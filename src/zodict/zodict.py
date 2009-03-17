@@ -9,3 +9,6 @@ class zodict(odict):
     """Mark ordered dict with corresponding interface.
     """
     implements(IFullMapping)
+    
+    def __init__(self, data=()):
+        odict.__init__(self, data=data)
