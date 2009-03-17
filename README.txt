@@ -1,5 +1,5 @@
 
-Ordered dictionary which simply implements the corresponding
+Ordered dictionary which simply implementing the corresponding
 ``zope.interface.common.mapping`` interfaces.
 
   >>> from zodict import zodict
@@ -8,4 +8,4 @@ Ordered dictionary which simply implements the corresponding
 Credits
 -------
 
-  -Written by ``rnix`` (Mar 17 2009)
+  -Written by ``rnix`` (2009-02-17)

@@ -32,6 +32,7 @@ setup(name='zodict',
       zip_safe=True,
       install_requires=[
           'setuptools',
+          'odict',
           'zope.interface',
       ],
       extras_require = {},
