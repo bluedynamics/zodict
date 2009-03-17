@@ -4,17 +4,18 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.2'
-shortdesc = 'Ordered dictionary.'
+version = '1.0'
+shortdesc = 'zope.interface compliant ordered dictionary.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 
-setup(name='odict',
+setup(name='zodict',
       version=version,
       description=shortdesc,
       long_description=longdesc,
       classifiers=[
             'Development Status :: 5 - Production/Stable',
-            'License :: OSI Approved :: Python Software Foundation License',
+            'License :: OSI Approved :: GNU General Public License (GPL)',
+            'Framework :: Zope3',
             'Operating System :: OS Independent',
             'Programming Language :: Python', 
             'Topic :: Software Development',       
@@ -29,6 +30,9 @@ setup(name='odict',
       namespace_packages=[],
       include_package_data=True,
       zip_safe=True,
-      install_requires=['setuptools'],
+      install_requires=[
+          'setuptools',
+          'zope.interface',
+      ],
       extras_require = {},
       )

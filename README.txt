@@ -1,12 +1,11 @@
 
-Yet another odict implementation.
+Ordered dictionary which simply implements the corresponding
+``zope.interface.common.mapping`` interfaces.
 
-  >>> from odict import odict
-  >>> od = odict()
+  >>> from zodict import zodict
+  >>> od = zodict()
   
 Credits
 -------
 
-  -Written by ``bearophile`` (Oct 12 2006)
-
-  -Eggified by ``rnix`` (Mar 17 2009)
+  -Written by ``rnix`` (Mar 17 2009)
