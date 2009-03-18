@@ -34,6 +34,12 @@ setup(name='zodict',
           'setuptools',
           'odict',
           'zope.interface',
+          'zope.location',
       ],
-      extras_require = {},
+      extras_require = dict(
+          test=[
+            'interlude',
+            'zope.testing',
+          ]
+      ),
       )

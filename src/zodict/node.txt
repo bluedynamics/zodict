@@ -1,0 +1,39 @@
+
+Node
+====
+
+We have a base node which provides the default interface implementation.
+
+  >>> from zope.interface.common.mapping import IFullMapping
+  >>> from zodict.interfaces import INode
+  >>> from zodict.node import Node
+  >>> root = Node('root')
+  >>> root
+  <Node object 'root' at ...>
+  
+  >>> root.__name__
+  'root'
+  
+  >>> root.__parent__
+
+  >>> root.path
+  ['root']
+  
+  >>> root['child'] = Node()
+  >>> root['child'].path
+  ['root', 'child']
+  
+  >>> root['child']['subchild'] = Node()
+  >>> root['child']['subchild'].path
+  ['root', 'child', 'subchild']
+  
+  >>> root['child']['subchild2'] = Node()
+  >>> root.keys()
+  ['child']
+  
+  >>> root['child'].keys()
+  ['subchild', 'subchild2']
+  
+  >>> root['child'].items()
+  [('subchild', <Node object 'subchild' at ...>), 
+  ('subchild2', <Node object 'subchild2' at ...>)]
