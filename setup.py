@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0'
+version = '1.1'
 shortdesc = 'zope.interface compliant ordered dictionary.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 
@@ -21,9 +21,9 @@ setup(name='zodict',
             'Topic :: Software Development',       
       ],
       keywords='odict',
-      author='bearophile, rnix',
+      author='rnix',
       author_email='rnix@squarewave.at',
-      url=u'https://svn.plone.org/svn/archetypes/AGX/odict',
+      url=u'https://svn.plone.org/svn/archetypes/AGX/zodict',
       license='GNU General Public Licence',
       packages=find_packages('src'),
       package_dir = {'': 'src'},

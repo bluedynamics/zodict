@@ -2,6 +2,14 @@
 Node
 ====
 
+Short test on superclass
+
+  >>> from zope.interface.common.mapping import IFullMapping
+  >>> from zodict import zodict
+  >>> zod = zodict()
+  >>> IFullMapping.providedBy(zod)
+  True
+
 We have a base node which provides the default interface implementation.
 
   >>> from zope.interface.common.mapping import IFullMapping
@@ -37,3 +45,10 @@ We have a base node which provides the default interface implementation.
   >>> root['child'].items()
   [('subchild', <Node object 'subchild' at ...>), 
   ('subchild2', <Node object 'subchild2' at ...>)]
+  
+  >>> child = root['child']
+  >>> child.__name__
+  'child'
+  
+  >>> child.__parent__
+  <Node object 'root' at ...>
