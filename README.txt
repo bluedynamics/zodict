@@ -42,4 +42,4 @@ Changes
 Credits
 =======
 
-  -Written by ``rnix`` (2009-03-17)
+  -Written by Robert Niederreiter <rnix@squarewave.at> (2009-03-17)
