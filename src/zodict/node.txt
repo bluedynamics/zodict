@@ -52,3 +52,16 @@ We have a base node which provides the default interface implementation.
   
   >>> child.__parent__
   <Node object 'root' at ...>
+
+Test filtereditems function
+
+  >>> from zope.interface import Interface
+  >>> from zope.interface import alsoProvides
+  >>> class IMarker(Interface): pass
+  >>> alsoProvides(root['child']['subchild'], IMarker)
+  >>> IMarker.providedBy(root['child']['subchild'])
+  True
+  
+  >>> for item in root['child'].filtereditems(IMarker):
+  ...     print item.path
+  ['root', 'child', 'subchild']

@@ -36,6 +36,9 @@ This is a zodict which provides a location.::
 Changes
 =======
 
+  -Add ``filtereditems`` function to Node
+   rnix, 2009-03-22
+
   -Add node interface and implementation
    rnix, 2009-03-18
 

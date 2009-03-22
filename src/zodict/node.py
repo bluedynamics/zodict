@@ -29,6 +29,11 @@ class Node(zodict):
         path.reverse()
         return path
     
+    def filtereditems(self, interface):
+        for node in self.values():
+            if interface.providedBy(node):
+                yield node
+    
     def __repr__(self):
         return '<Node object \'%s\' at %s>' % (self.__name__,
                                                hex(id(self))[:-1])

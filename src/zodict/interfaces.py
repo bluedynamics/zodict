@@ -10,3 +10,7 @@ class INode(ILocation, IFullMapping):
     """
     
     path = Attribute(u"Path of target element as list")
+    
+    def filtereditems(interface):
+        """Return self.items() filtered by interface.
+        """
