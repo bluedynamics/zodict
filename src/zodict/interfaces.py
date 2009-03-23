@@ -9,8 +9,14 @@ class INode(ILocation, IFullMapping):
     """A node.
     """
     
+    uuid = Attribute(u"UUID of this node.")
+    
     path = Attribute(u"Path of target element as list")
     
+    def node(uuid):
+        """Return node by uuid located anywhere in this nodetree.
+        """
+    
     def filtereditems(interface):
-        """Return self.items() filtered by interface.
+        """Return filtered child nodes by interface.
         """

@@ -53,7 +53,7 @@ We have a base node which provides the default interface implementation.
   >>> child.__parent__
   <Node object 'root' at ...>
 
-Test filtereditems function
+Test filtereditems function.
 
   >>> from zope.interface import Interface
   >>> from zope.interface import alsoProvides
@@ -65,3 +65,35 @@ Test filtereditems function
   >>> for item in root['child'].filtereditems(IMarker):
   ...     print item.path
   ['root', 'child', 'subchild']
+
+Check UUID stuff.::
+
+  >>> root._index.keys()
+  [UUID('...'), UUID('...'), UUID('...'), UUID('...')]
+
+  >>> uuid = root['child']['subchild'].uuid
+  >>> uuid
+  UUID('...')
+  
+  >>> root.node(uuid).path
+  ['root', 'child', 'subchild']
+  
+  >>> root.uuid = uuid
+  Traceback (most recent call last):
+    ...
+  ValueError: Given uuid was already used for another Node
+  
+  >>> import uuid
+  >>> newuuid = uuid.uuid4()
+  
+  >>> root.uuid = newuuid
+  >>> root['child'].node(newuuid).path
+  ['root']
+  
+  >>> len(root._index.keys())
+  4
+  
+  >>> root.uuid = object()
+  Traceback (most recent call last):
+    ...  
+  AssertionError: arg <object object at ...> does not match <class 'uuid.UUID'>

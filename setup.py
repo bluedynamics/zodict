@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.2'
+version = '1.3'
 shortdesc = 'zope.interface compliant ordered dictionary.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 
@@ -33,6 +33,7 @@ setup(name='zodict',
       install_requires=[
           'setuptools',
           'odict',
+          'uuid',
           'zope.interface',
           'zope.location',
       ],
