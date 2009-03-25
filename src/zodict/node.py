@@ -23,7 +23,7 @@ class Node(zodict):
     
     def __setitem__(self, key, val):
         if val.uuid in self._index.keys():
-            raise ValeError(u"Node with uuid already exists")
+            raise ValueError(u"Node with uuid already exists")
         val.__name__ = key
         val.__parent__ = self
         val._index = self._index
