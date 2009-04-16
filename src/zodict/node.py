@@ -30,6 +30,15 @@ class Node(zodict):
         self._index[val.uuid] = val
         zodict.__setitem__(self, key, val)
     
+    def __delitem__(self, key):
+        todelete = self[key]
+        childkeys = todelete.keys()
+        if childkeys:
+            for childkey in childkeys:
+                del todelete[childkey]
+        del self._index[todelete.uuid]
+        zodict.__delitem__(self, key)
+    
     @accepts(object, uuid.UUID)
     def set_uuid(self, uuid):
         if uuid in self._index.keys() and self._index[uuid] is not self:

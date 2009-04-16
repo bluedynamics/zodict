@@ -97,3 +97,53 @@ Check UUID stuff.::
   Traceback (most recent call last):
     ...  
   AssertionError: arg <object object at ...> does not match <class 'uuid.UUID'>
+
+Delete an Item::
+
+Child of root contains 2 more subchilds.:
+
+  >>> len(root['child'].keys())
+  2
+
+Store the uuids of the nodes which are expected to be deleted from index if
+child is deleted.:
+
+  >>> delindexes = [
+  ...     root['child'].uuid,
+  ...     root['child']['subchild'].uuid,
+  ...     root['child']['subchild2'].uuid,
+  ... ]
+
+Read the uuid index and check containment in index.:
+
+  >>> uuids = root._index.keys()
+  >>> len(uuids)
+  4
+  
+  >>> delindexes[0] in uuids
+  True
+  
+  >>> delindexes[1] in uuids
+  True
+  
+  >>> delindexes[2] in uuids
+  True
+  
+Delete child. All checked uuids above must be deleted from index.:
+  
+  >>> del root['child']
+  >>> root.keys()
+  []
+  
+  >>> uuids = root._index.keys()
+  >>> len(uuids)
+  1
+  
+  >>> delindexes[0] in uuids
+  False
+  
+  >>> delindexes[1] in uuids
+  False
+  
+  >>> delindexes[2] in uuids
+  False

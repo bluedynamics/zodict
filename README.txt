@@ -75,6 +75,12 @@ UUID related operations on Node.::
 Changes
 =======
 
+Version 1.3.1
+-------------
+
+  -Add ``__delitem__`` function to ``Node``.
+   rnix, 2009-04-16
+
 Version 1.3
 -----------
 
