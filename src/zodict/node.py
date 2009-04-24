@@ -12,7 +12,7 @@ class Node(zodict):
     """Base node implementation.
     """
     implements(INode)
-    
+
     def __init__(self, name=None):
         zodict.__init__(self)
         self.__parent__ = None
@@ -20,7 +20,7 @@ class Node(zodict):
         self._index = dict()
         self._uuid = None
         self.uuid = uuid.uuid4()
-    
+
     def __setitem__(self, key, val):
         if val.uuid in self._index.keys():
             raise ValueError(u"Node with uuid already exists")
@@ -29,7 +29,7 @@ class Node(zodict):
         val._index = self._index
         self._index[val.uuid] = val
         zodict.__setitem__(self, key, val)
-    
+
     def __delitem__(self, key):
         todelete = self[key]
         childkeys = todelete.keys()
@@ -38,7 +38,7 @@ class Node(zodict):
                 del todelete[childkey]
         del self._index[todelete.uuid]
         zodict.__delitem__(self, key)
-    
+
     @accepts(object, uuid.UUID)
     def set_uuid(self, uuid):
         if uuid in self._index.keys() and self._index[uuid] is not self:
@@ -47,13 +47,13 @@ class Node(zodict):
             del self._index[self._uuid]
         self._index[uuid] = self
         self._uuid = uuid
-    
+
     @returns(uuid.UUID)
     def get_uuid(self):
         return self._uuid
-    
+
     uuid = property(get_uuid, set_uuid)
-    
+
     @property
     def path(self):
         path = list()
@@ -61,17 +61,24 @@ class Node(zodict):
             path.append(parent.__name__)
         path.reverse()
         return path
-    
+
+    @property
+    def root(self):
+        root = None
+        for parent in LocationIterator(self):
+            root = parent
+        return root
+
     def node(self, uuid):
         return self._index.get(uuid)
-    
+
     def filtereditems(self, interface):
         for node in self.values():
             if interface.providedBy(node):
                 yield node
-    
+
     def __repr__(self):
         return '<Node object \'%s\' at %s>' % (self.__name__,
                                                hex(id(self))[:-1])
-    
+
     __str__ = __repr__
