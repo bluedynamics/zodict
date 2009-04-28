@@ -13,6 +13,8 @@ class INode(ILocation, IFullMapping):
     
     path = Attribute(u"Path of target element as list")
     
+    root = Attribute(u"Root node")
+    
     def node(uuid):
         """Return node by uuid located anywhere in this nodetree.
         """
