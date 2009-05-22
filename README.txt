@@ -21,18 +21,18 @@ This is a zodict which provides a location.::
   >>> root = Node('root')
   >>> ILocation.providedBy(Node)
   True
-  
+
   >>> root['child'] = Node()
   >>> root['child'].path
   ['root', 'child']
-  
+
   >>> child = root['child']
   >>> child.__name__
   'child'
-  
+
   >>> child.__parent__
   <Node object 'root' at ...>
-  
+
 The ``filtereditems`` function.::
 
   >>> from zope.interface import Interface
@@ -41,7 +41,7 @@ The ``filtereditems`` function.::
   >>> alsoProvides(root['child']['subchild'], IMarker)
   >>> IMarker.providedBy(root['child']['subchild'])
   True
-  
+
   >>> for item in root['child'].filtereditems(IMarker):
   ...     print item.path
   ['root', 'child', 'subchild']
@@ -51,29 +51,35 @@ UUID related operations on Node.::
   >>> uuid = root['child']['subchild'].uuid
   >>> uuid
   UUID('...')
-  
+
   >>> root.node(uuid).path
   ['root', 'child', 'subchild']
-  
+
   >>> root.uuid = uuid
   Traceback (most recent call last):
     ...
   ValueError: Given uuid was already used for another Node
-  
+
   >>> import uuid
   >>> newuuid = uuid.uuid4()
-  
+
   >>> root.uuid = newuuid
   >>> root['child'].node(newuuid).path
   ['root']
-  
+
   >>> root.uuid = object()
   Traceback (most recent call last):
-    ...  
+    ...
   AssertionError: arg <object object at ...> does not match <class 'uuid.UUID'>
 
 Changes
 =======
+
+Version 1.3.2
+-------------
+
+  -Add ``root`` property to ``Node``.
+   thet, 2009-04-24
 
 Version 1.3.1
 -------------

@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.3.1'
+version = '1.3.2'
 shortdesc = 'zope.interface compliant ordered dictionary.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 
@@ -17,8 +17,8 @@ setup(name='zodict',
             'License :: OSI Approved :: GNU General Public License (GPL)',
             'Framework :: Zope3',
             'Operating System :: OS Independent',
-            'Programming Language :: Python', 
-            'Topic :: Software Development',       
+            'Programming Language :: Python',
+            'Topic :: Software Development',
       ],
       keywords='odict',
       author='Robert Niederreiter',
