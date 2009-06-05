@@ -2,9 +2,9 @@
 # GNU General Public License Version 2 or later
 
 import unittest
+import doctest 
 from pprint import pprint
 from interlude import interact
-from zope.testing import doctest
 
 optionflags = doctest.NORMALIZE_WHITESPACE | \
               doctest.ELLIPSIS | \

@@ -78,7 +78,8 @@ class Node(zodict):
                 yield node
 
     def __repr__(self):
-        return '<Node object \'%s\' at %s>' % (self.__name__,
-                                               hex(id(self))[:-1])
+        return '<%s object \'%s\' at %s>' % (self.__class__.__name__, 
+                                             self.__name__,
+                                             hex(id(self))[:-1])
 
     __str__ = __repr__

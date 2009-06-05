@@ -75,6 +75,17 @@ UUID related operations on Node.::
 Changes
 =======
 
+Unreleased
+----------
+
+  -repr(nodeobj) now returns the real classname and not fixed ``<Node object``
+   this helps a lot while testing and using classes inheriting from Node!
+   jensens, 2009-05-06 
+
+  -Make tests run with ``python setup.py test``.
+   Removed superflous dependency on ``zope.testing``.
+   jensens, 2009-05-06 
+
 Version 1.3.2
 -------------
 

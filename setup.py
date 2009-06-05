@@ -7,6 +7,7 @@ import sys, os
 version = '1.3.2'
 shortdesc = 'zope.interface compliant ordered dictionary.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
+tests_require = ['interlude']
 
 setup(name='zodict',
       version=version,
@@ -32,15 +33,14 @@ setup(name='zodict',
       zip_safe=True,
       install_requires=[
           'setuptools',
+          'uuid', # only python2.4!
           'odict',
-          'uuid',
           'zope.interface',
           'zope.location',
       ],
+      tests_require=tests_require,
+      test_suite="zodict.tests.test_suite",
       extras_require = dict(
-          test=[
-            'interlude',
-            'zope.testing',
-          ]
+          test=tests_require,
       ),
       )
