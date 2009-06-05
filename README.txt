@@ -1,4 +1,3 @@
-
 zodict
 ======
 
@@ -14,7 +13,8 @@ Ordered dictionary which implements the corresponding
 Node
 ====
 
-This is a zodict which provides a location.::
+This is a ``zodict`` which provides a location. Location the zope way means
+each item in the node-tree knows its parent and its own name.::
 
   >>> from zope.location.interface import ILocation
   >>> from zodict.node import Node
@@ -77,6 +77,9 @@ Changes
 
 Unreleased
 ----------
+
+  -Don't allow classes as values of a Node. Attribute ``__name__`` conflicts.
+   jensens, 2009-05-06 
 
   -repr(nodeobj) now returns the real classname and not fixed ``<Node object``
    this helps a lot while testing and using classes inheriting from Node!

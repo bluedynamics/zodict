@@ -52,6 +52,19 @@ We have a base node which provides the default interface implementation.
   
   >>> child.__parent__
   <Node object 'root' at ...>
+  
+Node uses ILocation, so attribute __name__ is set. A python class object itself 
+uses this attribute too, here it stores the class name. If you set a class 
+derived from Node (others would be catched earlier) as a value in a Node you'd 
+get odd effects, so we don't allow it!
+
+  >>> class SomeClass(Node):
+  ...     """for testing"""
+  >>> root['aclasshere'] = SomeClass
+  Traceback (most recent call last):
+  ...
+  ValueError: It isn't allowed to use classes as values.
+
 
 Test filtereditems function.
 

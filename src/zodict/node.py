@@ -2,6 +2,7 @@
 # GNU General Public License Version 2 or later
 
 import uuid
+import inspect
 from zodict import zodict
 from zope.interface import implements
 from zope.location import LocationIterator
@@ -24,6 +25,8 @@ class Node(zodict):
     def __setitem__(self, key, val):
         if val.uuid in self._index.keys():
             raise ValueError(u"Node with uuid already exists")
+        if inspect.isclass(val):
+            raise ValueError(u"It isn't allowed to use classes as values.")
         val.__name__ = key
         val.__parent__ = self
         val._index = self._index
