@@ -80,8 +80,19 @@ class Node(zodict):
             if interface.providedBy(node):
                 yield node
 
+    def add(self, node_to_add):
+        """Adds a new Node to Node and uses new Nodes' uuid as key
+        """
+        try:
+            assert(INode.providedBy(node_to_add))
+        except:
+            raise ValueError(u'Can only add a INode implementing node.')
+        self[node_to_add.uuid] = node_to_add
+        return node_to_add.uuid
+
+
     def __repr__(self):
-        return '<%s object \'%s\' at %s>' % (self.__class__.__name__, 
+        return '<%s object \'%s\' at %s>' % (self.__class__.__name__,
                                              self.__name__,
                                              hex(id(self))[:-1])
 
