@@ -4,7 +4,9 @@ from types import StringTypes
 from zope.location.interfaces import ITraverser
 
 _RAISE_KEYERROR = object()
+
 class Traverser(object):
+    
     implements(ITraverser)
     
     def __init__(self, context):
@@ -18,15 +20,12 @@ class Traverser(object):
                 path.pop()
         else:
             path = list(path)
-
         path.reverse()
-
         curr = self.context
         if not path[-1]:
             # Start at the root
             path.pop()
             curr = self.context.root
-        
             while path:
                 name = path.pop()
                 try:
@@ -36,5 +35,3 @@ class Traverser(object):
                         raise KeyError, "'"+curr.name + "' has no '" + name + "'"
                     return default
             return curr
-       
-
