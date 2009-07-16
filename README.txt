@@ -75,8 +75,8 @@ UUID related operations on Node.::
 Changes
 =======
 
-Unreleased
-----------
+Version 1.4.0
+-------------
 
   -Don't allow classes as values of a Node. Attribute ``__name__`` conflicts.
    jensens, 2009-05-06 
