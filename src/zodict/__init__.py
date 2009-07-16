@@ -1,2 +1,2 @@
 from zodict import zodict
-import tests
+#import tests

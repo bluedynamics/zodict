@@ -75,6 +75,13 @@ UUID related operations on Node.::
 Changes
 =======
 
+Version 1.4.1
+-------------
+
+  -removed import of tests from zodicts init. this caused import errors if 
+   interlude wasnt installed.
+   jensens, 2009-07-16
+
 Version 1.4.0
 -------------
 
