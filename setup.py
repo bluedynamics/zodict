@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.4.0'
+version = '1.4.1'
 shortdesc = 'zope.interface compliant ordered dictionary.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 tests_require = ['interlude']
