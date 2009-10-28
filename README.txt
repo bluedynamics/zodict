@@ -96,6 +96,11 @@ Version 1.4.0
    Removed superflous dependency on ``zope.testing``.
    jensens, 2009-05-06 
 
+Version 1.3.3 (svn)
+-------------
+
+  -Fix ITraverser interface import including BBB.
+
 Version 1.3.2
 -------------
 
