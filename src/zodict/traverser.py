@@ -1,16 +1,12 @@
 from zope.interface import implements
 from types import StringTypes
 
-try: # BBB
-    from zope.location.interfaces import ITraverser
-except ImportError:
-    from zope.traversing.interfaces import ITraverser
+from interfaces import INodeTraverser
+from interfaces import _RAISE_KEYERROR
 
-_RAISE_KEYERROR = object()
-
-class Traverser(object):
+class NodeTraverser(object):
     
-    implements(ITraverser)
+    implements(INodeTraverser)
     
     def __init__(self, context):
         self.context = context

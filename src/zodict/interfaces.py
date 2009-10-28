@@ -1,7 +1,7 @@
 # Copyright 2009, Blue Dynamics Alliance - http://bluedynamics.com
 # GNU General Public Licence Version 2 or later
 
-from zope.interface import Attribute
+from zope.interface import Interface, Attribute
 from zope.interface.common.mapping import IFullMapping
 from zope.location.interfaces import ILocation
 
@@ -21,4 +21,16 @@ class INode(ILocation, IFullMapping):
     
     def filtereditems(interface):
         """Return filtered child nodes by interface.
+        """
+
+_RAISE_KEYERROR = object()
+
+class INodeTraverser(Interface):
+    """Same interface as zope.traversing.interfaces.ITraverser.
+    
+    Changed due to huge dependency tail of zope.traversing.
+    """
+
+    def traverse(path, default=_RAISE_KEYERROR):
+        """Traverse Node(s).
         """

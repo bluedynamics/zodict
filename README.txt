@@ -75,8 +75,11 @@ UUID related operations on Node.::
 Changes
 =======
 
-Version 1.4.1
+Version 1.5.0 (svn)
 -------------
+
+  -define own Traverser interface and reduce dependencies
+   rnix, 2009-10-28
 
   -removed import of tests from zodicts init. this caused import errors if 
    interlude wasnt installed.
