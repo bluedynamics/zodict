@@ -1,7 +1,10 @@
 from zope.interface import implements
 from types import StringTypes
 
-from zope.location.interfaces import ITraverser
+try: # BBB
+    from zope.location.interfaces import ITraverser
+except ImportError:
+    from zope.traversing.interfaces import ITraverser
 
 _RAISE_KEYERROR = object()
 
