@@ -22,6 +22,10 @@ class INode(ILocation, IFullMapping):
     def filtereditems(interface):
         """Return filtered child nodes by interface.
         """
+    
+    def printtree():
+        """Debugging helper.
+        """
 
 _RAISE_KEYERROR = object()
 
