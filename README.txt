@@ -78,6 +78,9 @@ Changes
 Version 1.5.0 (svn)
 -------------
 
+  -add printtree debug helper function to Node.
+   rnix, 2009-11-09
+
   -define own Traverser interface and reduce dependencies
    rnix, 2009-10-28
 
