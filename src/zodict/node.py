@@ -81,18 +81,18 @@ class Node(zodict):
                 yield node
     
     def printtree(self):
-        print str(self.__class__) + ': ' + self.__name__
+        print str(self.__class__) + ': ' + str(self.__name__)
         self._printtree(2)
 
     def _printtree(self, indent):
         for node in self.values():
             print indent * ' ' + str(node.__class__) + ': ' + \
-                node.__name__[node.__name__.find(':') + 1:]
+                node.__name__[str(node.__name__).find(':') + 1:]
             node._printtree(indent + 2)
 
     def __repr__(self):
         return '<%s object \'%s\' at %s>' % (self.__class__.__name__,
-                                             self.__name__,
+                                             str(self.__name__),
                                              hex(id(self))[:-1])
 
     __str__ = __repr__

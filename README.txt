@@ -77,6 +77,9 @@ Changes
 
 Version 1.5.0 (svn)
 -------------
+ 
+  -fix printtree if Node.__name__ is None.
+   rnix, 2009-11-20
 
   -add printtree debug helper function to Node.
    rnix, 2009-11-09
