@@ -86,8 +86,9 @@ class Node(zodict):
 
     def _printtree(self, indent):
         for node in self.values():
+            name = str(node.__name__)
             print indent * ' ' + str(node.__class__) + ': ' + \
-                node.__name__[str(node.__name__).find(':') + 1:]
+                name[name.find(':') + 1:]
             node._printtree(indent + 2)
 
     def __repr__(self):
