@@ -79,21 +79,20 @@ class Node(zodict):
         for node in self.values():
             if interface.providedBy(node):
                 yield node
+            
+    @property
+    def noderepr(self): 
+        name = str(self.__name__)
+        return str(self.__class__) + ': ' + name[name.find(':') + 1:]
     
-    def printtree(self):
-        print str(self.__class__) + ': ' + str(self.__name__)
-        self._printtree(2)
-
-    def _printtree(self, indent):
+    def printtree(self, indent=0):
+        print "%s%s" % (indent * ' ', self.noderepr)
         for node in self.values():
-            name = str(node.__name__)
-            print indent * ' ' + str(node.__class__) + ': ' + \
-                name[name.find(':') + 1:]
-            node._printtree(indent + 2)
+            node.printtree(indent+2)        
 
     def __repr__(self):
-        return '<%s object \'%s\' at %s>' % (self.__class__.__name__,
-                                             str(self.__name__),
-                                             hex(id(self))[:-1])
+        return "<%s object '%s' at %s>" % (self.__class__.__name__,
+                                           str(self.__name__),
+                                           hex(id(self))[:-1])
 
     __str__ = __repr__
