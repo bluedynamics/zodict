@@ -202,9 +202,9 @@ Move a node.:
   >>> root.insertbefore(node, root['child1'])
   >>> root.printtree()
   <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child2
-      <class 'zodict.node.Node'>: child1
-      <class 'zodict.node.Node'>: child3
+    <class 'zodict.node.Node'>: child2
+    <class 'zodict.node.Node'>: child1
+    <class 'zodict.node.Node'>: child3
 
 There exist an insertafter function as well::
 
@@ -212,7 +212,17 @@ There exist an insertafter function as well::
   >>> root.insertafter(node, root['child2'])
   >>> root.printtree()
   <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child2
-      <class 'zodict.node.Node'>: child4
-      <class 'zodict.node.Node'>: child1
-      <class 'zodict.node.Node'>: child3
+    <class 'zodict.node.Node'>: child2
+    <class 'zodict.node.Node'>: child4
+    <class 'zodict.node.Node'>: child1
+    <class 'zodict.node.Node'>: child3
+  
+  >>> node = Node('child5')
+  >>> root.insertafter(node, root['child3'])
+  >>> root.printtree()
+  <class 'zodict.node.Node'>: root
+    <class 'zodict.node.Node'>: child2
+    <class 'zodict.node.Node'>: child4
+    <class 'zodict.node.Node'>: child1
+    <class 'zodict.node.Node'>: child3
+    <class 'zodict.node.Node'>: child5

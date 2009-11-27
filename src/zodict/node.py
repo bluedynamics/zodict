@@ -82,8 +82,6 @@ class Node(zodict):
                 yield node
     
     def insertbefore(self, newnode, refnode):
-        """Insert newnode before refnode.
-        """
         nodekey = newnode.__name__
         if nodekey is None:
             raise ValueError(u"Given node has no __name__ set.")
@@ -97,7 +95,7 @@ class Node(zodict):
         prevnode = None
         prevkey = None
         if index > 0:
-            prevkey = self.keys()[index -1]
+            prevkey = self.keys()[index - 1]
             prevnode = dict.__getitem__(self, prevkey)
         if prevnode is not None:
             dict.__getitem__(self, prevkey)[2] = nodekey
@@ -112,6 +110,31 @@ class Node(zodict):
     def insertafter(self, newnode, refnode):
         """Insert newnode after refnode.
         """
+        nodekey = newnode.__name__
+        if nodekey is None:
+            raise ValueError(u"Given node has no __name__ set.")
+        if self.node(newnode.uuid) is not None:
+            raise KeyError(u"Given node already contained in tree.")
+        index = self._nodeindex(refnode)
+        if index is None:
+            raise ValueError(u"Given reference node not child of self.")
+        refkey = refnode.__name__
+        refnode = dict.__getitem__(self, refkey)
+        nextnode = None
+        nextkey = None
+        keys = self.keys()
+        if index < len(keys) - 1:
+            nextkey = self.keys()[index + 1]
+            nextnode = dict.__getitem__(self, nextkey)
+        if nextnode is not None:
+            dict.__getitem__(self, nextkey)[0] = nodekey
+            newnode = [refkey, newnode, nextkey]
+        else:
+            self.lt = nodekey
+            newnode = [refkey, newnode, _nil]
+        dict.__getitem__(self, refkey)[2] = nodekey
+        dict.__setitem__(self, nodekey, newnode)
+        self[nodekey] = newnode[1]
     
     def _nodeindex(self, node):
         index = 0
