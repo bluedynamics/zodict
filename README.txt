@@ -103,19 +103,19 @@ add it elsewhere again.:
 Changes
 =======
 
-Version 1.5.0 (svn)
+Version 1.5.0
 -------------
  
   -add ``insertbefore`` and ``insertafter`` function.
    rnix, 2009-11-27
   
-  -fix printtree if Node.__name__ is None.
+  -fix printtree if ``Node.__name__`` is None.
    rnix, 2009-11-20
 
-  -add printtree debug helper function to Node.
+  -add ``printtree`` debug helper function to Node.
    rnix, 2009-11-09
 
-  -define own Traverser interface and reduce dependencies
+  -define own Traverser interface and reduce dependencies.
    rnix, 2009-10-28
 
   -removed import of tests from zodicts init. this caused import errors if 

@@ -11,8 +11,6 @@ from interfaces import INode
 from deco import accepts, returns
 
 class Node(zodict):
-    """Base node implementation.
-    """
     implements(INode)
 
     def __init__(self, name=None):
