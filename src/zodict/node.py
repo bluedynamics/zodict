@@ -82,14 +82,9 @@ class Node(zodict):
                 yield node
     
     def insertbefore(self, newnode, refnode):
+        self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
-        if nodekey is None:
-            raise ValueError(u"Given node has no __name__ set.")
-        if self.node(newnode.uuid) is not None:
-            raise KeyError(u"Given node already contained in tree.")
         index = self._nodeindex(refnode)
-        if index is None:
-            raise ValueError(u"Given reference node not child of self.")
         refkey = refnode.__name__
         refnode = dict.__getitem__(self, refkey)
         prevnode = None
@@ -108,16 +103,9 @@ class Node(zodict):
         self[nodekey] = newnode[1]
     
     def insertafter(self, newnode, refnode):
-        """Insert newnode after refnode.
-        """
+        self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
-        if nodekey is None:
-            raise ValueError(u"Given node has no __name__ set.")
-        if self.node(newnode.uuid) is not None:
-            raise KeyError(u"Given node already contained in tree.")
         index = self._nodeindex(refnode)
-        if index is None:
-            raise ValueError(u"Given reference node not child of self.")
         refkey = refnode.__name__
         refnode = dict.__getitem__(self, refkey)
         nextnode = None
@@ -135,6 +123,16 @@ class Node(zodict):
         dict.__getitem__(self, refkey)[2] = nodekey
         dict.__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
+    
+    def _validateinsertion(self, newnode, refnode):
+        nodekey = newnode.__name__
+        if nodekey is None:
+            raise ValueError(u"Given node has no __name__ set.")
+        if self.node(newnode.uuid) is not None:
+            raise KeyError(u"Given node already contained in tree.")
+        index = self._nodeindex(refnode)
+        if index is None:
+            raise ValueError(u"Given reference node not child of self.")
     
     def _nodeindex(self, node):
         index = 0
