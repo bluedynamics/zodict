@@ -3,6 +3,7 @@
 
 import uuid
 import inspect
+from odict.pyodict import _nil
 from zodict import zodict
 from zope.interface import implements
 from zope.location import LocationIterator
@@ -79,6 +80,46 @@ class Node(zodict):
         for node in self.values():
             if interface.providedBy(node):
                 yield node
+    
+    def insertbefore(self, newnode, refnode):
+        """Insert newnode before refnode.
+        """
+        nodekey = newnode.__name__
+        if nodekey is None:
+            raise ValueError(u"Given node has no __name__ set.")
+        if self.node(newnode.uuid) is not None:
+            raise KeyError(u"Given node already contained in tree.")
+        index = self._nodeindex(refnode)
+        if index is None:
+            raise ValueError(u"Given reference node not child of self.")
+        refkey = refnode.__name__
+        refnode = dict.__getitem__(self, refkey)
+        prevnode = None
+        prevkey = None
+        if index > 0:
+            prevkey = self.keys()[index -1]
+            prevnode = dict.__getitem__(self, prevkey)
+        if prevnode is not None:
+            dict.__getitem__(self, prevkey)[2] = nodekey
+            newnode = [prevkey, newnode, refkey]
+        else:
+            self.lh = nodekey
+            newnode = [_nil, newnode, refkey]
+        dict.__getitem__(self, refkey)[0] = nodekey
+        dict.__setitem__(self, nodekey, newnode)
+        self[nodekey] = newnode[1]
+    
+    def insertafter(self, newnode, refnode):
+        """Insert newnode after refnode.
+        """
+    
+    def _nodeindex(self, node):
+        index = 0
+        for key in self.keys():
+            if key == node.__name__:
+                return index
+            index += 1
+        return None
             
     @property
     def noderepr(self): 

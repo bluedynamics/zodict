@@ -72,12 +72,43 @@ UUID related operations on Node.::
     ...
   AssertionError: arg <object object at ...> does not match <class 'uuid.UUID'>
 
+Node insertion (an insertafter function exist as well)::
+
+  >>> root['child1'] = Node()
+  >>> root['child2'] = Node()
+  
+  >>> node = Node('child3')
+  >>> root.insertbefore(node, root['child2'])
+  >>> root.printtree()
+  <class 'zodict.node.Node'>: root
+    <class 'zodict.node.Node'>: child1
+    <class 'zodict.node.Node'>: child3
+    <class 'zodict.node.Node'>: child2
+
+Nodes can not be moved. Therefor you have to read it, delete it from tree and 
+add it elsewhere again.:
+
+  >>> node = root['child2']
+  >>> del root['child2']
+  >>> root.values()
+  [<Node object 'child1' at ...>, <Node object 'child3' at ...>]
+  
+  >>> root.insertbefore(node, root['child1'])
+  >>> root.printtree()
+  <class 'zodict.node.Node'>: root
+      <class 'zodict.node.Node'>: child2
+      <class 'zodict.node.Node'>: child1
+      <class 'zodict.node.Node'>: child3
+
 Changes
 =======
 
 Version 1.5.0 (svn)
 -------------
  
+  -add ``insertbefore`` and ``insertafter`` function.
+   rnix, 2009-11-27
+  
   -fix printtree if Node.__name__ is None.
    rnix, 2009-11-20
 

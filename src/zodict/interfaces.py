@@ -23,6 +23,24 @@ class INode(ILocation, IFullMapping):
         """Return filtered child nodes by interface.
         """
     
+    def insertbefore(newnode, refnode):
+        """Insert newnode before refnode.
+        
+        __name__ on newnode must be set.
+        
+        This function only supports adding of new nodes, for moving nodes,
+        read node to move, delete it from tree and re-add it elsewhere.
+        """
+    
+    def insertafter(newnode, refnode):
+        """Insert newnode after refnode.
+        
+        __name__ on newnode must be set.
+        
+        This function only supports adding of new nodes, for moving nodes,
+        read node to move, delete it from tree and re-add it elsewhere.
+        """
+    
     def printtree():
         """Debugging helper.
         """
