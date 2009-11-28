@@ -22,9 +22,9 @@ class Node(zodict):
 
     def __setitem__(self, key, val):
         if val.uuid in self._index.keys():
-            raise ValueError(u"Node with uuid already exists")
+            raise ValueError, u"Node with uuid already exists"
         if inspect.isclass(val):
-            raise ValueError(u"It isn't allowed to use classes as values.")
+            raise ValueError, u"It isn't allowed to use classes as values."
         val.__name__ = key
         val.__parent__ = self
         val._index = self._index
@@ -42,7 +42,7 @@ class Node(zodict):
 
     def set_uuid(self, uuid):
         if uuid in self._index.keys() and self._index[uuid] is not self:
-            raise ValueError(u"Given uuid was already used for another Node")
+            raise ValueError, u"Given uuid was already used for another Node"
         if self._uuid in self._index.keys():
             del self._index[self._uuid]
         self._index[uuid] = self
@@ -124,12 +124,12 @@ class Node(zodict):
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
         if nodekey is None:
-            raise ValueError(u"Given node has no __name__ set.")
+            raise ValueError, u"Given node has no __name__ set."
         if self.node(newnode.uuid) is not None:
-            raise KeyError(u"Given node already contained in tree.")
+            raise KeyError, u"Given node already contained in tree."
         index = self._nodeindex(refnode)
         if index is None:
-            raise ValueError(u"Given reference node not child of self.")
+            raise ValueError, u"Given reference node not child of self."
     
     def _nodeindex(self, node):
         index = 0
