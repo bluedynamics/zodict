@@ -2,7 +2,7 @@ zodict
 ======
 
 Ordered dictionary which implements the corresponding
-``zope.interface.common.mapping`` interface.::
+``zope.interface.common.mapping`` interface::
 
   >>> from zope.interface.common.mapping import IFullMapping
   >>> from zodict import zodict
@@ -14,7 +14,7 @@ Node
 ====
 
 This is a ``zodict`` which provides a location. Location the zope way means
-each item in the node-tree knows its parent and its own name.::
+each item in the node-tree knows its parent and its own name::
 
   >>> from zope.location.interface import ILocation
   >>> from zodict.node import Node
@@ -33,7 +33,7 @@ each item in the node-tree knows its parent and its own name.::
   >>> child.__parent__
   <Node object 'root' at ...>
 
-The ``filtereditems`` function.::
+The ``filtereditems`` function::
 
   >>> from zope.interface import Interface
   >>> from zope.interface import alsoProvides
@@ -46,7 +46,7 @@ The ``filtereditems`` function.::
   ...     print item.path
   ['root', 'child', 'subchild']
 
-UUID related operations on Node.::
+UUID related operations on Node::
 
   >>> uuid = root['child']['subchild'].uuid
   >>> uuid
@@ -86,7 +86,7 @@ Node insertion (an insertafter function exist as well)::
     <class 'zodict.node.Node'>: child2
 
 Nodes can not be moved. Therefor you have to read it, delete it from tree and 
-add it elsewhere again.:
+add it elsewhere again::
 
   >>> node = root['child2']
   >>> del root['child2']
@@ -102,6 +102,15 @@ add it elsewhere again.:
 
 Changes
 =======
+
+Version 1.5.1 (svn)
+-------------
+
+  -add ``index`` Attribute. Allows access to the internal _index attribute.
+   rnix, 2009-11-28
+  
+  -remove ``@accept`` and ``@return`` decorators. Just overhead.
+   rnix, 2009-11-28
 
 Version 1.5.0
 -------------
@@ -136,7 +145,7 @@ Version 1.4.0
    Removed superflous dependency on ``zope.testing``.
    jensens, 2009-05-06 
 
-Version 1.3.3 (svn)
+Version 1.3.3
 -------------
 
   -Fix ITraverser interface import including BBB.

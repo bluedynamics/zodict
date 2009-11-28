@@ -105,11 +105,6 @@ Check UUID stuff.::
   
   >>> len(root._index.keys())
   4
-  
-  >>> root.uuid = object()
-  Traceback (most recent call last):
-    ...  
-  AssertionError: arg <object object at ...> does not match <class 'uuid.UUID'>
 
 Delete an Item::
 

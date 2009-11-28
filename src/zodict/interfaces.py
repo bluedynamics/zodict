@@ -15,6 +15,8 @@ class INode(ILocation, IFullMapping):
     
     root = Attribute(u"Root node")
     
+    index = Attribute(u"The tree node index")
+    
     def node(uuid):
         """Return node by uuid located anywhere in this nodetree.
         """

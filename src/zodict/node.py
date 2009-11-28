@@ -8,7 +8,6 @@ from zodict import zodict
 from zope.interface import implements
 from zope.location import LocationIterator
 from interfaces import INode
-from deco import accepts, returns
 
 class Node(zodict):
     implements(INode)
@@ -41,7 +40,6 @@ class Node(zodict):
         del self._index[todelete.uuid]
         zodict.__delitem__(self, key)
 
-    @accepts(object, uuid.UUID)
     def set_uuid(self, uuid):
         if uuid in self._index.keys() and self._index[uuid] is not self:
             raise ValueError(u"Given uuid was already used for another Node")
@@ -50,7 +48,6 @@ class Node(zodict):
         self._index[uuid] = self
         self._uuid = uuid
 
-    @returns(uuid.UUID)
     def get_uuid(self):
         return self._uuid
 
@@ -70,6 +67,10 @@ class Node(zodict):
         for parent in LocationIterator(self):
             root = parent
         return root
+    
+    @property
+    def index(self):
+        return self._index
 
     def node(self, uuid):
         return self._index.get(uuid)
