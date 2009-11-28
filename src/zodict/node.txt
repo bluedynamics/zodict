@@ -3,6 +3,7 @@ Node
 ====
 
 Short test on superclass
+::
 
   >>> from zope.interface.common.mapping import IFullMapping
   >>> from zodict import zodict
@@ -10,7 +11,8 @@ Short test on superclass
   >>> IFullMapping.providedBy(zod)
   True
 
-We have a base node which provides the default interface implementation.
+We have a base node which provides the default interface implementation
+::
 
   >>> from zope.interface.common.mapping import IFullMapping
   >>> from zodict.interfaces import INode
@@ -57,6 +59,7 @@ Node uses ILocation, so attribute __name__ is set. A python class object itself
 uses this attribute too, here it stores the class name. If you set a class 
 derived from Node (others would be catched earlier) as a value in a Node you'd 
 get odd effects, so we don't allow it!
+::
 
   >>> class SomeClass(Node):
   ...     """for testing"""
@@ -66,7 +69,8 @@ get odd effects, so we don't allow it!
   ValueError: It isn't allowed to use classes as values.
 
 
-Test filtereditems function.
+Test filtereditems function
+::
 
   >>> from zope.interface import Interface
   >>> from zope.interface import alsoProvides
@@ -79,7 +83,8 @@ Test filtereditems function.
   ...     print item.path
   ['root', 'child', 'subchild']
 
-Check UUID stuff.::
+Check UUID stuff
+::
 
   >>> root._index.keys()
   [UUID('...'), UUID('...'), UUID('...'), UUID('...')]
@@ -106,15 +111,15 @@ Check UUID stuff.::
   >>> len(root._index.keys())
   4
 
-Delete an Item::
-
-Child of root contains 2 more subchilds.:
+Child of root contains 2 more subchilds.
+::
 
   >>> len(root['child'].keys())
   2
 
 Store the uuids of the nodes which are expected to be deleted from index if
-child is deleted.:
+child is deleted
+::
 
   >>> delindexes = [
   ...     root['child'].uuid,
@@ -122,7 +127,8 @@ child is deleted.:
   ...     root['child']['subchild2'].uuid,
   ... ]
 
-Read the uuid index and check containment in index.:
+Read the uuid index and check containment in index
+::
 
   >>> uuids = root._index.keys()
   >>> len(uuids)
@@ -137,7 +143,8 @@ Read the uuid index and check containment in index.:
   >>> delindexes[2] in uuids
   True
   
-Delete child. All checked uuids above must be deleted from index.:
+Delete child. All checked uuids above must be deleted from index.
+::
   
   >>> del root['child']
   >>> root.keys()
@@ -156,7 +163,8 @@ Delete child. All checked uuids above must be deleted from index.:
   >>> delindexes[2] in uuids
   False
 
-Node insertion::
+Node insertion
+::
 
   >>> root.printtree()
   <class 'zodict.node.Node'>: root
@@ -187,7 +195,8 @@ Node insertion::
     <class 'zodict.node.Node'>: child3
     <class 'zodict.node.Node'>: child2
 
-Move a node.:
+Move a node
+::
 
   >>> node = root['child2']
   >>> del root['child2']
@@ -201,7 +210,8 @@ Move a node.:
     <class 'zodict.node.Node'>: child1
     <class 'zodict.node.Node'>: child3
 
-There exist an insertafter function as well::
+There exist an insertafter function as well
+::
 
   >>> node = Node('child4')
   >>> root.insertafter(node, root['child2'])

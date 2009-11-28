@@ -2,7 +2,8 @@ zodict
 ======
 
 Ordered dictionary which implements the corresponding
-``zope.interface.common.mapping`` interface::
+``zope.interface.common.mapping`` interface
+::
 
   >>> from zope.interface.common.mapping import IFullMapping
   >>> from zodict import zodict
@@ -14,7 +15,8 @@ Node
 ====
 
 This is a ``zodict`` which provides a location. Location the zope way means
-each item in the node-tree knows its parent and its own name::
+each item in the node-tree knows its parent and its own name
+::
 
   >>> from zope.location.interface import ILocation
   >>> from zodict.node import Node
@@ -33,7 +35,8 @@ each item in the node-tree knows its parent and its own name::
   >>> child.__parent__
   <Node object 'root' at ...>
 
-The ``filtereditems`` function::
+The ``filtereditems`` function
+::
 
   >>> from zope.interface import Interface
   >>> from zope.interface import alsoProvides
@@ -46,7 +49,8 @@ The ``filtereditems`` function::
   ...     print item.path
   ['root', 'child', 'subchild']
 
-UUID related operations on Node::
+UUID related operations on Node
+::
 
   >>> uuid = root['child']['subchild'].uuid
   >>> uuid
@@ -72,7 +76,8 @@ UUID related operations on Node::
     ...
   AssertionError: arg <object object at ...> does not match <class 'uuid.UUID'>
 
-Node insertion (an insertafter function exist as well)::
+Node insertion (an insertafter function exist as well)
+::
 
   >>> root['child1'] = Node()
   >>> root['child2'] = Node()
@@ -86,7 +91,8 @@ Node insertion (an insertafter function exist as well)::
     <class 'zodict.node.Node'>: child2
 
 Nodes can not be moved. Therefor you have to read it, delete it from tree and 
-add it elsewhere again::
+add it elsewhere again
+::
 
   >>> node = root['child2']
   >>> del root['child2']
@@ -109,7 +115,8 @@ Version 1.5.1 (svn)
   -improve ``insertbefore`` and ``insertafter`` a little bit.
    rnix, 2009-11-28
 
-  -add ``index`` Attribute. Allows access to the internal _index attribute.
+  -add ``index`` Attribute to ``Node``. Allows access to the internal 
+   ``_index`` attribute.
    rnix, 2009-11-28
   
   -remove ``@accept`` and ``@return`` decorators. Just overhead.
@@ -118,30 +125,32 @@ Version 1.5.1 (svn)
 Version 1.5.0
 -------------
  
-  -add ``insertbefore`` and ``insertafter`` function.
+  -add ``insertbefore`` and ``insertafter`` function to ``Node``.
    rnix, 2009-11-27
   
-  -fix printtree if ``Node.__name__`` is None.
+  -fix ``printtree`` if ``Node.__name__`` is ``None``.
    rnix, 2009-11-20
 
-  -add ``printtree`` debug helper function to Node.
+  -add ``printtree`` debug helper function to ``Node``.
    rnix, 2009-11-09
 
   -define own Traverser interface and reduce dependencies.
    rnix, 2009-10-28
 
-  -removed import of tests from zodicts init. this caused import errors if 
-   interlude wasnt installed.
+  -removed import of tests from zodicts ``__init__``. this caused import errors
+   if ``interlude`` wasnt installed.
    jensens, 2009-07-16
 
 Version 1.4.0
 -------------
 
-  -Don't allow classes as values of a Node. Attribute ``__name__`` conflicts.
+  -Don't allow classes as values of a ``Node``. Attribute ``__name__``
+   conflicts.
    jensens, 2009-05-06 
 
-  -repr(nodeobj) now returns the real classname and not fixed ``<Node object``
-   this helps a lot while testing and using classes inheriting from Node!
+  -``repr(nodeobj)`` now returns the real classname and not fixed
+   ``<Node object`` this helps a lot while testing and using classes inheriting
+   from ``Node``!
    jensens, 2009-05-06 
 
   -Make tests run with ``python setup.py test``.
@@ -151,7 +160,7 @@ Version 1.4.0
 Version 1.3.3
 -------------
 
-  -Fix ITraverser interface import including BBB.
+  -Fix ``ITraverser`` interface import including BBB.
 
 Version 1.3.2
 -------------
@@ -186,4 +195,5 @@ Version 1.1
 Credits
 =======
 
-  -Written by Robert Niederreiter <rnix@squarewave.at> (2009-03-17)
+  -Written by Robert Niederreiter <rnix@squarewave.at>
+   2009-03-17
