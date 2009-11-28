@@ -106,6 +106,9 @@ Changes
 Version 1.5.1 (svn)
 -------------
 
+  -improve ``insertbefore`` and ``insertafter`` a little bit.
+   rnix, 2009-11-28
+
   -add ``index`` Attribute. Allows access to the internal _index attribute.
    rnix, 2009-11-28
   

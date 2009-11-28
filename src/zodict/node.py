@@ -83,9 +83,8 @@ class Node(zodict):
     def insertbefore(self, newnode, refnode):
         self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
-        index = self._nodeindex(refnode)
         refkey = refnode.__name__
-        refnode = dict.__getitem__(self, refkey)
+        index = self._nodeindex(refnode)
         prevnode = None
         prevkey = None
         if index > 0:
@@ -104,9 +103,8 @@ class Node(zodict):
     def insertafter(self, newnode, refnode):
         self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
-        index = self._nodeindex(refnode)
         refkey = refnode.__name__
-        refnode = dict.__getitem__(self, refkey)
+        index = self._nodeindex(refnode)
         nextnode = None
         nextkey = None
         keys = self.keys()
