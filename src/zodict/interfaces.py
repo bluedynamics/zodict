@@ -46,15 +46,3 @@ class INode(ILocation, IFullMapping):
     def printtree():
         """Debugging helper.
         """
-
-_RAISE_KEYERROR = object()
-
-class INodeTraverser(Interface):
-    """Same interface as zope.traversing.interfaces.ITraverser.
-    
-    Changed due to huge dependency tail of zope.traversing.
-    """
-
-    def traverse(path, default=_RAISE_KEYERROR):
-        """Traverse Node(s).
-        """

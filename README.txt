@@ -104,8 +104,10 @@ add it elsewhere again
 Changes
 =======
 
-Version 1.5.1 (svn)
+Version 1.6.0 (svn)
 -------------------
+
+  -remove the ``traverser`` module.
 
   -improve ``insertbefore`` and ``insertafter`` a little bit.
    rnix, 2009-11-28
