@@ -71,11 +71,6 @@ UUID related operations on Node
   >>> root['child'].node(newuuid).path
   ['root']
 
-  >>> root.uuid = object()
-  Traceback (most recent call last):
-    ...
-  AssertionError: arg <object object at ...> does not match <class 'uuid.UUID'>
-
 Node insertion (an insertafter function exist as well)
 ::
 
@@ -110,7 +105,7 @@ Changes
 =======
 
 Version 1.5.1 (svn)
--------------
+-------------------
 
   -improve ``insertbefore`` and ``insertafter`` a little bit.
    rnix, 2009-11-28
