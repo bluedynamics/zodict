@@ -35,7 +35,6 @@ setup(name='zodict',
           'setuptools',
           'uuid', # only python2.4!
           'odict',
-          'zope.interface',
           'zope.location',
       ],
       tests_require=tests_require,
