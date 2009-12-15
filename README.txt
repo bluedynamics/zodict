@@ -2,7 +2,7 @@ zodict
 ======
 
 Ordered dictionary which implements the corresponding
-``zope.interface.common.mapping`` interface
+``zope.interface.common.mapping`` interface.
 ::
 
   >>> from zope.interface.common.mapping import IFullMapping
@@ -15,7 +15,7 @@ Node
 ====
 
 This is a ``zodict`` which provides a location. Location the zope way means
-each item in the node-tree knows its parent and its own name
+each item in the node-tree knows its parent and its own name.
 ::
 
   >>> from zope.location.interface import ILocation
@@ -35,7 +35,7 @@ each item in the node-tree knows its parent and its own name
   >>> child.__parent__
   <Node object 'root' at ...>
 
-The ``filtereditems`` function
+The ``filtereditems`` function.
 ::
 
   >>> from zope.interface import Interface
@@ -49,7 +49,7 @@ The ``filtereditems`` function
   ...     print item.path
   ['root', 'child', 'subchild']
 
-UUID related operations on Node
+UUID related operations on Node.
 ::
 
   >>> uuid = root['child']['subchild'].uuid
@@ -71,7 +71,7 @@ UUID related operations on Node
   >>> root['child'].node(newuuid).path
   ['root']
 
-Node insertion (an insertafter function exist as well)
+Node insertion (an insertafter function exist as well).
 ::
 
   >>> root['child1'] = Node()
@@ -86,7 +86,7 @@ Node insertion (an insertafter function exist as well)
     <class 'zodict.node.Node'>: child2
 
 Nodes can not be moved. Therefor you have to read it, delete it from tree and 
-add it elsewhere again
+add it elsewhere again.
 ::
 
   >>> node = root['child2']
@@ -110,7 +110,7 @@ Merge 2 Node Trees.
   >>> tree2 = Node()
   >>> tree2['a'] = Node()
   >>> tree2['b'] = Node()
-  >>> tree1._index is tree2._index
+  >>> tree1.index is tree2.index
   False
   
   >>> len(tree1.index.keys())
@@ -122,7 +122,7 @@ Merge 2 Node Trees.
   >>> len(tree1.index.keys())
   6
   
-  >>> tree1._index is tree2._index
+  >>> tree1.index is tree2.index
   True
   
   >>> tree1.printtree()
