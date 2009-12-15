@@ -101,96 +101,138 @@ add it elsewhere again
       <class 'zodict.node.Node'>: child1
       <class 'zodict.node.Node'>: child3
 
+Merge 2 Node Trees.
+::
+
+  >>> tree1 = Node()
+  >>> tree1['a'] = Node()
+  >>> tree1['b'] = Node()
+  >>> tree2 = Node()
+  >>> tree2['a'] = Node()
+  >>> tree2['b'] = Node()
+  >>> tree1._index is tree2._index
+  False
+  
+  >>> len(tree1.index.keys())
+  3
+  >>> len(tree2.index.keys())
+  3
+  
+  >>> tree1['c'] = tree2
+  >>> len(tree1.index.keys())
+  6
+  
+  >>> tree1._index is tree2._index
+  True
+  
+  >>> tree1.printtree()
+  <class 'zodict.node.Node'>: None
+    <class 'zodict.node.Node'>: a
+    <class 'zodict.node.Node'>: b
+    <class 'zodict.node.Node'>: c
+      <class 'zodict.node.Node'>: a
+      <class 'zodict.node.Node'>: b
+
 Changes
 =======
 
-Version 1.6.0 (svn)
--------------------
+Version 1.6.1
+-------------
 
-  -remove the ``traverser`` module.
+  * make ``Node`` trees merge properly.
+    rnix, 2009-12-15
 
-  -improve ``insertbefore`` and ``insertafter`` a little bit.
-   rnix, 2009-11-28
+  * make getter and setter functions of ``uuid`` property private.
+    rnix, 2009-12-15
 
-  -add ``index`` Attribute to ``Node``. Allows access to the internal 
-   ``_index`` attribute.
-   rnix, 2009-11-28
+Version 1.6.0
+-------------
+
+  * remove the ``traverser`` module.
+    rnix, 2009-11-28
+
+  * improve ``insertbefore`` and ``insertafter`` a little bit.
+    rnix, 2009-11-28
+
+  * add ``index`` Attribute to ``Node``. Allows access to the internal 
+    ``_index`` attribute.
+    rnix, 2009-11-28
   
-  -remove ``@accept`` and ``@return`` decorators. Just overhead.
-   rnix, 2009-11-28
+  * remove ``@accept`` and ``@return`` decorators. Just overhead.
+    rnix, 2009-11-28
 
 Version 1.5.0
 -------------
  
-  -add ``insertbefore`` and ``insertafter`` function to ``Node``.
-   rnix, 2009-11-27
+  * add ``insertbefore`` and ``insertafter`` function to ``Node``.
+    rnix, 2009-11-27
   
-  -fix ``printtree`` if ``Node.__name__`` is ``None``.
-   rnix, 2009-11-20
+  * fix ``printtree`` if ``Node.__name__`` is ``None``.
+    rnix, 2009-11-20
 
-  -add ``printtree`` debug helper function to ``Node``.
-   rnix, 2009-11-09
+  * add ``printtree`` debug helper function to ``Node``.
+    rnix, 2009-11-09
 
-  -define own Traverser interface and reduce dependencies.
-   rnix, 2009-10-28
+  * define own Traverser interface and reduce dependencies.
+    rnix, 2009-10-28
 
-  -removed import of tests from zodicts ``__init__``. this caused import errors
-   if ``interlude`` wasnt installed.
-   jensens, 2009-07-16
+  * removed import of tests from zodicts ``__init__``. this caused import errors
+    if ``interlude`` wasnt installed.
+    jensens, 2009-07-16
 
 Version 1.4.0
 -------------
 
-  -Don't allow classes as values of a ``Node``. Attribute ``__name__``
-   conflicts.
-   jensens, 2009-05-06 
+  * Don't allow classes as values of a ``Node``. Attribute ``__name__``
+    conflicts.
+    jensens, 2009-05-06 
 
-  -``repr(nodeobj)`` now returns the real classname and not fixed
-   ``<Node object`` this helps a lot while testing and using classes inheriting
-   from ``Node``!
-   jensens, 2009-05-06 
+  * ``repr(nodeobj)`` now returns the real classname and not fixed
+    ``<Node object`` this helps a lot while testing and using classes inheriting
+    from ``Node``!
+    jensens, 2009-05-06 
 
-  -Make tests run with ``python setup.py test``.
-   Removed superflous dependency on ``zope.testing``.
-   jensens, 2009-05-06 
+  * Make tests run with ``python setup.py test``.
+    Removed superflous dependency on ``zope.testing``.
+    jensens, 2009-05-06 
 
 Version 1.3.3
 -------------
 
-  -Fix ``ITraverser`` interface import including BBB.
+  * Fix ``ITraverser`` interface import including BBB.
 
 Version 1.3.2
 -------------
 
-  -Add ``root`` property to ``Node``.
+  * Add ``root`` property to ``Node``.
    thet, 2009-04-24
 
 Version 1.3.1
 -------------
 
-  -Add ``__delitem__`` function to ``Node``.
-   rnix, 2009-04-16
+  * Add ``__delitem__`` function to ``Node``.
+    rnix, 2009-04-16
 
 Version 1.3
 -----------
 
-  -Add ``uuid`` Attribute and ``node`` function to ``Node``.
-   rnix, 2009-03-23
+  * Add ``uuid`` Attribute and ``node`` function to ``Node``.
+    rnix, 2009-03-23
 
 Version 1.2
 -----------
 
-  -Add ``filtereditems`` function to ``Node``.
-   rnix, 2009-03-22
+  * Add ``filtereditems`` function to ``Node``.
+    rnix, 2009-03-22
 
 Version 1.1
 -----------
 
-  -Add ``INode`` interface and implementation.
-   rnix, 2009-03-18
+  * Add ``INode`` interface and implementation.
+    rnix, 2009-03-18
 
 Credits
 =======
 
-  -Written by Robert Niederreiter <rnix@squarewave.at>
-   2009-03-17
+  * Written by Robert Niederreiter <rnix@squarewave.at>
+    2009-03-17

@@ -21,14 +21,16 @@ class Node(zodict):
         self.uuid = uuid.uuid4()
 
     def __setitem__(self, key, val):
-        if val.uuid in self._index.keys():
-            raise ValueError, u"Node with uuid already exists"
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
+        keys = self._index.keys()
+        for valkey in val._index.keys():
+            if valkey in keys:
+                raise ValueError, u"Node with uuid already exists"
         val.__name__ = key
         val.__parent__ = self
+        self._index.update(val._index)
         val._index = self._index
-        self._index[val.uuid] = val
         zodict.__setitem__(self, key, val)
 
     def __delitem__(self, key):
@@ -37,10 +39,14 @@ class Node(zodict):
         if childkeys:
             for childkey in childkeys:
                 del todelete[childkey]
+        todelete._index = { todelete.uuid: todelete }
         del self._index[todelete.uuid]
         zodict.__delitem__(self, key)
 
-    def set_uuid(self, uuid):
+    def _get_uuid(self):
+        return self._uuid
+    
+    def _set_uuid(self, uuid):
         if uuid in self._index.keys() and self._index[uuid] is not self:
             raise ValueError, u"Given uuid was already used for another Node"
         if self._uuid in self._index.keys():
@@ -48,10 +54,7 @@ class Node(zodict):
         self._index[uuid] = self
         self._uuid = uuid
 
-    def get_uuid(self):
-        return self._uuid
-
-    uuid = property(get_uuid, set_uuid)
+    uuid = property(_get_uuid, _set_uuid)
 
     @property
     def path(self):

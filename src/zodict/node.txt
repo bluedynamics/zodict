@@ -2,7 +2,7 @@
 Node
 ====
 
-Short test on superclass
+Short test on superclass.
 ::
 
   >>> from zope.interface.common.mapping import IFullMapping
@@ -11,7 +11,7 @@ Short test on superclass
   >>> IFullMapping.providedBy(zod)
   True
 
-We have a base node which provides the default interface implementation
+We have a base node which provides the default interface implementation.
 ::
 
   >>> from zope.interface.common.mapping import IFullMapping
@@ -69,7 +69,7 @@ get odd effects, so we don't allow it!
   ValueError: It isn't allowed to use classes as values.
 
 
-Test filtereditems function
+Test filtereditems function.
 ::
 
   >>> from zope.interface import Interface
@@ -83,7 +83,7 @@ Test filtereditems function
   ...     print item.path
   ['root', 'child', 'subchild']
 
-Check UUID stuff
+Check UUID stuff.
 ::
 
   >>> root._index.keys()
@@ -118,7 +118,7 @@ Child of root contains 2 more subchilds.
   2
 
 Store the uuids of the nodes which are expected to be deleted from index if
-child is deleted
+child is deleted.
 ::
 
   >>> delindexes = [
@@ -127,7 +127,7 @@ child is deleted
   ...     root['child']['subchild2'].uuid,
   ... ]
 
-Read the uuid index and check containment in index
+Read the uuid index and check containment in index.
 ::
 
   >>> uuids = root._index.keys()
@@ -163,7 +163,7 @@ Delete child. All checked uuids above must be deleted from index.
   >>> delindexes[2] in uuids
   False
 
-Node insertion
+Node insertion.
 ::
 
   >>> root.printtree()
@@ -195,11 +195,15 @@ Node insertion
     <class 'zodict.node.Node'>: child3
     <class 'zodict.node.Node'>: child2
 
-Move a node
+Move a node.
 ::
 
   >>> node = root['child2']
+  >>> len(node._index.keys())
+  4
   >>> del root['child2']
+  >>> len(node._index.keys())
+  1
   >>> root.values()
   [<Node object 'child1' at ...>, <Node object 'child3' at ...>]
   
@@ -210,7 +214,7 @@ Move a node
     <class 'zodict.node.Node'>: child1
     <class 'zodict.node.Node'>: child3
 
-There exist an insertafter function as well
+There exist an insertafter function as well.
 ::
 
   >>> node = Node('child4')
@@ -231,3 +235,37 @@ There exist an insertafter function as well
     <class 'zodict.node.Node'>: child1
     <class 'zodict.node.Node'>: child3
     <class 'zodict.node.Node'>: child5
+
+Merge 2 Node Trees.
+::
+
+  >>> tree1 = Node()
+  >>> tree1['a'] = Node()
+  >>> tree1['b'] = Node()
+  >>> tree2 = Node()
+  >>> len(tree2._index)
+  1
+  >>> tree2['a'] = Node()
+  >>> tree2['b'] = Node()
+  >>> tree1._index is tree2._index
+  False
+  
+  >>> len(tree1._index.keys())
+  3
+  >>> len(tree2._index.keys())
+  3
+  
+  >>> tree1['c'] = tree2
+  >>> len(tree1._index.keys())
+  6
+  
+  >>> tree1._index is tree2._index
+  True
+  
+  >>> tree1.printtree()
+  <class 'zodict.node.Node'>: None
+    <class 'zodict.node.Node'>: a
+    <class 'zodict.node.Node'>: b
+    <class 'zodict.node.Node'>: c
+      <class 'zodict.node.Node'>: a
+      <class 'zodict.node.Node'>: b
