@@ -165,7 +165,8 @@ Changes
 Version 1.7.0
 -------------
 
-  -Add ``Node.detach`` function. Needed for tree merging.
+  -Add ``Node.detach`` function. Needed for node or subtree moving. This is
+   done due to performance reasons.
    rnix, 2009-12-18
 
   -``Node.index`` returns now a ``NodeIndex`` object, which implements
