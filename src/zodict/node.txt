@@ -55,6 +55,7 @@ We have a base node which provides the default interface implementation.
   >>> child.__parent__
   <Node object 'root' at ...>
   
+  
 Node uses ILocation, so attribute __name__ is set. A python class object itself 
 uses this attribute too, here it stores the class name. If you set a class 
 derived from Node (others would be catched earlier) as a value in a Node you'd 
@@ -86,8 +87,8 @@ Test filtereditems function.
 Check UUID stuff.
 ::
 
-  >>> root._index.keys()
-  [UUID('...'), UUID('...'), UUID('...'), UUID('...')]
+  >>> len(root._index.keys())
+  4
 
   >>> uuid = root['child']['subchild'].uuid
   >>> uuid
@@ -122,25 +123,25 @@ child is deleted.
 ::
 
   >>> delindexes = [
-  ...     root['child'].uuid,
-  ...     root['child']['subchild'].uuid,
-  ...     root['child']['subchild2'].uuid,
+  ...     int(root['child'].uuid),
+  ...     int(root['child']['subchild'].uuid),
+  ...     int(root['child']['subchild2'].uuid),
   ... ]
 
 Read the uuid index and check containment in index.
 ::
 
-  >>> uuids = root._index.keys()
-  >>> len(uuids)
+  >>> iuuids = root._index.keys()
+  >>> len(iuuids)
   4
   
-  >>> delindexes[0] in uuids
+  >>> delindexes[0] in iuuids
   True
   
-  >>> delindexes[1] in uuids
+  >>> delindexes[1] in iuuids
   True
   
-  >>> delindexes[2] in uuids
+  >>> delindexes[2] in iuuids
   True
   
 Delete child. All checked uuids above must be deleted from index.
@@ -182,6 +183,7 @@ Node insertion.
     ...
   ValueError: Given node has no __name__ set.
   
+  >> interact(locals())  
   >>> root.insertbefore(root['child2'], root['child1'])
   Traceback (most recent call last):
     ...

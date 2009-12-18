@@ -136,6 +136,16 @@ Merge 2 Node Trees.
 Changes
 =======
 
+Version 1.6.2
+-------------
+
+  - make ``Node`` much faster (after profiling session). This includes changes
+    and a new release of odict as well.
+    jensens, rnix, 2009-12-18
+
+  - make ``Node`` thread safe.
+    jensens, rnix, 2009-12-18
+
 Version 1.6.1
 -------------
 
