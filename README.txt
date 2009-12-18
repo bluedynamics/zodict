@@ -5,11 +5,11 @@ Ordered dictionary which implements the corresponding
 ``zope.interface.common.mapping`` interface.
 ::
 
-  >>> from zope.interface.common.mapping import IFullMapping
-  >>> from zodict import zodict
-  >>> zod = zodict()
-  >>> IFullMapping.providedBy(zod)
-  True
+    >>> from zope.interface.common.mapping import IFullMapping
+    >>> from zodict import zodict
+    >>> zod = zodict()
+    >>> IFullMapping.providedBy(zod)
+    True
 
 Node
 ====
@@ -18,133 +18,168 @@ This is a ``zodict`` which provides a location. Location the zope way means
 each item in the node-tree knows its parent and its own name.
 ::
 
-  >>> from zope.location.interface import ILocation
-  >>> from zodict.node import Node
-  >>> root = Node('root')
-  >>> ILocation.providedBy(Node)
-  True
-
-  >>> root['child'] = Node()
-  >>> root['child'].path
-  ['root', 'child']
-
-  >>> child = root['child']
-  >>> child.__name__
-  'child'
-
-  >>> child.__parent__
-  <Node object 'root' at ...>
+    >>> from zope.location.interface import ILocation
+    >>> from zodict import Node
+    >>> root = Node('root')
+    >>> ILocation.providedBy(Node)
+    True
+    
+    >>> root['child'] = Node()
+    >>> root['child'].path
+    ['root', 'child']
+    
+    >>> child = root['child']
+    >>> child.__name__
+    'child'
+    
+    >>> child.__parent__
+    <Node object 'root' at ...>
 
 The ``filtereditems`` function.
 ::
 
-  >>> from zope.interface import Interface
-  >>> from zope.interface import alsoProvides
-  >>> class IMarker(Interface): pass
-  >>> alsoProvides(root['child']['subchild'], IMarker)
-  >>> IMarker.providedBy(root['child']['subchild'])
-  True
-
-  >>> for item in root['child'].filtereditems(IMarker):
-  ...     print item.path
-  ['root', 'child', 'subchild']
+    >>> from zope.interface import Interface
+    >>> from zope.interface import alsoProvides
+    >>> class IMarker(Interface): pass
+    >>> alsoProvides(root['child']['subchild'], IMarker)
+    >>> IMarker.providedBy(root['child']['subchild'])
+    True
+    
+    >>> for item in root['child'].filtereditems(IMarker):
+    ...     print item.path
+    ['root', 'child', 'subchild']
 
 UUID related operations on Node.
 ::
 
-  >>> uuid = root['child']['subchild'].uuid
-  >>> uuid
-  UUID('...')
-
-  >>> root.node(uuid).path
-  ['root', 'child', 'subchild']
-
-  >>> root.uuid = uuid
-  Traceback (most recent call last):
-    ...
-  ValueError: Given uuid was already used for another Node
-
-  >>> import uuid
-  >>> newuuid = uuid.uuid4()
-
-  >>> root.uuid = newuuid
-  >>> root['child'].node(newuuid).path
-  ['root']
+    >>> uuid = root['child']['subchild'].uuid
+    >>> uuid
+    UUID('...')
+    
+    >>> root.node(uuid).path
+    ['root', 'child', 'subchild']
+    
+    >>> root.uuid = uuid
+    Traceback (most recent call last):
+      ...
+    ValueError: Given uuid was already used for another Node
+    
+    >>> import uuid
+    >>> newuuid = uuid.uuid4()
+    
+    >>> root.uuid = newuuid
+    >>> root['child'].node(newuuid).path
+    ['root']
 
 Node insertion (an insertafter function exist as well).
 ::
 
-  >>> root['child1'] = Node()
-  >>> root['child2'] = Node()
-  
-  >>> node = Node('child3')
-  >>> root.insertbefore(node, root['child2'])
-  >>> root.printtree()
-  <class 'zodict.node.Node'>: root
-    <class 'zodict.node.Node'>: child1
-    <class 'zodict.node.Node'>: child3
-    <class 'zodict.node.Node'>: child2
-
-Nodes can not be moved. Therefor you have to read it, delete it from tree and 
-add it elsewhere again.
-::
-
-  >>> node = root['child2']
-  >>> del root['child2']
-  >>> root.values()
-  [<Node object 'child1' at ...>, <Node object 'child3' at ...>]
-  
-  >>> root.insertbefore(node, root['child1'])
-  >>> root.printtree()
-  <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child2
+    >>> root['child1'] = Node()
+    >>> root['child2'] = Node()
+    
+    >>> node = Node('child3')
+    >>> root.insertbefore(node, root['child2'])
+    >>> root.printtree()
+    <class 'zodict.node.Node'>: root
       <class 'zodict.node.Node'>: child1
       <class 'zodict.node.Node'>: child3
+      <class 'zodict.node.Node'>: child2
+
+Move a node. Therefor we first need to detach the node we want to move from
+tree. Then insert the detached node elsewhere. In general, you can insert the
+detached node or subtree to a complete different tree.
+::
+
+    >>> len(root._index.keys())
+    6
+    
+    >>> node = root.detach('child4')
+    >>> node
+    <Node object 'child4' at ...>
+    
+    >>> len(node._index.keys())
+    1
+    >>> len(root._index.keys())
+    5
+    
+    >>> len(root.values())
+    4
+    
+    >>> root.insertbefore(node, root['child1'])
+    >>> root.printtree()
+    <class 'zodict.node.Node'>: root
+      <class 'zodict.node.Node'>: child4
+      <class 'zodict.node.Node'>: child1
+      <class 'zodict.node.Node'>: child3
+      <class 'zodict.node.Node'>: child5
+      <class 'zodict.node.Node'>: child2
 
 Merge 2 Node Trees.
 ::
 
-  >>> tree1 = Node()
-  >>> tree1['a'] = Node()
-  >>> tree1['b'] = Node()
-  >>> tree2 = Node()
-  >>> tree2['a'] = Node()
-  >>> tree2['b'] = Node()
-  >>> tree1.index is tree2.index
-  False
+    >>> tree1 = Node()
+    >>> tree1['a'] = Node()
+    >>> tree1['b'] = Node()
+    >>> tree2 = Node()
+    >>> tree2['d'] = Node()
+    >>> tree2['e'] = Node()
+    >>> tree1._index is tree2._index
+    False
   
-  >>> len(tree1.index.keys())
-  3
-  >>> len(tree2.index.keys())
-  3
-  
-  >>> tree1['c'] = tree2
-  >>> len(tree1.index.keys())
-  6
-  
-  >>> tree1.index is tree2.index
-  True
-  
-  >>> tree1.printtree()
-  <class 'zodict.node.Node'>: None
-    <class 'zodict.node.Node'>: a
-    <class 'zodict.node.Node'>: b
-    <class 'zodict.node.Node'>: c
+    >>> len(tree1._index.keys())
+    3
+    
+    >>> tree1.printtree()
+    <class 'zodict.node.Node'>: None
       <class 'zodict.node.Node'>: a
       <class 'zodict.node.Node'>: b
+    
+    >>> len(tree2._index.keys())
+    3
+    
+    >>> tree2.printtree()
+    <class 'zodict.node.Node'>: None
+      <class 'zodict.node.Node'>: d
+      <class 'zodict.node.Node'>: e
+    
+    >>> tree1['c'] = tree2
+    >>> len(tree1._index.keys())
+    6
+    
+    >> sorted(tree1._index.values(), key=lambda x: x.__name__)
+    
+    >>> tree1._index is tree2._index
+    True
+    
+    >>> tree1.printtree()
+    <class 'zodict.node.Node'>: None
+      <class 'zodict.node.Node'>: a
+      <class 'zodict.node.Node'>: b
+      <class 'zodict.node.Node'>: c
+        <class 'zodict.node.Node'>: d
+        <class 'zodict.node.Node'>: e
 
 Changes
 =======
 
-Version 1.6.2
+Version 1.7.0
 -------------
 
-  - make ``Node`` much faster (after profiling session). This includes changes
-    and a new release of odict as well.
-    jensens, rnix, 2009-12-18
+  -Add ``Node.detach`` function. Needed for tree merging.
+   rnix, 2009-12-18
 
-  - make ``Node`` thread safe.
-    jensens, rnix, 2009-12-18
+  -``Node.index`` returns now a ``NodeIndex`` object, which implements
+   ``zope.interface.common.mapping.IReadMapping``. This functions convert uuid 
+   instances to integers before node lookup. So we still fit the contract of 
+   returning nodes from index by uuid.
+   rnix, 2009-12-18
+
+  -Change type of keys of ``Node._index`` to int. ``uuid.UUID.__hash__``
+   function was called too often
+   jensens, rnix, 2009-12-18
+
+  -make ``Node`` thread safe.
+   jensens, rnix, 2009-12-18
 
 Version 1.6.1
 -------------

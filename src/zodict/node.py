@@ -7,6 +7,7 @@ from threading import Lock
 from odict.pyodict import _nil
 from zodict import zodict
 from zope.interface import implements
+from zope.interface.common.mapping import IReadMapping
 from zope.location import LocationIterator
 from interfaces import INode
 
@@ -24,6 +25,20 @@ class TreeLock(object):
     def __exit__(self, type, value, traceback):
         self.lock.release()    
 
+class NodeIndex(object):
+    implements(IReadMapping)
+    
+    def __init__(self, index):
+        self._index = index
+    
+    def __getitem__(self, key):
+        return self._index[int(key)]
+    
+    def get(self, key, default=None):
+        return self._index.get(int(key), default)
+    
+    def __contains__(self, key):
+        return int(key) in self._index
 
 class Node(zodict):
     implements(INode)
@@ -40,30 +55,30 @@ class Node(zodict):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
         has_children = False
-        for key in val.iterkeys():
+        for valkey in val.iterkeys():
             has_children = True
             break
         if has_children:
             keys = set(self._index.keys())
             if keys.intersection(val._index.keys()):
                 raise ValueError, u"Node with uuid already exists"
-        with TreeLock(self):  
+        with TreeLock(self):
             val.__name__ = key
             val.__parent__ = self
             self._index.update(val._index)
             val._index = self._index
             zodict.__setitem__(self, key, val)
-            
-    def _del_from_index(self):
+    
+    def _to_delete(self):
+        todel = [int(self.uuid)]
         for childkey in self:
-            self[childkey]._del_from_index()
-        iuuid = int(self.uuid)
-        del self._index[iuuid]
-        self._index = { iuuid: self }
+            todel += self[childkey]._to_delete()
+        return todel
 
     def __delitem__(self, key):
         with TreeLock(self):
-            self[key]._del_from_index()
+            for iuuid in self[key]._to_delete():
+                del self._index[iuuid]
             zodict.__delitem__(self, key)
 
     def _get_uuid(self):
@@ -73,7 +88,7 @@ class Node(zodict):
         iuuid = uuid is not None and int(uuid) or None
         if iuuid in self._index and self._index[iuuid] is not self:
             raise ValueError, u"Given uuid was already used for another Node"
-        with TreeLock(self):  
+        with TreeLock(self):
             siuuid = self._uuid is not None and int(self._uuid) or None
             if siuuid in self._index:
                 del self._index[siuuid]
@@ -99,7 +114,7 @@ class Node(zodict):
     
     @property
     def index(self):
-        return self._index
+        return NodeIndex(self._index)
 
     def node(self, uuid):
         return self._index.get(int(uuid))
@@ -109,8 +124,26 @@ class Node(zodict):
             if interface.providedBy(node):
                 yield node
     
+    def _validateinsertion(self, newnode, refnode):
+        nodekey = newnode.__name__
+        if nodekey is None:
+            raise ValueError, u"Given node has no __name__ set."
+        if self.node(newnode.uuid) is not None:
+            raise KeyError, u"Given node already contained in tree."
+        index = self._nodeindex(refnode)
+        if index is None:
+            raise ValueError, u"Given reference node not child of self."
+    
+    def _nodeindex(self, node):
+        index = 0
+        for key in self.keys():
+            if key == node.__name__:
+                return index
+            index += 1
+        return None
+    
     def insertbefore(self, newnode, refnode):
-        with TreeLock(self):  
+        with TreeLock(self):
             self._validateinsertion(newnode, refnode)
             nodekey = newnode.__name__
             refkey = refnode.__name__
@@ -131,7 +164,7 @@ class Node(zodict):
         self[nodekey] = newnode[1]
     
     def insertafter(self, newnode, refnode):
-        with TreeLock(self):  
+        with TreeLock(self):
             self._validateinsertion(newnode, refnode)
             nodekey = newnode.__name__
             refkey = refnode.__name__
@@ -152,23 +185,18 @@ class Node(zodict):
             dict.__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
     
-    def _validateinsertion(self, newnode, refnode):
-        nodekey = newnode.__name__
-        if nodekey is None:
-            raise ValueError, u"Given node has no __name__ set."
-        if self.node(newnode.uuid) is not None:
-            raise KeyError, u"Given node already contained in tree."
-        index = self._nodeindex(refnode)
-        if index is None:
-            raise ValueError, u"Given reference node not child of self."
+    def _index_nodes(self):
+        for node in self.values():
+            self._index[int(node.uuid)] = node
+            node._index = self._index
+            node._index_nodes() 
     
-    def _nodeindex(self, node):
-        index = 0
-        for key in self.keys():
-            if key == node.__name__:
-                return index
-            index += 1
-        return None
+    def detach(self, key):
+        node = self[key]
+        del self[key]
+        node._index = { int(node.uuid): node }
+        node._index_nodes() 
+        return node
             
     @property
     def noderepr(self): 
