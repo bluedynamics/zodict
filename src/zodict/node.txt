@@ -6,20 +6,29 @@ Short test on superclass.
 ::
 
     >>> from zope.interface.common.mapping import IFullMapping
-    >>> from zodict import zodict
-    >>> zod = zodict()
+    >>> from zodict import Zodict
+    >>> zod = Zodict()
     >>> IFullMapping.providedBy(zod)
     True
+
+Test BBB - deprecated usage
+::
+
+    >>> from zodict.zodict import zodict as BBBzodict
+    >>> BBBzodict
+    <class 'zodict._zodict.Zodict'>
 
 We have a base node which provides the default interface implementation.
 ::
 
-    >>> from zope.interface.common.mapping import IFullMapping
     >>> from zodict.interfaces import INode
     >>> from zodict import Node
     >>> root = Node('root')
     >>> root
     <Node object 'root' at ...>
+
+    >>> INode.providedBy(root)
+    True
 
 Location related attributes.
 ::

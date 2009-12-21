@@ -4,6 +4,11 @@
 from zope.interface import Interface, Attribute
 from zope.interface.common.mapping import IFullMapping
 from zope.location.interfaces import ILocation
+from zope.lifecycleevent import (
+    IObjectCreatedEvent,
+    IObjectAddedEvent,
+    IObjectRemovedEvent,
+)
 
 class INode(ILocation, IFullMapping):
     """A node.
@@ -50,3 +55,15 @@ class INode(ILocation, IFullMapping):
     def printtree():
         """Debugging helper.
         """
+        
+class INodeCreatedEvent(IObjectCreatedEvent):
+    """An new Node was born."""        
+    
+class INodeAddedEvent(IObjectAddedEvent):
+    """An Node has been added to its parent."""        
+
+class INodeRemovedEvent(IObjectRemovedEvent):
+    """An Node has been removed from its parent."""        
+
+class INodeDetachedEvent(IObjectRemovedEvent):
+    """An Node has been detached from its parent."""        

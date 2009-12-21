@@ -4,8 +4,9 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.7.0'
-shortdesc = 'zope.interface compliant ordered dictionary.'
+version = '1.8.0'
+shortdesc = 'zope.interface compliant ordered dictionary and zope.location '+\
+            'aware node.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 tests_require = ['interlude']
 
@@ -33,9 +34,11 @@ setup(name='zodict',
       zip_safe=True,
       install_requires=[
           'setuptools',
-          'uuid', # only python2.4!
+          'uuid', # only needed for python2.4!
           'odict',
           'zope.location',
+          'zope.lifecycleevent',
+          'zope.deprecation', # can be removed with v.2.0
       ],
       tests_require=tests_require,
       test_suite="zodict.tests.test_suite",

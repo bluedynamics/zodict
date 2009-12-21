@@ -1,18 +1,23 @@
-zodict
-======
+.. contents:: **Table of Contents**
+
+Usage
+=====
+
+Zodict
+------
 
 Ordered dictionary which implements the corresponding
 ``zope.interface.common.mapping`` interface.
 ::
 
     >>> from zope.interface.common.mapping import IFullMapping
-    >>> from zodict import zodict
-    >>> zod = zodict()
+    >>> from zodict import Zodict
+    >>> zod = Zodict()
     >>> IFullMapping.providedBy(zod)
     True
 
 Node
-====
+----
 
 This is a ``zodict`` which provides a location. Location the zope way means
 each item in the node-tree knows its parent and its own name.
@@ -158,9 +163,50 @@ Merge 2 Node Trees.
       <class 'zodict.node.Node'>: c
         <class 'zodict.node.Node'>: d
         <class 'zodict.node.Node'>: e
+        
+LifecycleNode
+----------------
+
+The ``LifecycleNode`` is able to send out notifies with object-events based on 
+``zope.lifecycleevent`` subclasses.  
+
+Creation of Node
+  ``zodict.events.NodeCreatedEvent`` implementing 
+  ``zodict.interfaces.INodeCreatedEvent``. 
+
+Adding childs to Node
+  ``zodict.events.NodeAddedEvent`` implementing 
+  ``zodict.interfaces.INodeAddedEvent``. 
+
+Deleting childs from Node
+  ``zodict.events.NodeRemovedEvent`` implementing 
+  ``zodict.interfaces.INodeRemovedEvent``. 
+
+Detaching childs from Node
+  ``zodict.events.NodeDetachedEvent`` implementing 
+  ``zodict.interfaces.INodeDetachedEvent``.
+  
+In subclasses of Node the event classes can be exchanged by modifying the
+class attribute ``events`` on the node. It is a dictionary with the keys:
+``['created', 'added', 'removed', 'detached']``             
+
 
 Changes
 =======
+
+Version 1.8.0
+-------------
+
+  - added ``zope.lifecycle`` events to the new ``LifecycleNode``. You can 
+    easiely override them with your own events. Events are suppressed by 
+    default, enable them if needed. 
+    jensens, 2009-12-21
+
+  - Renamed class ``zodict`` to ``Zodict``, renamed module ``zodict.zodict`` to
+    ``zodict._zodict``. This avoids ugly clashes on import (package vs. module 
+    vs.class). BBB import is provided in the 1.x release series.
+    jensens, 2009-12-21
+    
 
 Version 1.7.0
 -------------
@@ -282,3 +328,5 @@ Credits
 
   -Written by Robert Niederreiter <rnix@squarewave.at>
    2009-03-17
+   
+  -Contributions and ideas by Jens Klein <jens@bluedynamics.com>

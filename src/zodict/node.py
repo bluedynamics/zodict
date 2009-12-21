@@ -4,12 +4,19 @@
 import uuid
 import inspect
 from threading import Lock
-from odict.pyodict import _nil
-from zodict import zodict
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
 from zope.location import LocationIterator
-from interfaces import INode
+from zope.component.event import objectEventNotify
+from odict.pyodict import _nil
+from zodict import Zodict
+from zodict.interfaces import INode
+from zodict.events import (
+    NodeCreatedEvent,
+    NodeAddedEvent,
+    NodeRemovedEvent,
+    NodeDetachedEvent,
+) 
 
 class TreeLock(object):
     
@@ -23,7 +30,7 @@ class TreeLock(object):
         self.lock.acquire()
         
     def __exit__(self, type, value, traceback):
-        self.lock.release()    
+        self.lock.release()
 
 class NodeIndex(object):
     implements(IReadMapping)
@@ -40,11 +47,15 @@ class NodeIndex(object):
     def __contains__(self, key):
         return int(key) in self._index
 
-class Node(zodict):
+class Node(Zodict):
     implements(INode)
 
     def __init__(self, name=None):
-        zodict.__init__(self)
+        """
+        ``name``
+            optional name used for ``__name__`` declared by ``ILocation``.
+        """  
+        Zodict.__init__(self)
         self.__parent__ = None
         self.__name__ = name
         self._index = dict()
@@ -67,8 +78,8 @@ class Node(zodict):
             val.__parent__ = self
             self._index.update(val._index)
             val._index = self._index
-            zodict.__setitem__(self, key, val)
-    
+            Zodict.__setitem__(self, key, val)
+                                                       
     def _to_delete(self):
         todel = [int(self.uuid)]
         for childkey in self:
@@ -76,10 +87,11 @@ class Node(zodict):
         return todel
 
     def __delitem__(self, key):
+        val = self[key]
         with TreeLock(self):
             for iuuid in self[key]._to_delete():
                 del self._index[iuuid]
-            zodict.__delitem__(self, key)
+            Zodict.__delitem__(self, key)
 
     def _get_uuid(self):
         return self._uuid
@@ -195,7 +207,7 @@ class Node(zodict):
         node = self[key]
         del self[key]
         node._index = { int(node.uuid): node }
-        node._index_nodes() 
+        node._index_nodes()
         return node
             
     @property
@@ -214,3 +226,41 @@ class Node(zodict):
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
+    
+
+class LifecycleNode(Node):
+    """Node with lifecycle event notification.""" 
+    
+    events = {
+        'created': NodeCreatedEvent,
+        'added': NodeAddedEvent,
+        'removed': NodeRemovedEvent,
+        'detached': NodeDetachedEvent,
+    }
+    
+    def __init__(self, name=None):
+        super(LifecycleNode, self).__init__(name=name)
+        self._notify_supress = False        
+        objectEventNotify(self.events['created'](self))
+    
+    def __setitem__(self, key, val):
+        super(LifecycleNode, self).__setitem__(key, val)
+        objectEventNotify(self.events['added'](val, newParent=self, 
+                                               newName=key))
+        
+    def __delitem__(self, key):
+        delnode = self[key]
+        super(LifecycleNode, self).__delitem__(key)
+        if self._notify_supress: 
+            return
+        objectEventNotify(self.events['removed'](delnode, oldParent=self, 
+                                                 oldName=key))
+
+    def detach(self, key):
+        notify_before = self._notify_supress
+        self._notify_supress = True
+        node = super(LifecycleNode, self).detach(key)
+        self._notify_supress = False
+        objectEventNotify(self.events['detached'](node, oldParent=self, 
+                                                  oldName=key))
+        return node

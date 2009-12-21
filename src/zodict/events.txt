@@ -1,0 +1,52 @@
+Lifecycle Events for Node
+-------------------------
+
+Check NodeCreation
+
+    >>> import zope.component
+    >>> from zodict import Node
+    >>> from zodict import LifecycleNode
+    >>> from zodict.interfaces import INode
+    >>> from zodict.interfaces import INodeCreatedEvent
+    >>> from zodict.interfaces import INodeAddedEvent
+    >>> from zodict.interfaces import INodeRemovedEvent
+    >>> from zodict.interfaces import INodeDetachedEvent
+    >>> handled_events = []
+    >>> def handler(obj, event):
+    ...     handled_events.append(event) 
+    >>> zope.component.provideHandler(handler, [INode, INodeCreatedEvent])
+    >>> zope.component.provideHandler(handler, [INode, INodeAddedEvent])
+    >>> zope.component.provideHandler(handler, [INode, INodeRemovedEvent])
+    >>> zope.component.provideHandler(handler, [INode, INodeDetachedEvent])
+    >>> root = Node('no_notify')
+    >>> handled_events
+    []
+
+    >>> root = LifecycleNode('root')
+    >>> handled_events
+    [<zodict.events.NodeCreatedEvent object at ...>]
+
+Check Node adding::
+    
+    >>> child1 = LifecycleNode()
+    >>> root['child1'] = child1
+    >>> handled_events
+    [<zodict.events.NodeCreatedEvent object at ...>, 
+    <zodict.events.NodeCreatedEvent object at ...>,
+    <zodict.events.NodeAddedEvent object at ...>]
+
+Check Node Deletion:: 
+
+    >>> handled_events = []
+    >>> del root['child1']
+    >>> handled_events
+    [<zodict.events.NodeRemovedEvent object at ...>]
+    
+Check Node Detach:: 
+
+    >>> child2 = LifecycleNode()
+    >>> root['child2'] = child2
+    >>> handled_events = []
+    >>> detached = root.detach('child2')    
+    >>> handled_events
+    [<zodict.events.NodeDetachedEvent object at ...>]
