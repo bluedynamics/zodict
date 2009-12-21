@@ -198,8 +198,7 @@ Version 1.8.0
 -------------
 
   - added ``zope.lifecycle`` events to the new ``LifecycleNode``. You can 
-    easiely override them with your own events. Events are suppressed by 
-    default, enable them if needed. 
+    easiely override them with your own events. 
     jensens, 2009-12-21
 
   - Renamed class ``zodict`` to ``Zodict``, renamed module ``zodict.zodict`` to
