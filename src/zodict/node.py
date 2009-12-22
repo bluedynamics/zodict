@@ -265,11 +265,12 @@ class LifecycleNode(Node):
         'removed': NodeRemovedEvent,
         'detached': NodeDetachedEvent,
     }
+    attributes_factory = NodeAttributes
     
     @property
     def attributes(self):
         if not hasattr(self, '_attributes'):
-            self._attributes = NodeAttributes(self)
+            self._attributes = self.attributes_factory(self)
         return self._attributes
     
     def __init__(self, name=None):
