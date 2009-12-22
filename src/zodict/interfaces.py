@@ -82,7 +82,8 @@ class ILifecycleNode(INode):
     
     attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
     
-    events = Attribute(u"Dict with lifecycle event classes to throw.")
+    events = Attribute(u"Dict with lifecycle event classes to use for "
+                       u"notification.")
     
     attributes = Attribute(u"``INodeAttributes`` implementation.")
 

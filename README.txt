@@ -210,7 +210,7 @@ Version 1.9.0
 - Add ``attributes`` Attribute to ``LifecycleNode``.
   [rnix, 2009-12-22]
 
-- Add ``ILifecycleNode`` interface.
+- Add ``ILifecycleNode`` and ``INodeAttributes`` interfaces.
   [rnix, 2009-12-22]
 
 - Removed typo in private variable name. added notify-suppress to setitem of
