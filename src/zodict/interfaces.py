@@ -1,14 +1,10 @@
 # Copyright 2009, Blue Dynamics Alliance - http://bluedynamics.com
-# GNU General Public Licence Version 2 or later
+# Python Software Foundation License
 
 from zope.interface import Interface, Attribute
 from zope.interface.common.mapping import IFullMapping
 from zope.location.interfaces import ILocation
-from zope.lifecycleevent import (
-    IObjectCreatedEvent,
-    IObjectAddedEvent,
-    IObjectRemovedEvent,
-)
+import zope.lifecycleevent
 
 class INode(ILocation, IFullMapping):
     """A node.
@@ -55,15 +51,29 @@ class INode(ILocation, IFullMapping):
     def printtree():
         """Debugging helper.
         """
-        
-class INodeCreatedEvent(IObjectCreatedEvent):
-    """An new Node was born."""        
+
+class ILifecycleNode(INode):
+    """Node which care about its lifecycle.
+    """
     
-class INodeAddedEvent(IObjectAddedEvent):
-    """An Node has been added to its parent."""        
+    attributes = Attribute(u"``zodict.node.NodeAttributes`` object.")
 
-class INodeRemovedEvent(IObjectRemovedEvent):
-    """An Node has been removed from its parent."""        
+class INodeCreatedEvent(zope.lifecycleevent.IObjectCreatedEvent):
+    """An new Node was born.
+    """        
 
-class INodeDetachedEvent(IObjectRemovedEvent):
-    """An Node has been detached from its parent."""        
+class INodeAddedEvent(zope.lifecycleevent.IObjectAddedEvent):
+    """An Node has been added to its parent.
+    """        
+
+class INodeModifiedEvent(zope.lifecycleevent.IObjectModifiedEvent):
+    """An Node has been modified.
+    """
+
+class INodeRemovedEvent(zope.lifecycleevent.IObjectRemovedEvent):
+    """An Node has been removed from its parent.
+    """
+
+class INodeDetachedEvent(zope.lifecycleevent.IObjectRemovedEvent):
+    """An Node has been detached from its parent.
+    """

@@ -1,22 +1,29 @@
 # Copyright 2009, BlueDynamics Alliance - http://bluedynamics.com
-# GNU General Public License Version 2 or later
+# Python Software Foundation License
 
 import uuid
 import inspect
 from threading import Lock
+from odict.pyodict import _nil
 from zope.interface import implements
-from zope.interface.common.mapping import IReadMapping
+from zope.interface.common.mapping import (
+    IReadMapping,
+    IWriteMapping,
+)
 from zope.location import LocationIterator
 from zope.component.event import objectEventNotify
-from odict.pyodict import _nil
 from zodict import Zodict
-from zodict.interfaces import INode
+from zodict.interfaces import (
+    INode,
+    ILifecycleNode,
+)
 from zodict.events import (
     NodeCreatedEvent,
     NodeAddedEvent,
     NodeRemovedEvent,
+    NodeModifiedEvent,
     NodeDetachedEvent,
-) 
+)
 
 class TreeLock(object):
     
@@ -226,17 +233,44 @@ class Node(Zodict):
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
+
+class NodeAttributes(dict):
     
+    def __init__(self, node):
+        super(NodeAttributes, self).__init__()
+        self._node = node
+        self.changed = False
+    
+    def __setitem__(self, key, val):
+        super(NodeAttributes, self).__setitem__(key, val)
+        self.changed = True
+        if self._node._notify_suppress: 
+            return
+        objectEventNotify(self._node.events['modified'](self._node))
+    
+    def __delitem__(self, key):
+        super(NodeAttributes, self).__delitem__(key)
+        self.changed = True
+        if self._node._notify_suppress: 
+            return
+        objectEventNotify(self._node.events['modified'](self._node))
 
 class LifecycleNode(Node):
-    """Node with lifecycle event notification.""" 
+    implements(ILifecycleNode)
     
     events = {
         'created': NodeCreatedEvent,
         'added': NodeAddedEvent,
+        'modified': NodeModifiedEvent,
         'removed': NodeRemovedEvent,
         'detached': NodeDetachedEvent,
     }
+    
+    @property
+    def attributes(self):
+        if not hasattr(self, '_attributes'):
+            self._attributes = NodeAttributes(self)
+        return self._attributes
     
     def __init__(self, name=None):
         super(LifecycleNode, self).__init__(name=name)

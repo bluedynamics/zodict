@@ -1,5 +1,5 @@
 # Copyright 2009, BlueDynamics Alliance - http://bluedynamics.com
-# GNU General Public License Version 2 or later
+# Python Software Foundation License
 
 from odict import odict
 from zope.interface import implements
@@ -17,4 +17,4 @@ class Zodict(odict):
 zodict = Zodict 
 from zope.deprecation import deprecated
 deprecated('zodict', "'zodict' has been renamed to 'Zodict'. Please modify your"
-                     " code and import to use: 'from zodict import Zodict'")    
+                     " code and import to use: 'from zodict import Zodict'")

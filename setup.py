@@ -1,10 +1,10 @@
 # Copyright 2009, BlueDynamics Alliance - http://bluedynamics.com
-# GNU General Public License Version 2 or later
+# Python Software Foundation License
 
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.8.0'
+version = '1.9.0'
 shortdesc = 'zope.interface compliant ordered dictionary and zope.location '+\
             'aware node.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
@@ -16,17 +16,17 @@ setup(name='zodict',
       long_description=longdesc,
       classifiers=[
             'Development Status :: 5 - Production/Stable',
-            'License :: OSI Approved :: GNU General Public License (GPL)',
+            'License :: OSI Approved :: Python Software Foundation License',
             'Framework :: Zope3',
             'Operating System :: OS Independent',
             'Programming Language :: Python',
             'Topic :: Software Development',
       ],
-      keywords='odict',
+      keywords='odict zodict tree node datamodel container',
       author='Robert Niederreiter',
-      author_email='rnix@squarewave.at',
+      author_email='dev@bluedynamics.com',
       url=u'https://svn.plone.org/svn/archetypes/AGX/zodict',
-      license='GNU General Public Licence',
+      license='Python Software Foundation License',
       packages=find_packages('src'),
       package_dir = {'': 'src'},
       namespace_packages=[],

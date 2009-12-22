@@ -1,5 +1,10 @@
 .. contents:: **Table of Contents**
 
+Requires
+========
+
+- Python2.6+
+
 Usage
 =====
 
@@ -165,174 +170,184 @@ Merge 2 Node Trees.
         <class 'zodict.node.Node'>: e
         
 LifecycleNode
-----------------
+-------------
 
 The ``LifecycleNode`` is able to send out notifies with object-events based on 
 ``zope.lifecycleevent`` subclasses.  
 
 Creation of Node
-  ``zodict.events.NodeCreatedEvent`` implementing 
-  ``zodict.interfaces.INodeCreatedEvent``. 
+    ``zodict.events.NodeCreatedEvent`` implementing 
+    ``zodict.interfaces.INodeCreatedEvent``. 
 
 Adding childs to Node
-  ``zodict.events.NodeAddedEvent`` implementing 
-  ``zodict.interfaces.INodeAddedEvent``. 
+    ``zodict.events.NodeAddedEvent`` implementing 
+    ``zodict.interfaces.INodeAddedEvent``. 
 
 Deleting childs from Node
-  ``zodict.events.NodeRemovedEvent`` implementing 
-  ``zodict.interfaces.INodeRemovedEvent``. 
+    ``zodict.events.NodeRemovedEvent`` implementing 
+    ``zodict.interfaces.INodeRemovedEvent``. 
 
 Detaching childs from Node
-  ``zodict.events.NodeDetachedEvent`` implementing 
-  ``zodict.interfaces.INodeDetachedEvent``.
+    ``zodict.events.NodeDetachedEvent`` implementing 
+    ``zodict.interfaces.INodeDetachedEvent``.
   
 In subclasses of Node the event classes can be exchanged by modifying the
 class attribute ``events`` on the node. It is a dictionary with the keys:
 ``['created', 'added', 'removed', 'detached']``             
 
-
 Changes
 =======
 
-Version 1.8.1
+Version 1.9.0
 -------------
 
-  - removed typo in private variable name. added notify-suppress to setitem off
-    ``LifecycleNode``.
-    jensens, 2009-12-22
+- Change Lisence to PSF
+  [rnix, 2009-12-22]
+
+- Add ``zodict.node.NodeAttributes`` object.
+  [rnix, 2009-12-22]
+
+- Add ``attributes`` Attribute to ``LifecycleNode``.
+  [rnix, 2009-12-22]
+
+- Add ``ILifecycleNode`` interface.
+  [rnix, 2009-12-22]
+
+- Removed typo in private variable name. added notify-suppress to setitem of
+  ``LifecycleNode``.
+  [jensens, 2009-12-22]
 
 Version 1.8.0
 -------------
 
-  - added ``zope.lifecycle`` events to the new ``LifecycleNode``. You can 
-    easiely override them with your own events. 
-    jensens, 2009-12-21
+- Added ``zope.lifecycle`` events to the new ``LifecycleNode``. You can 
+  easiely override them with your own events. 
+  [jensens, 2009-12-21]
 
-  - Renamed class ``zodict`` to ``Zodict``, renamed module ``zodict.zodict`` to
-    ``zodict._zodict``. This avoids ugly clashes on import (package vs. module 
-    vs.class). BBB import is provided in the 1.x release series.
-    jensens, 2009-12-21
+- Renamed class ``zodict`` to ``Zodict``, renamed module ``zodict.zodict`` to
+  ``zodict._zodict``. This avoids ugly clashes on import (package vs. module 
+  vs.class). BBB import is provided in the 1.x release series.
+  [jensens, 2009-12-21]
     
 
 Version 1.7.0
 -------------
 
-  -Add ``Node.detach`` function. Needed for node or subtree moving. This is
-   done due to performance reasons.
-   rnix, 2009-12-18
+- Add ``Node.detach`` function. Needed for node or subtree moving. This is
+  done due to performance reasons.
+  [rnix, 2009-12-18]
 
-  -``Node.index`` returns now a ``NodeIndex`` object, which implements
-   ``zope.interface.common.mapping.IReadMapping``. This functions convert uuid 
-   instances to integers before node lookup. So we still fit the contract of 
-   returning nodes from index by uuid.
-   rnix, 2009-12-18
+- ``Node.index`` returns now a ``NodeIndex`` object, which implements
+  ``zope.interface.common.mapping.IReadMapping``. This functions convert uuid 
+  instances to integers before node lookup. So we still fit the contract of 
+  returning nodes from index by uuid.
+  [rnix, 2009-12-18]
 
-  -Change type of keys of ``Node._index`` to int. ``uuid.UUID.__hash__``
-   function was called too often
-   jensens, rnix, 2009-12-18
+- Change type of keys of ``Node._index`` to int. ``uuid.UUID.__hash__``
+  function was called too often
+  [jensens, rnix, 2009-12-18]
 
-  -make ``Node`` thread safe.
-   jensens, rnix, 2009-12-18
+- make ``Node`` thread safe.
+  [jensens, rnix, 2009-12-18]
 
 Version 1.6.1
 -------------
 
-  -make ``Node`` trees merge properly.
-   rnix, 2009-12-15
+- make ``Node`` trees merge properly.
+  [rnix, 2009-12-15]
 
-  -make getter and setter functions of ``uuid`` property private.
-   rnix, 2009-12-15
+- make getter and setter functions of ``uuid`` property private.
+  [rnix, 2009-12-15]
 
 Version 1.6.0
 -------------
 
-  -remove the ``traverser`` module.
-   rnix, 2009-11-28
+- remove the ``traverser`` module.
+  [rnix, 2009-11-28]
 
-  -improve ``insertbefore`` and ``insertafter`` a little bit.
-   rnix, 2009-11-28
+- improve ``insertbefore`` and ``insertafter`` a little bit.
+  [rnix, 2009-11-28]
 
-  -add ``index`` Attribute to ``Node``. Allows access to the internal 
-   ``_index`` attribute.
-   rnix, 2009-11-28
+- add ``index`` Attribute to ``Node``. Allows access to the internal 
+  ``_index`` attribute.
+  [rnix, 2009-11-28]
   
-  -remove ``@accept`` and ``@return`` decorators. Just overhead.
-   rnix, 2009-11-28
+- remove ``@accept`` and ``@return`` decorators. Just overhead.
+  [rnix, 2009-11-28]
 
 Version 1.5.0
 -------------
  
-  -add ``insertbefore`` and ``insertafter`` function to ``Node``.
-   rnix, 2009-11-27
+- add ``insertbefore`` and ``insertafter`` function to ``Node``.
+  [rnix, 2009-11-27]
   
-  -fix ``printtree`` if ``Node.__name__`` is ``None``.
-   rnix, 2009-11-20
+- fix ``printtree`` if ``Node.__name__`` is ``None``.
+  [rnix, 2009-11-20]
 
-  -add ``printtree`` debug helper function to ``Node``.
-   rnix, 2009-11-09
+- add ``printtree`` debug helper function to ``Node``.
+  [rnix, 2009-11-09]
 
-  -define own Traverser interface and reduce dependencies.
-   rnix, 2009-10-28
+- define own Traverser interface and reduce dependencies.
+  [rnix, 2009-10-28]
 
-  -removed import of tests from zodicts ``__init__``. this caused import errors
-   if ``interlude`` wasnt installed.
-   jensens, 2009-07-16
+- removed import of tests from zodicts ``__init__``. this caused import errors
+  if ``interlude`` wasnt installed.
+  [jensens, 2009-07-16]
 
 Version 1.4.0
 -------------
 
-  -Don't allow classes as values of a ``Node``. Attribute ``__name__``
-   conflicts.
-   jensens, 2009-05-06 
+- Don't allow classes as values of a ``Node``. Attribute ``__name__``
+  conflicts.
+  [jensens, 2009-05-06]
 
-  -``repr(nodeobj)`` now returns the real classname and not fixed
-   ``<Node object`` this helps a lot while testing and using classes inheriting
-   from ``Node``!
-   jensens, 2009-05-06 
+- ``repr(nodeobj)`` now returns the real classname and not fixed
+  ``<Node object`` this helps a lot while testing and using classes inheriting
+  from ``Node``!
+  [jensens, 2009-05-06]
 
-  -Make tests run with ``python setup.py test``.
-   Removed superflous dependency on ``zope.testing``.
-   jensens, 2009-05-06 
+- Make tests run with ``python setup.py test``.
+  Removed superflous dependency on ``zope.testing``.
+  [jensens, 2009-05-06]
 
 Version 1.3.3
 -------------
 
-  -Fix ``ITraverser`` interface import including BBB.
+- Fix ``ITraverser`` interface import including BBB.
 
 Version 1.3.2
 -------------
 
-  -Add ``root`` property to ``Node``.
-   thet, 2009-04-24
+- Add ``root`` property to ``Node``.
+  [thet, 2009-04-24]
 
 Version 1.3.1
 -------------
 
-  -Add ``__delitem__`` function to ``Node``.
-   rnix, 2009-04-16
+- Add ``__delitem__`` function to ``Node``.
+  [rnix, 2009-04-16]
 
 Version 1.3
 -----------
 
-  -Add ``uuid`` Attribute and ``node`` function to ``Node``.
-   rnix, 2009-03-23
+- Add ``uuid`` Attribute and ``node`` function to ``Node``.
+  [rnix, 2009-03-23]
 
 Version 1.2
 -----------
 
-  -Add ``filtereditems`` function to ``Node``.
-   rnix, 2009-03-22
+- Add ``filtereditems`` function to ``Node``.
+  [rnix, 2009-03-22]
 
 Version 1.1
 -----------
 
-  -Add ``INode`` interface and implementation.
-   rnix, 2009-03-18
+- Add ``INode`` interface and implementation.
+  [rnix, 2009-03-18]
 
 Credits
 =======
 
-  -Written by Robert Niederreiter <rnix@squarewave.at>
-   2009-03-17
-   
-  -Contributions and ideas by Jens Klein <jens@bluedynamics.com>
+- Written by Robert Niederreiter <rnix@squarewave.at>
+  
+- Contributions and ideas by Jens Klein <jens@bluedynamics.com>
