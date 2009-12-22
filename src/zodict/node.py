@@ -240,27 +240,29 @@ class LifecycleNode(Node):
     
     def __init__(self, name=None):
         super(LifecycleNode, self).__init__(name=name)
-        self._notify_supress = False        
+        self._notify_suppress = False        
         objectEventNotify(self.events['created'](self))
     
     def __setitem__(self, key, val):
         super(LifecycleNode, self).__setitem__(key, val)
+        if self._notify_suppress: 
+            return
         objectEventNotify(self.events['added'](val, newParent=self, 
                                                newName=key))
         
     def __delitem__(self, key):
         delnode = self[key]
         super(LifecycleNode, self).__delitem__(key)
-        if self._notify_supress: 
+        if self._notify_suppress: 
             return
         objectEventNotify(self.events['removed'](delnode, oldParent=self, 
                                                  oldName=key))
 
     def detach(self, key):
-        notify_before = self._notify_supress
-        self._notify_supress = True
+        notify_before = self._notify_suppress
+        self._notify_suppress = True
         node = super(LifecycleNode, self).detach(key)
-        self._notify_supress = False
+        self._notify_suppress = False
         objectEventNotify(self.events['detached'](node, oldParent=self, 
                                                   oldName=key))
         return node

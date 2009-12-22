@@ -194,6 +194,13 @@ class attribute ``events`` on the node. It is a dictionary with the keys:
 Changes
 =======
 
+Version 1.8.1
+-------------
+
+  - removed typo in private variable name. added notify-suppress to setitem off
+    ``LifecycleNode``.
+    jensens, 2009-12-22
+
 Version 1.8.0
 -------------
 
