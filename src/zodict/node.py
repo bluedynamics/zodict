@@ -253,6 +253,13 @@ class NodeAttributes(dict):
         if self._node._notify_suppress: 
             return
         objectEventNotify(self._node.events['modified'](self._node))
+        
+    def __copy__(self):
+        _new = NodeAttributes(self._node)
+        for key, value in self.items():
+            _new[key] = value
+        _new.changed = self.changed
+        return _new
 
 class LifecycleNode(Node):
     implements(ILifecycleNode)
