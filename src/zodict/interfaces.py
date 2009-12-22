@@ -2,7 +2,11 @@
 # Python Software Foundation License
 
 from zope.interface import Interface, Attribute
-from zope.interface.common.mapping import IFullMapping
+from zope.interface.common.mapping import (
+    IEnumerableMapping,                            
+    IWriteMapping,
+    IFullMapping,
+)
 from zope.location.interfaces import ILocation
 import zope.lifecycleevent
 
@@ -52,11 +56,35 @@ class INode(ILocation, IFullMapping):
         """Debugging helper.
         """
 
+class INodeAttributes(IEnumerableMapping, IWriteMapping):
+    """Interface describing the attributes of a (lifecycle) Node.
+    
+    Promise to throw modification related events when calling IWriteMapping
+    related functions.
+    
+    You do not instanciate this kind of object directly. This is done due to
+    ``attributes`` access in ``ILifecycleNode`` implementation. You can provide
+    your own ``INodeAttributes`` implementation by setting
+    ``ILifecycleNode.attributes_factory``. 
+    """
+    
+    changed = Attribute(u"Flag indicating if attributes were changed or not.")
+    
+    def __init__(node):
+        """Initialize object.
+        
+        Takes attributes refering node at creation time.
+        """
+
 class ILifecycleNode(INode):
     """Node which care about its lifecycle.
     """
     
-    attributes = Attribute(u"``zodict.node.NodeAttributes`` object.")
+    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
+    
+    events = Attribute(u"Dict with lifecycle event classes to throw.")
+    
+    attributes = Attribute(u"``INodeAttributes`` implementation.")
 
 class INodeCreatedEvent(zope.lifecycleevent.IObjectCreatedEvent):
     """An new Node was born.

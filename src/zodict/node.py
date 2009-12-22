@@ -6,15 +6,13 @@ import inspect
 from threading import Lock
 from odict.pyodict import _nil
 from zope.interface import implements
-from zope.interface.common.mapping import (
-    IReadMapping,
-    IWriteMapping,
-)
+from zope.interface.common.mapping import IReadMapping
 from zope.location import LocationIterator
 from zope.component.event import objectEventNotify
 from zodict import Zodict
 from zodict.interfaces import (
     INode,
+    INodeAttributes,
     ILifecycleNode,
 )
 from zodict.events import (
@@ -235,6 +233,7 @@ class Node(Zodict):
     __str__ = __repr__
 
 class NodeAttributes(dict):
+    implements(INodeAttributes)
     
     def __init__(self, node):
         super(NodeAttributes, self).__init__()
