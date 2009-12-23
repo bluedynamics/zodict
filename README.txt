@@ -255,7 +255,7 @@ Version 1.9.0
   applications and subclasses of ``Node``.
   [jensens, 2009-12-23]
 
-- Introduce ``ICallableNode`` , ``ILeaf`` and ``IRoot` interfaces.
+- Introduce ``ICallableNode``, ``ILeaf`` and ``IRoot`` interfaces.
   [rnix, 2009-12-23]
 
 - Change Lisence to PSF
