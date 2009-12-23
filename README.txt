@@ -193,7 +193,52 @@ Detaching childs from Node
   
 In subclasses of Node the event classes can be exchanged by modifying the
 class attribute ``events`` on the node. It is a dictionary with the keys:
-``['created', 'added', 'removed', 'detached']``             
+``['created', 'added', 'removed', 'detached']`` 
+
+Threadsafe Locking of a Tree
+--------------------------
+
+Not ``Node`` not ``LifecycleNode`` are threadsafe. Application-builder are
+responsible fot this. Major reason: Acquiring and releasing locks is an 
+expensive operation.
+
+The module ``zodict.locking`` provides a mechanism to lock the whole tree 
+threadsafe. A class an a decorator is provided. The Class is intended to be used 
+standalone with some Node, the decorator to be used on subclasses of ``Node`` or 
+``LifecycleNode``.
+
+``zodict.locking.TreeLock`` 
+    is a adapter like class on a Node. It can be used 
+    in Python >2.6 within the ``with`` statement.
+    ::
+
+        >>> node = Node()
+        >>> with TreeLock(node):
+        >>>     # do something on the locked tree
+        >>>     node['foo'] = Node()
+    
+    Alternative it can be used in older Python version with in a try: finally.
+    ::     
+
+        >>> from zodict.locking import TreeLock
+        >>> lock = TreeLock(node)
+        >>> lock.acquire()
+        >>> try:
+        >>>     # do something on the locked tree
+        >>>     node['bar'] = Node()
+        >>> finally:
+        >>>     lock.release()    
+            
+``zodict.locking.locktree``
+    is an decorator for methods of a (sub-)class of ``Node``.     
+            
+        >>> from zodict.locking import locktree
+        >>> class LockedNode(Node):
+        ...
+        ...     @locktree
+        ...     def __setitem__(self, key, val):
+        ...         super(LockedNode, self).__setitem__(key, val)        
+        
 
 Changes
 =======
