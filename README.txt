@@ -246,6 +246,12 @@ Changes
 Version 1.9.0
 -------------
 
+
+- Refactor locking, remove tree-locking from Node base implementations. 
+  Add easy to use locking class and a decorator intended to be used in 
+  applications and subclasses of ``Node``.
+  [jensens, 2009-12-23]
+
 - Introduce ``ICallableNode`` , ``ILeaf`` and ``IRoot` interfaces.
   [rnix, 2009-12-23]
 
