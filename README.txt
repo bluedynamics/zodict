@@ -244,6 +244,9 @@ Changes
 Version 1.9.0
 -------------
 
+- Make zodict compatible with python 2.4 again, BBB
+  [jensens, 2009-12-23]
+
 - Add locking test
   [rnix, 2009-12-23]
 
