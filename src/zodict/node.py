@@ -3,7 +3,6 @@
 
 import uuid
 import inspect
-from threading import Lock
 from odict.pyodict import _nil
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
@@ -22,21 +21,7 @@ from zodict.events import (
     NodeModifiedEvent,
     NodeDetachedEvent,
 )
-
-class TreeLock(object):
     
-    def __init__(self, node):
-        root = node.root
-        self.lock = getattr(root, '_treelock', None)
-        if self.lock is None:
-            self.lock = root._treelock = Lock()
-            
-    def __enter__(self):
-        self.lock.acquire()
-        
-    def __exit__(self, type, value, traceback):
-        self.lock.release()
-
 class NodeIndex(object):
     implements(IReadMapping)
     
@@ -78,12 +63,11 @@ class Node(Zodict):
             keys = set(self._index.keys())
             if keys.intersection(val._index.keys()):
                 raise ValueError, u"Node with uuid already exists"
-        with TreeLock(self):
-            val.__name__ = key
-            val.__parent__ = self
-            self._index.update(val._index)
-            val._index = self._index
-            Zodict.__setitem__(self, key, val)
+        val.__name__ = key
+        val.__parent__ = self
+        self._index.update(val._index)
+        val._index = self._index
+        Zodict.__setitem__(self, key, val)
                                                        
     def _to_delete(self):
         todel = [int(self.uuid)]
@@ -93,10 +77,9 @@ class Node(Zodict):
 
     def __delitem__(self, key):
         val = self[key]
-        with TreeLock(self):
-            for iuuid in self[key]._to_delete():
-                del self._index[iuuid]
-            Zodict.__delitem__(self, key)
+        for iuuid in self[key]._to_delete():
+            del self._index[iuuid]
+        Zodict.__delitem__(self, key)
 
     def _get_uuid(self):
         return self._uuid
@@ -105,12 +88,11 @@ class Node(Zodict):
         iuuid = uuid is not None and int(uuid) or None
         if iuuid in self._index and self._index[iuuid] is not self:
             raise ValueError, u"Given uuid was already used for another Node"
-        with TreeLock(self):
-            siuuid = self._uuid is not None and int(self._uuid) or None
-            if siuuid in self._index:
-                del self._index[siuuid]
-            self._index[iuuid] = self
-            self._uuid = uuid
+        siuuid = self._uuid is not None and int(self._uuid) or None
+        if siuuid in self._index:
+            del self._index[siuuid]
+        self._index[iuuid] = self
+        self._uuid = uuid
 
     uuid = property(_get_uuid, _set_uuid)
 
@@ -158,48 +140,46 @@ class Node(Zodict):
                 return index
             index += 1
         return None
-    
+
     def insertbefore(self, newnode, refnode):
-        with TreeLock(self):
-            self._validateinsertion(newnode, refnode)
-            nodekey = newnode.__name__
-            refkey = refnode.__name__
-            index = self._nodeindex(refnode)
-            prevnode = None
-            prevkey = None
-            if index > 0:
-                prevkey = self.keys()[index - 1]
-                prevnode = dict.__getitem__(self, prevkey)
-            if prevnode is not None:
-                dict.__getitem__(self, prevkey)[2] = nodekey
-                newnode = [prevkey, newnode, refkey]
-            else:
-                self.lh = nodekey
-                newnode = [_nil, newnode, refkey]
-            dict.__getitem__(self, refkey)[0] = nodekey
-            dict.__setitem__(self, nodekey, newnode)
+        self._validateinsertion(newnode, refnode)
+        nodekey = newnode.__name__
+        refkey = refnode.__name__
+        index = self._nodeindex(refnode)
+        prevnode = None
+        prevkey = None
+        if index > 0:
+            prevkey = self.keys()[index - 1]
+            prevnode = dict.__getitem__(self, prevkey)
+        if prevnode is not None:
+            dict.__getitem__(self, prevkey)[2] = nodekey
+            newnode = [prevkey, newnode, refkey]
+        else:
+            self.lh = nodekey
+            newnode = [_nil, newnode, refkey]
+        dict.__getitem__(self, refkey)[0] = nodekey
+        dict.__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
     
     def insertafter(self, newnode, refnode):
-        with TreeLock(self):
-            self._validateinsertion(newnode, refnode)
-            nodekey = newnode.__name__
-            refkey = refnode.__name__
-            index = self._nodeindex(refnode)
-            nextnode = None
-            nextkey = None
-            keys = self.keys()
-            if index < len(keys) - 1:
-                nextkey = self.keys()[index + 1]
-                nextnode = dict.__getitem__(self, nextkey)
-            if nextnode is not None:
-                dict.__getitem__(self, nextkey)[0] = nodekey
-                newnode = [refkey, newnode, nextkey]
-            else:
-                self.lt = nodekey
-                newnode = [refkey, newnode, _nil]
-            dict.__getitem__(self, refkey)[2] = nodekey
-            dict.__setitem__(self, nodekey, newnode)
+        self._validateinsertion(newnode, refnode)
+        nodekey = newnode.__name__
+        refkey = refnode.__name__
+        index = self._nodeindex(refnode)
+        nextnode = None
+        nextkey = None
+        keys = self.keys()
+        if index < len(keys) - 1:
+            nextkey = self.keys()[index + 1]
+            nextnode = dict.__getitem__(self, nextkey)
+        if nextnode is not None:
+            dict.__getitem__(self, nextkey)[0] = nodekey
+            newnode = [refkey, newnode, nextkey]
+        else:
+            self.lt = nodekey
+            newnode = [refkey, newnode, _nil]
+        dict.__getitem__(self, refkey)[2] = nodekey
+        dict.__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
     
     def _index_nodes(self):
@@ -207,7 +187,7 @@ class Node(Zodict):
             self._index[int(node.uuid)] = node
             node._index = self._index
             node._index_nodes() 
-    
+
     def detach(self, key):
         node = self[key]
         del self[key]
@@ -231,6 +211,7 @@ class Node(Zodict):
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
+    
 
 class NodeAttributes(dict):
     implements(INodeAttributes)
