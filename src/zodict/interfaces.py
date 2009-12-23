@@ -79,6 +79,14 @@ class ILifecycleNode(INode):
     attributes = Attribute(u"``INodeAttributes`` implementation.")
     attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
 
+class ICallableNode(ILifecycleNode):
+    """Node which implements the ``__call__`` function.
+    """
+    
+    def __call__():
+        """Expose the tree contents to an output channel.
+        """
+
 class INodeCreatedEvent(zope.lifecycleevent.IObjectCreatedEvent):
     """An new Node was born.
     """        

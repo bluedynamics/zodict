@@ -201,6 +201,9 @@ Changes
 Version 1.9.0
 -------------
 
+- Introduce ``ICallableNode`` interface.
+  [rnix, 2009-12-23]
+
 - Change Lisence to PSF
   [rnix, 2009-12-22]
 
