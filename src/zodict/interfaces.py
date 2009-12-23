@@ -52,6 +52,22 @@ class INode(ILocation, IFullMapping):
         """Debugging helper.
         """
 
+class IRoot(INode):
+    """Marker for a root node.
+    """
+
+class ILeaf(INode):
+    """A node without children.
+    """
+
+class ICallableNode(INode):
+    """Node which implements the ``__call__`` function.
+    """
+    
+    def __call__():
+        """Expose the tree contents to an output channel.
+        """
+
 class INodeAttributes(IEnumerableMapping, IWriteMapping):
     """Interface describing the attributes of a (lifecycle) Node.
     
@@ -78,14 +94,6 @@ class ILifecycleNode(INode):
                        u"notification.")
     attributes = Attribute(u"``INodeAttributes`` implementation.")
     attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
-
-class ICallableNode(INode):
-    """Node which implements the ``__call__`` function.
-    """
-    
-    def __call__():
-        """Expose the tree contents to an output channel.
-        """
 
 class INodeCreatedEvent(zope.lifecycleevent.IObjectCreatedEvent):
     """An new Node was born.

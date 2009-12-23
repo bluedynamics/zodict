@@ -201,7 +201,7 @@ Changes
 Version 1.9.0
 -------------
 
-- Introduce ``ICallableNode`` interface.
+- Introduce ``ICallableNode`` , ``ILeaf`` and ``IRoot` interfaces.
   [rnix, 2009-12-23]
 
 - Change Lisence to PSF
