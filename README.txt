@@ -198,7 +198,7 @@ class attribute ``events`` on the node. It is a dictionary with the keys:
 Threadsafe Locking of a Tree
 --------------------------
 
-Not ``Node`` not ``LifecycleNode`` are threadsafe. Application-builder are
+Not ``Node`` nor ``LifecycleNode`` are threadsafe. Application-builder are
 responsible fot this. Major reason: Acquiring and releasing locks is an 
 expensive operation.
 
