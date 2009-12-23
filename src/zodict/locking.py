@@ -21,10 +21,10 @@ class TreeLock(object):
 
     def __exit__(self, type, value, traceback):
         self.release()
-        
-    
+
 def locktree(fn):
-    """decorator for locking of a whole method."""
+    """Decorator for locking of a whole method.
+    """
     def _locktree_decorator(self, *args, **kwargs):
         lock = TreeLock(self)
         lock.acquire()

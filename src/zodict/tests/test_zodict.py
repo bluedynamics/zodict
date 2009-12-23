@@ -13,6 +13,7 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
 TESTFILES = [
     '../node.txt',
     '../events.txt',
+    '../locking.txt',
 ]
 
 def test_suite():

@@ -211,7 +211,6 @@ class Node(Zodict):
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
-    
 
 class NodeAttributes(dict):
     implements(INodeAttributes)

@@ -3,7 +3,7 @@
 Requires
 ========
 
-- Python2.6+
+- Python2.4+
 
 Usage
 =====
@@ -195,51 +195,48 @@ In subclasses of Node the event classes can be exchanged by modifying the
 class attribute ``events`` on the node. It is a dictionary with the keys:
 ``['created', 'added', 'removed', 'detached']`` 
 
-Threadsafe Locking of a Tree
---------------------------
+Thread safe Locking of a Tree
+-----------------------------
 
-Not ``Node`` nor ``LifecycleNode`` are threadsafe. Application-builders are
+Not ``Node`` nor ``LifecycleNode`` are thread safe. Application-builder are
 responsible for this. Major reason: Acquiring and releasing locks is an 
 expensive operation.
 
 The module ``zodict.locking`` provides a mechanism to lock the whole tree 
-threadsafe. Class and decorator are provided. The class is intended to be used 
-standalone with some Node, the decorator to be used on subclasses of ``Node`` or 
-``LifecycleNode``.
+thread safe. A class and a decorator is provided. The class is intended to be 
+used standalone with some Node, the decorator to be used on subclasses of
+``Node`` or ``LifecycleNode``.
 
-``zodict.locking.TreeLock`` 
-    Adapter like class on a Node. It can be used 
-    in Python >2.6 within the ``with`` statement.
-    ::
+``zodict.locking.TreeLock`` is a adapter like class on a Node. It can be used 
+in Python > 2.6 within the ``with`` statement.
+::
 
-        >>> node = Node()
-        >>> with TreeLock(node):
-        >>>     # do something on the locked tree
-        >>>     node['foo'] = Node()
+    >>> node = Node()
+    >>> with TreeLock(node):
+    >>>     # do something on the locked tree
+    >>>     node['foo'] = Node()
     
-    Alternative it can be used in older Python version with in a try: finally.
-    ::     
+Alternative it can be used in older Python version with in a try: finally.
+::     
 
-        >>> from zodict.locking import TreeLock
-        >>> lock = TreeLock(node)
-        >>> lock.acquire()
-        >>> try:
-        >>>     # do something on the locked tree
-        >>>     node['bar'] = Node()
-        >>> finally:
-        >>>     lock.release()    
+    >>> from zodict.locking import TreeLock
+    >>> lock = TreeLock(node)
+    >>> lock.acquire()
+    >>> try:
+    >>>     # do something on the locked tree
+    >>>     node['bar'] = Node()
+    >>> finally:
+    >>>     lock.release()    
             
-``zodict.locking.locktree``
-    Decorator for methods of a (sub-)class of ``Node``.     
-    ::
-            
-        >>> from zodict.locking import locktree
-        >>> class LockedNode(Node):
-        ...
-        ...     @locktree
-        ...     def __setitem__(self, key, val):
-        ...         super(LockedNode, self).__setitem__(key, val)        
-        
+``zodict.locking.locktree`` Decorator for methods of a (sub-)class of ``Node``.     
+::
+       
+    >>> from zodict.locking import locktree
+    >>> class LockedNode(Node):
+    ...
+    ...     @locktree
+    ...     def __setitem__(self, key, val):
+    ...         super(LockedNode, self).__setitem__(key, val)        
 
 Changes
 =======
@@ -247,6 +244,8 @@ Changes
 Version 1.9.0
 -------------
 
+- Add locking test
+  [rnix, 2009-12-23]
 
 - Refactor locking, remove tree-locking from Node base implementations. 
   Add easy to use locking class and a decorator intended to be used in 
@@ -283,7 +282,6 @@ Version 1.8.0
   ``zodict._zodict``. This avoids ugly clashes on import (package vs. module 
   vs.class). BBB import is provided in the 1.x release series.
   [jensens, 2009-12-21]
-    
 
 Version 1.7.0
 -------------
