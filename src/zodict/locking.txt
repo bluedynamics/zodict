@@ -18,6 +18,7 @@ We need a thread implementation which checks for access collision.
     ...         lock.acquire()
     ...         dummy._waiting = True
     ...         time.sleep(1)
+    ...         dummy._waiting = False
     ...         lock.release()
 
 A Dummy Node with _waiting flag for access collision check.
