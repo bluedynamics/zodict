@@ -231,6 +231,7 @@ standalone with some Node, the decorator to be used on subclasses of ``Node`` or
             
 ``zodict.locking.locktree``
     is an decorator for methods of a (sub-)class of ``Node``.     
+    ::
             
         >>> from zodict.locking import locktree
         >>> class LockedNode(Node):
