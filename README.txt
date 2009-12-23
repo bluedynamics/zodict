@@ -198,17 +198,17 @@ class attribute ``events`` on the node. It is a dictionary with the keys:
 Threadsafe Locking of a Tree
 --------------------------
 
-Not ``Node`` nor ``LifecycleNode`` are threadsafe. Application-builder are
-responsible fot this. Major reason: Acquiring and releasing locks is an 
+Not ``Node`` nor ``LifecycleNode`` are threadsafe. Application-builders are
+responsible for this. Major reason: Acquiring and releasing locks is an 
 expensive operation.
 
 The module ``zodict.locking`` provides a mechanism to lock the whole tree 
-threadsafe. A class an a decorator is provided. The Class is intended to be used 
+threadsafe. Class and decorator are provided. The class is intended to be used 
 standalone with some Node, the decorator to be used on subclasses of ``Node`` or 
 ``LifecycleNode``.
 
 ``zodict.locking.TreeLock`` 
-    is a adapter like class on a Node. It can be used 
+    Adapter like class on a Node. It can be used 
     in Python >2.6 within the ``with`` statement.
     ::
 
@@ -230,7 +230,7 @@ standalone with some Node, the decorator to be used on subclasses of ``Node`` or
         >>>     lock.release()    
             
 ``zodict.locking.locktree``
-    is an decorator for methods of a (sub-)class of ``Node``.     
+    Decorator for methods of a (sub-)class of ``Node``.     
     ::
             
         >>> from zodict.locking import locktree
