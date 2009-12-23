@@ -8,7 +8,12 @@ from zope.interface.common.mapping import (
     IFullMapping,
 )
 from zope.location.interfaces import ILocation
-import zope.lifecycleevent
+from zope.lifecycleevent import (
+    IObjectCreatedEvent,
+    IObjectAddedEvent,
+    IObjectModifiedEvent,
+    IObjectRemovedEvent,
+)
 
 class INode(ILocation, IFullMapping):
     """A node.
@@ -95,22 +100,22 @@ class ILifecycleNode(INode):
     attributes = Attribute(u"``INodeAttributes`` implementation.")
     attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
 
-class INodeCreatedEvent(zope.lifecycleevent.IObjectCreatedEvent):
+class INodeCreatedEvent(IObjectCreatedEvent):
     """An new Node was born.
     """        
 
-class INodeAddedEvent(zope.lifecycleevent.IObjectAddedEvent):
+class INodeAddedEvent(IObjectAddedEvent):
     """An Node has been added to its parent.
     """        
 
-class INodeModifiedEvent(zope.lifecycleevent.IObjectModifiedEvent):
+class INodeModifiedEvent(IObjectModifiedEvent):
     """An Node has been modified.
     """
 
-class INodeRemovedEvent(zope.lifecycleevent.IObjectRemovedEvent):
+class INodeRemovedEvent(IObjectRemovedEvent):
     """An Node has been removed from its parent.
     """
 
-class INodeDetachedEvent(zope.lifecycleevent.IObjectRemovedEvent):
+class INodeDetachedEvent(IObjectRemovedEvent):
     """An Node has been detached from its parent.
     """
