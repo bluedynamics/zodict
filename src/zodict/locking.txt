@@ -2,6 +2,15 @@
 Thread locking for Nodes
 ========================
 
+A Dummy Node with _waiting flag for access collision check.
+::
+
+    >>> from zodict import Node
+    >>> class Dummy(Node):
+    ...     _waiting = False
+    >>> dummy = Dummy()
+    >>> global dummy
+
 We need a thread implementation which checks for access collision.
 ::
 
@@ -21,13 +30,6 @@ We need a thread implementation which checks for access collision.
     ...         dummy._waiting = False
     ...         lock.release()
 
-A Dummy Node with _waiting flag for access collision check.
-::
-
-    >>> from zodict import Node
-    >>> class Dummy(Node):
-    ...     _waiting = False
-    >>> dummy = Dummy()
     >>> t1 = TestThread()
     >>> t2 = TestThread()
     >>> t1.start()
