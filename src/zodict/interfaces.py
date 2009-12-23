@@ -13,13 +13,9 @@ import zope.lifecycleevent
 class INode(ILocation, IFullMapping):
     """A node.
     """
-    
     uuid = Attribute(u"``uuid.UUID`` of this node.")
-    
     path = Attribute(u"Path of node as list")
-    
     root = Attribute(u"Root node")
-    
     index = Attribute(u"The tree node index")
     
     def node(uuid):
@@ -36,7 +32,7 @@ class INode(ILocation, IFullMapping):
         __name__ on newnode must be set.
         
         This function only supports adding of new nodes, for moving nodes,
-        read node to move, delete it from tree and re-add it elsewhere.
+        you first have to detach it from the tree.
         """
     
     def insertafter(newnode, refnode):
@@ -45,7 +41,7 @@ class INode(ILocation, IFullMapping):
         __name__ on newnode must be set.
         
         This function only supports adding of new nodes, for moving nodes,
-        read node to move, delete it from tree and re-add it elsewhere.
+        you first have to detach it from the tree.
         """
     
     def detach(key):
@@ -63,11 +59,10 @@ class INodeAttributes(IEnumerableMapping, IWriteMapping):
     related functions.
     
     You do not instanciate this kind of object directly. This is done due to
-    ``attributes`` access in ``ILifecycleNode`` implementation. You can provide
-    your own ``INodeAttributes`` implementation by setting
-    ``ILifecycleNode.attributes_factory``. 
+    ``LifecycleNode.attributes`` access. You can provide your own
+    ``INodeAttributes`` implementation by setting
+    ``LifecycleNode.attributes_factory``. 
     """
-    
     changed = Attribute(u"Flag indicating if attributes were changed or not.")
     
     def __init__(node):
@@ -79,13 +74,10 @@ class INodeAttributes(IEnumerableMapping, IWriteMapping):
 class ILifecycleNode(INode):
     """Node which care about its lifecycle.
     """
-    
-    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
-    
     events = Attribute(u"Dict with lifecycle event classes to use for "
                        u"notification.")
-    
     attributes = Attribute(u"``INodeAttributes`` implementation.")
+    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
 
 class INodeCreatedEvent(zope.lifecycleevent.IObjectCreatedEvent):
     """An new Node was born.

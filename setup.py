@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 import sys, os
 
 version = '1.9.0'
-shortdesc = 'zope.interface compliant ordered dictionary and zope.location '+\
+shortdesc = 'zope.interface compliant ordered dictionary and zope.location ' + \
             'aware node.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 tests_require = ['interlude']
@@ -22,7 +22,7 @@ setup(name='zodict',
             'Programming Language :: Python',
             'Topic :: Software Development',
       ],
-      keywords='odict zodict tree node datamodel container',
+      keywords='odict zodict tree node leaf datamodel container',
       author='Robert Niederreiter',
       author_email='dev@bluedynamics.com',
       url=u'https://svn.plone.org/svn/archetypes/AGX/zodict',

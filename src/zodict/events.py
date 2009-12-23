@@ -3,6 +3,12 @@
 
 import zope.lifecycleevent
 from zope.interface import implements
+from zope.lifecycleevent import (
+    ObjectCreatedEvent,
+    ObjectAddedEvent,
+    ObjectModifiedEvent,
+    ObjectRemovedEvent,
+)
 from zodict.interfaces import (
     INodeCreatedEvent,
     INodeAddedEvent,
@@ -11,27 +17,17 @@ from zodict.interfaces import (
     INodeDetachedEvent,
 )
 
-class NodeCreatedEvent(zope.lifecycleevent.ObjectCreatedEvent):
-    """A Node has been created.
-    """
+class NodeCreatedEvent(ObjectCreatedEvent):
     implements(INodeCreatedEvent)
     
-class NodeAddedEvent(zope.lifecycleevent.ObjectAddedEvent):
-    """A Node has been added to its parent.
-    """
+class NodeAddedEvent(ObjectAddedEvent):
     implements(INodeAddedEvent)
 
-class NodeModifiedEvent(zope.lifecycleevent.ObjectModifiedEvent):
-    """An Node has been modified.
-    """
+class NodeModifiedEvent(ObjectModifiedEvent):
     implements(INodeModifiedEvent)
 
-class NodeRemovedEvent(zope.lifecycleevent.ObjectRemovedEvent):
-    """A Node was removed from it parent.
-    """               
+class NodeRemovedEvent(ObjectRemovedEvent):              
     implements(INodeRemovedEvent)
 
-class NodeDetachedEvent(zope.lifecycleevent.ObjectRemovedEvent):
-    """A Node was detached from its parent.
-    """
+class NodeDetachedEvent(ObjectRemovedEvent):
     implements(INodeDetachedEvent)
