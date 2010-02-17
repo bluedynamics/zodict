@@ -241,6 +241,12 @@ Alternative it can be used in older Python version with in a try: finally.
 Changes
 =======
 
+Version 1.9.1
+-------------
+
+- BBB import of LocationIterator
+  [rnix, 2010-02-17]
+
 Version 1.9.0
 -------------
 

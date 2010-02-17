@@ -6,7 +6,10 @@ import inspect
 from odict.pyodict import _nil
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
-from zope.location import LocationIterator
+try:
+    from zope.location import LocationIterator
+except ImportError, e:
+    from zope.app.location import LocationIterator
 from zope.component.event import objectEventNotify
 from zodict import Zodict
 from zodict.interfaces import (
