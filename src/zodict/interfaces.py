@@ -7,13 +7,23 @@ from zope.interface.common.mapping import (
     IWriteMapping,
     IFullMapping,
 )
-from zope.location.interfaces import ILocation
-from zope.lifecycleevent import (
-    IObjectCreatedEvent,
-    IObjectAddedEvent,
-    IObjectModifiedEvent,
-    IObjectRemovedEvent,
-)
+try:
+    from zope.app.location.interfaces import ILocation # BBB
+except ImportError, e:
+    from zope.location.interfaces import ILocation
+try:
+    from zope.lifecycleevent import (
+        IObjectCreatedEvent,
+        IObjectAddedEvent,
+        IObjectModifiedEvent,
+        IObjectRemovedEvent,
+    )
+except ImportError, e: # BBB
+    from zope.app.event.interfaces import IObjectEvent
+    class IObjectCreatedEvent(IObjectEvent): pass
+    class IObjectAddedEvent(IObjectEvent): pass
+    class IObjectModifiedEvent(IObjectEvent): pass
+    class IObjectRemovedEvent(IObjectEvent): pass
 
 class INode(ILocation, IFullMapping):
     """A node.

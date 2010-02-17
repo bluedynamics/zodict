@@ -244,8 +244,8 @@ Changes
 Version 1.9.1
 -------------
 
-- BBB import of LocationIterator
-  [rnix, 2010-02-17]
+- BBB compatibility for zope2.9
+  [rnix, jensens, 2010-02-17]
 
 Version 1.9.0
 -------------

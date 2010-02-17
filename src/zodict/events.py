@@ -1,14 +1,20 @@
 # Copyright 2009, BlueDynamics Alliance - http://bluedynamics.com
 # Python Software Foundation License
 
-import zope.lifecycleevent
 from zope.interface import implements
-from zope.lifecycleevent import (
-    ObjectCreatedEvent,
-    ObjectAddedEvent,
-    ObjectModifiedEvent,
-    ObjectRemovedEvent,
-)
+try:
+    from zope.lifecycleevent import (
+        ObjectCreatedEvent,
+        ObjectAddedEvent,
+        ObjectModifiedEvent,
+        ObjectRemovedEvent,
+    )
+except ImportError, e: # BBB
+    from zope.app.event.objectevent import ObjectEvent
+    class ObjectCreatedEvent(ObjectEvent): pass
+    class ObjectAddedEvent(ObjectEvent): pass
+    class ObjectModifiedEvent(ObjectEvent): pass
+    class ObjectRemovedEvent(ObjectEvent): pass
 from zodict.interfaces import (
     INodeCreatedEvent,
     INodeAddedEvent,

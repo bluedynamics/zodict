@@ -7,10 +7,13 @@ from odict.pyodict import _nil
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
 try:
-    from zope.location import LocationIterator
+    from zope.app.location import LocationIterator # BBB
 except ImportError, e:
-    from zope.app.location import LocationIterator
-from zope.component.event import objectEventNotify
+    from zope.location import LocationIterator
+try:
+    from zope.app.event.objectevent import objectEventNotify # BBB
+except ImportError, e:
+    from zope.component.event import objectEventNotify
 from zodict import Zodict
 from zodict.interfaces import (
     INode,
