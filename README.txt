@@ -241,10 +241,11 @@ Alternative it can be used in older Python version with in a try: finally.
 Changes
 =======
 
-add __setattr__ and __getattr__ to node attributes object
-
 Version 1.9.1
 -------------
+
+- Add test for bool evaluation
+  rnix, 2010-04-21
 
 - Add ``__setattr__`` and ``__getattr__`` to ``NodeAttributes`` object.
   [rnix, 2010-04-21]

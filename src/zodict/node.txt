@@ -403,4 +403,22 @@ Check Node attributes
     >>> node.attrs['bar'] = 'baz'
     >>> node.attrs.bar
     'baz'
+
+Check bool evaluation
+::
+
+    >>> node = Node()
+    >>> node and True or False
+    False
     
+    >>> if not node:
+    ...     print False
+    False
+    
+    >>> node['1'] = Node()
+    >>> node and True or False
+    True
+    
+    >>> if node:
+    ...     print True
+    True
