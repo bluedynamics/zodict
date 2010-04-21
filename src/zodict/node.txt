@@ -388,3 +388,19 @@ Detach subtree and insert elsewhere.
     Traceback (most recent call last):
       ...
     KeyError: u'Given node already contained in tree.'
+
+Check Node attributes
+::
+
+    >>> from zodict.node import LifecycleNode # XXX: provide attributes on
+    ...                                       #      base nodes as well
+    
+    >>> node = LifecycleNode()
+    >>> node.attrs.foo = 'bar'
+    >>> node.attrs['foo']
+    'bar'
+    
+    >>> node.attrs['bar'] = 'baz'
+    >>> node.attrs.bar
+    'baz'
+    

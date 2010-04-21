@@ -223,28 +223,41 @@ class NodeAttributes(dict):
     
     def __init__(self, node):
         super(NodeAttributes, self).__init__()
-        self._node = node
-        self.changed = False
+        object.__setattr__(self, '_node', node)
+        object.__setattr__(self, 'changed', False)
+    
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
     
     def __setitem__(self, key, val):
-        super(NodeAttributes, self).__setitem__(key, val)
-        self.changed = True
-        if self._node._notify_suppress: 
+        dict.__setitem__(self, key, val)
+        object.__setattr__(self, 'changed', True)
+        node = object.__getattribute__(self, '_node')
+        if node._notify_suppress: 
             return
-        objectEventNotify(self._node.events['modified'](self._node))
+        objectEventNotify(node.events['modified'](node))
     
     def __delitem__(self, key):
-        super(NodeAttributes, self).__delitem__(key)
-        self.changed = True
+        dict.__delitem__(self, key)
+        object.__setattr__(self, 'changed', True)
+        node = object.__getattribute__(self, '_node')
         if self._node._notify_suppress: 
             return
-        objectEventNotify(self._node.events['modified'](self._node))
+        if node._notify_suppress: 
+            return
+        objectEventNotify(node.events['modified'](node))
         
     def __copy__(self):
-        _new = NodeAttributes(self._node)
+        _new = NodeAttributes(object.__getattribute__(self, '_node'))
         for key, value in self.items():
             _new[key] = value
-        _new.changed = self.changed
+        _new.changed = object.__getattribute__(self, 'changed')
         return _new
 
 class LifecycleNode(Node):
@@ -260,10 +273,13 @@ class LifecycleNode(Node):
     attributes_factory = NodeAttributes
     
     @property
-    def attributes(self):
+    def attrs(self):
         if not hasattr(self, '_attributes'):
             self._attributes = self.attributes_factory(self)
         return self._attributes
+    
+    # BBB
+    attributes = attrs
     
     def __init__(self, name=None):
         super(LifecycleNode, self).__init__(name=name)
