@@ -245,7 +245,7 @@ Version 1.9.1
 -------------
 
 - Add test for bool evaluation
-  rnix, 2010-04-21
+  [rnix, 2010-04-21]
 
 - Add ``__setattr__`` and ``__getattr__`` to ``NodeAttributes`` object.
   [rnix, 2010-04-21]
