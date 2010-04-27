@@ -102,13 +102,17 @@ class INodeAttributes(IEnumerableMapping, IWriteMapping):
         Takes attributes refering node at creation time.
         """
 
-class ILifecycleNode(INode):
+class IAttributedNode(INode):
+    """Node which care about its attributes.
+    """
+    attributes = Attribute(u"``INodeAttributes`` implementation.")
+    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
+
+class ILifecycleNode(IAttributedNode):
     """Node which care about its lifecycle.
     """
     events = Attribute(u"Dict with lifecycle event classes to use for "
                        u"notification.")
-    attributes = Attribute(u"``INodeAttributes`` implementation.")
-    attributes_factory = Attribute(u"``INodeAttributes`` implementation class")
 
 class INodeCreatedEvent(IObjectCreatedEvent):
     """An new Node was born.

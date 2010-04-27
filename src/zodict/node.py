@@ -18,6 +18,7 @@ from zodict import Zodict
 from zodict.interfaces import (
     INode,
     INodeAttributes,
+    IAttributedNode,
     ILifecycleNode,
 )
 from zodict.events import (
@@ -238,20 +239,10 @@ class NodeAttributes(dict):
     def __setitem__(self, key, val):
         dict.__setitem__(self, key, val)
         object.__setattr__(self, 'changed', True)
-        node = object.__getattribute__(self, '_node')
-        if node._notify_suppress: 
-            return
-        objectEventNotify(node.events['modified'](node))
     
     def __delitem__(self, key):
         dict.__delitem__(self, key)
         object.__setattr__(self, 'changed', True)
-        node = object.__getattribute__(self, '_node')
-        if self._node._notify_suppress: 
-            return
-        if node._notify_suppress: 
-            return
-        objectEventNotify(node.events['modified'](node))
         
     def __copy__(self):
         _new = NodeAttributes(object.__getattribute__(self, '_node'))
@@ -259,17 +250,10 @@ class NodeAttributes(dict):
             _new[key] = value
         _new.changed = object.__getattribute__(self, 'changed')
         return _new
-
-class LifecycleNode(Node):
-    implements(ILifecycleNode)
     
-    events = {
-        'created': NodeCreatedEvent,
-        'added': NodeAddedEvent,
-        'modified': NodeModifiedEvent,
-        'removed': NodeRemovedEvent,
-        'detached': NodeDetachedEvent,
-    }
+class AttributedNode(Node):
+    implements(IAttributedNode)
+
     attributes_factory = NodeAttributes
     
     @property
@@ -280,6 +264,37 @@ class LifecycleNode(Node):
     
     # BBB
     attributes = attrs
+    
+class LifecycleNodeAttributes(NodeAttributes):
+
+    def __setitem__(self, key, val):
+        NodeAttributes.__setitem__(self, key, val)
+        node = object.__getattribute__(self, '_node')
+        if node._notify_suppress: 
+            return
+        objectEventNotify(node.events['modified'](node))
+
+    def __delitem__(self, key):
+        NodeAttributes.__delitem__(self, key)
+        node = object.__getattribute__(self, '_node')
+        if self._node._notify_suppress: 
+            return
+        if node._notify_suppress: 
+            return
+        objectEventNotify(node.events['modified'](node))
+
+class LifecycleNode(AttributedNode):
+    implements(ILifecycleNode)
+    
+    events = {
+        'created': NodeCreatedEvent,
+        'added': NodeAddedEvent,
+        'modified': NodeModifiedEvent,
+        'removed': NodeRemovedEvent,
+        'detached': NodeDetachedEvent,
+    }
+
+    attributes_factory = LifecycleNodeAttributes
     
     def __init__(self, name=None):
         super(LifecycleNode, self).__init__(name=name)
