@@ -245,8 +245,8 @@ Changes
 Version 1.9.2 (unreleased)
 -------------------------
 
-- Separated ``AttributedNode`` from ``LifecycleNode``, so attributed can be used 
-  w/o events now.
+- Separated ``AttributedNode`` from ``LifecycleNode``, so attributes can be used 
+  without events now.
   [jensens, 2010-04-28]
 
 Version 1.9.1
