@@ -245,6 +245,11 @@ Changes
 Version 1.9.2 (unreleased)
 -------------------------
 
+- set ``child.__name__`` and ``child.__parent__`` before ``child.keys()`` call
+  for index check in ``Node.__setitem__``. ``keys()`` of child might depend
+  on those.
+  [rnix, 2010-05-01]
+
 - Separated ``AttributedNode`` from ``LifecycleNode``, so attributes can be used 
   without events now.
   [jensens, 2010-04-28]

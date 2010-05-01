@@ -62,6 +62,8 @@ class Node(Zodict):
     def __setitem__(self, key, val):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
+        val.__name__ = key
+        val.__parent__ = self
         has_children = False
         for valkey in val.iterkeys():
             has_children = True
@@ -70,8 +72,6 @@ class Node(Zodict):
             keys = set(self._index.keys())
             if keys.intersection(val._index.keys()):
                 raise ValueError, u"Node with uuid already exists"
-        val.__name__ = key
-        val.__parent__ = self
         self._index.update(val._index)
         val._index = self._index
         Zodict.__setitem__(self, key, val)
