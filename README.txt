@@ -241,9 +241,11 @@ Alternative it can be used in older Python version with in a try: finally.
 Changes
 =======
 
+Version 1.9.3 (svn)
+-------------------
 
-Version 1.9.2 (unreleased)
--------------------------
+Version 1.9.2
+-------------
 
 - set ``child.__name__`` and ``child.__parent__`` before ``child.keys()`` call
   for index check in ``Node.__setitem__``. ``keys()`` of child might depend
