@@ -33,15 +33,15 @@ each item in the node-tree knows its parent and its own name.
     >>> root = Node('root')
     >>> ILocation.providedBy(Node)
     True
-    
+
     >>> root['child'] = Node()
     >>> root['child'].path
     ['root', 'child']
-    
+
     >>> child = root['child']
     >>> child.__name__
     'child'
-    
+
     >>> child.__parent__
     <Node object 'root' at ...>
 
@@ -54,7 +54,7 @@ The ``filtereditems`` function.
     >>> alsoProvides(root['child']['subchild'], IMarker)
     >>> IMarker.providedBy(root['child']['subchild'])
     True
-    
+
     >>> for item in root['child'].filtereditems(IMarker):
     ...     print item.path
     ['root', 'child', 'subchild']
@@ -65,18 +65,18 @@ UUID related operations on Node.
     >>> uuid = root['child']['subchild'].uuid
     >>> uuid
     UUID('...')
-    
+
     >>> root.node(uuid).path
     ['root', 'child', 'subchild']
-    
+
     >>> root.uuid = uuid
     Traceback (most recent call last):
       ...
     ValueError: Given uuid was already used for another Node
-    
+
     >>> import uuid
     >>> newuuid = uuid.uuid4()
-    
+
     >>> root.uuid = newuuid
     >>> root['child'].node(newuuid).path
     ['root']
@@ -86,7 +86,7 @@ Node insertion (an insertafter function exist as well).
 
     >>> root['child1'] = Node()
     >>> root['child2'] = Node()
-    
+
     >>> node = Node('child3')
     >>> root.insertbefore(node, root['child2'])
     >>> root.printtree()
@@ -102,19 +102,19 @@ detached node or subtree to a complete different tree.
 
     >>> len(root._index.keys())
     6
-    
+
     >>> node = root.detach('child4')
     >>> node
     <Node object 'child4' at ...>
-    
+
     >>> len(node._index.keys())
     1
     >>> len(root._index.keys())
     5
-    
+
     >>> len(root.values())
     4
-    
+
     >>> root.insertbefore(node, root['child1'])
     >>> root.printtree()
     <class 'zodict.node.Node'>: root
@@ -135,32 +135,32 @@ Merge 2 Node Trees.
     >>> tree2['e'] = Node()
     >>> tree1._index is tree2._index
     False
-  
+
     >>> len(tree1._index.keys())
     3
-    
+
     >>> tree1.printtree()
     <class 'zodict.node.Node'>: None
       <class 'zodict.node.Node'>: a
       <class 'zodict.node.Node'>: b
-    
+
     >>> len(tree2._index.keys())
     3
-    
+
     >>> tree2.printtree()
     <class 'zodict.node.Node'>: None
       <class 'zodict.node.Node'>: d
       <class 'zodict.node.Node'>: e
-    
+
     >>> tree1['c'] = tree2
     >>> len(tree1._index.keys())
     6
-    
+
     >> sorted(tree1._index.values(), key=lambda x: x.__name__)
-    
+
     >>> tree1._index is tree2._index
     True
-    
+
     >>> tree1.printtree()
     <class 'zodict.node.Node'>: None
       <class 'zodict.node.Node'>: a
@@ -168,46 +168,46 @@ Merge 2 Node Trees.
       <class 'zodict.node.Node'>: c
         <class 'zodict.node.Node'>: d
         <class 'zodict.node.Node'>: e
-        
+
 LifecycleNode
 -------------
 
-The ``LifecycleNode`` is able to send out notifies with object-events based on 
-``zope.lifecycleevent`` subclasses.  
+The ``LifecycleNode`` is able to send out notifies with object-events based on
+``zope.lifecycleevent`` subclasses.
 
 Creation of Node
-    ``zodict.events.NodeCreatedEvent`` implementing 
-    ``zodict.interfaces.INodeCreatedEvent``. 
+    ``zodict.events.NodeCreatedEvent`` implementing
+    ``zodict.interfaces.INodeCreatedEvent``.
 
 Adding childs to Node
-    ``zodict.events.NodeAddedEvent`` implementing 
-    ``zodict.interfaces.INodeAddedEvent``. 
+    ``zodict.events.NodeAddedEvent`` implementing
+    ``zodict.interfaces.INodeAddedEvent``.
 
 Deleting childs from Node
-    ``zodict.events.NodeRemovedEvent`` implementing 
-    ``zodict.interfaces.INodeRemovedEvent``. 
+    ``zodict.events.NodeRemovedEvent`` implementing
+    ``zodict.interfaces.INodeRemovedEvent``.
 
 Detaching childs from Node
-    ``zodict.events.NodeDetachedEvent`` implementing 
+    ``zodict.events.NodeDetachedEvent`` implementing
     ``zodict.interfaces.INodeDetachedEvent``.
-  
+
 In subclasses of Node the event classes can be exchanged by modifying the
 class attribute ``events`` on the node. It is a dictionary with the keys:
-``['created', 'added', 'removed', 'detached']`` 
+``['created', 'added', 'removed', 'detached']``
 
 Thread safe Locking of a Tree
 -----------------------------
 
 Not ``Node`` nor ``LifecycleNode`` are thread safe. Application-builder are
-responsible for this. Major reason: Acquiring and releasing locks is an 
+responsible for this. Major reason: Acquiring and releasing locks is an
 expensive operation.
 
-The module ``zodict.locking`` provides a mechanism to lock the whole tree 
-thread safe. A class and a decorator is provided. The class is intended to be 
+The module ``zodict.locking`` provides a mechanism to lock the whole tree
+thread safe. A class and a decorator is provided. The class is intended to be
 used standalone with some Node, the decorator to be used on subclasses of
 ``Node`` or ``LifecycleNode``.
 
-``zodict.locking.TreeLock`` is a adapter like class on a Node. It can be used 
+``zodict.locking.TreeLock`` is a adapter like class on a Node. It can be used
 in Python > 2.6 within the ``with`` statement.
 ::
 
@@ -215,9 +215,9 @@ in Python > 2.6 within the ``with`` statement.
     >>> with TreeLock(node):
     >>>     # do something on the locked tree
     >>>     node['foo'] = Node()
-    
+
 Alternative it can be used in older Python version with in a try: finally.
-::     
+::
 
     >>> from zodict.locking import TreeLock
     >>> lock = TreeLock(node)
@@ -226,23 +226,32 @@ Alternative it can be used in older Python version with in a try: finally.
     >>>     # do something on the locked tree
     >>>     node['bar'] = Node()
     >>> finally:
-    >>>     lock.release()    
-            
-``zodict.locking.locktree`` Decorator for methods of a (sub-)class of ``Node``.     
+    >>>     lock.release()
+
+``zodict.locking.locktree`` Decorator for methods of a (sub-)class of ``Node``.
 ::
-       
+
     >>> from zodict.locking import locktree
     >>> class LockedNode(Node):
     ...
     ...     @locktree
     ...     def __setitem__(self, key, val):
-    ...         super(LockedNode, self).__setitem__(key, val)        
+    ...         super(LockedNode, self).__setitem__(key, val)
 
 Changes
 =======
 
 Version 1.9.3 (svn)
 -------------------
+
+- Typos in documentation
+  [thet]
+
+- BBB imports in except block rather than trying it first.
+  [thet]
+
+- Buildout configuration for testing purposes.
+  [thet]
 
 Version 1.9.2
 -------------
@@ -252,7 +261,7 @@ Version 1.9.2
   on those.
   [rnix, 2010-05-01]
 
-- Separated ``AttributedNode`` from ``LifecycleNode``, so attributes can be used 
+- Separated ``AttributedNode`` from ``LifecycleNode``, so attributes can be used
   without events now.
   [jensens, 2010-04-28]
 
@@ -277,8 +286,8 @@ Version 1.9.0
 - Add locking test
   [rnix, 2009-12-23]
 
-- Refactor locking, remove tree-locking from Node base implementations. 
-  Add easy to use locking class and a decorator intended to be used in 
+- Refactor locking, remove tree-locking from Node base implementations.
+  Add easy to use locking class and a decorator intended to be used in
   applications and subclasses of ``Node``.
   [jensens, 2009-12-23]
 
@@ -304,12 +313,12 @@ Version 1.9.0
 Version 1.8.0
 -------------
 
-- Added ``zope.lifecycle`` events to the new ``LifecycleNode``. You can 
-  easiely override them with your own events. 
+- Added ``zope.lifecycle`` events to the new ``LifecycleNode``. You can
+  easiely override them with your own events.
   [jensens, 2009-12-21]
 
 - Renamed class ``zodict`` to ``Zodict``, renamed module ``zodict.zodict`` to
-  ``zodict._zodict``. This avoids ugly clashes on import (package vs. module 
+  ``zodict._zodict``. This avoids ugly clashes on import (package vs. module
   vs.class). BBB import is provided in the 1.x release series.
   [jensens, 2009-12-21]
 
@@ -321,8 +330,8 @@ Version 1.7.0
   [rnix, 2009-12-18]
 
 - ``Node.index`` returns now a ``NodeIndex`` object, which implements
-  ``zope.interface.common.mapping.IReadMapping``. This functions convert uuid 
-  instances to integers before node lookup. So we still fit the contract of 
+  ``zope.interface.common.mapping.IReadMapping``. This functions convert uuid
+  instances to integers before node lookup. So we still fit the contract of
   returning nodes from index by uuid.
   [rnix, 2009-12-18]
 
@@ -351,19 +360,19 @@ Version 1.6.0
 - improve ``insertbefore`` and ``insertafter`` a little bit.
   [rnix, 2009-11-28]
 
-- add ``index`` Attribute to ``Node``. Allows access to the internal 
+- add ``index`` Attribute to ``Node``. Allows access to the internal
   ``_index`` attribute.
   [rnix, 2009-11-28]
-  
+
 - remove ``@accept`` and ``@return`` decorators. Just overhead.
   [rnix, 2009-11-28]
 
 Version 1.5.0
 -------------
- 
+
 - add ``insertbefore`` and ``insertafter`` function to ``Node``.
   [rnix, 2009-11-27]
-  
+
 - fix ``printtree`` if ``Node.__name__`` is ``None``.
   [rnix, 2009-11-20]
 
@@ -432,5 +441,5 @@ Credits
 =======
 
 - Written by Robert Niederreiter <rnix@squarewave.at>
-  
+
 - Contributions and ideas by Jens Klein <jens@bluedynamics.com>

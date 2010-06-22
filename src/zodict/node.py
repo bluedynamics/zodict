@@ -7,13 +7,13 @@ from odict.pyodict import _nil
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
 try:
-    from zope.app.location import LocationIterator # BBB
-except ImportError, e:
     from zope.location import LocationIterator
-try:
-    from zope.app.event.objectevent import objectEventNotify # BBB
 except ImportError, e:
+    from zope.app.location import LocationIterator # BBB
+try:
     from zope.component.event import objectEventNotify
+except ImportError, e:
+    from zope.app.event.objectevent import objectEventNotify # BBB
 from zodict import Zodict
 from zodict.interfaces import (
     INode,
@@ -28,19 +28,19 @@ from zodict.events import (
     NodeModifiedEvent,
     NodeDetachedEvent,
 )
-    
+
 class NodeIndex(object):
     implements(IReadMapping)
-    
+
     def __init__(self, index):
         self._index = index
-    
+
     def __getitem__(self, key):
         return self._index[int(key)]
-    
+
     def get(self, key, default=None):
         return self._index.get(int(key), default)
-    
+
     def __contains__(self, key):
         return int(key) in self._index
 
@@ -51,8 +51,8 @@ class Node(Zodict):
         """
         ``name``
             optional name used for ``__name__`` declared by ``ILocation``.
-        """  
-        Zodict.__init__(self)
+        """
+        super(Zodict, self).__init__()
         self.__parent__ = None
         self.__name__ = name
         self._index = dict()
@@ -75,7 +75,7 @@ class Node(Zodict):
         self._index.update(val._index)
         val._index = self._index
         Zodict.__setitem__(self, key, val)
-                                                       
+
     def _to_delete(self):
         todel = [int(self.uuid)]
         for childkey in self:
@@ -90,7 +90,7 @@ class Node(Zodict):
 
     def _get_uuid(self):
         return self._uuid
-    
+
     def _set_uuid(self, uuid):
         iuuid = uuid is not None and int(uuid) or None
         if iuuid in self._index and self._index[iuuid] is not self:
@@ -117,7 +117,7 @@ class Node(Zodict):
         for parent in LocationIterator(self):
             root = parent
         return root
-    
+
     @property
     def index(self):
         return NodeIndex(self._index)
@@ -129,7 +129,7 @@ class Node(Zodict):
         for node in self.values():
             if interface.providedBy(node):
                 yield node
-    
+
     def _validateinsertion(self, newnode, refnode):
         nodekey = newnode.__name__
         if nodekey is None:
@@ -139,7 +139,7 @@ class Node(Zodict):
         index = self._nodeindex(refnode)
         if index is None:
             raise ValueError, u"Given reference node not child of self."
-    
+
     def _nodeindex(self, node):
         index = 0
         for key in self.keys():
@@ -167,7 +167,7 @@ class Node(Zodict):
         dict.__getitem__(self, refkey)[0] = nodekey
         dict.__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
-    
+
     def insertafter(self, newnode, refnode):
         self._validateinsertion(newnode, refnode)
         nodekey = newnode.__name__
@@ -188,12 +188,12 @@ class Node(Zodict):
         dict.__getitem__(self, refkey)[2] = nodekey
         dict.__setitem__(self, nodekey, newnode)
         self[nodekey] = newnode[1]
-    
+
     def _index_nodes(self):
         for node in self.values():
             self._index[int(node.uuid)] = node
             node._index = self._index
-            node._index_nodes() 
+            node._index_nodes()
 
     def detach(self, key):
         node = self[key]
@@ -201,16 +201,16 @@ class Node(Zodict):
         node._index = { int(node.uuid): node }
         node._index_nodes()
         return node
-            
+
     @property
-    def noderepr(self): 
+    def noderepr(self):
         name = str(self.__name__)
         return str(self.__class__) + ': ' + name[name.find(':') + 1:]
-    
+
     def printtree(self, indent=0):
         print "%s%s" % (indent * ' ', self.noderepr)
         for node in self.values():
-            node.printtree(indent+2)        
+            node.printtree(indent+2)
 
     def __repr__(self):
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
@@ -221,12 +221,12 @@ class Node(Zodict):
 
 class NodeAttributes(dict):
     implements(INodeAttributes)
-    
+
     def __init__(self, node):
         super(NodeAttributes, self).__init__()
         object.__setattr__(self, '_node', node)
         object.__setattr__(self, 'changed', False)
-    
+
     def __getattr__(self, name):
         try:
             return self[name]
@@ -235,57 +235,57 @@ class NodeAttributes(dict):
 
     def __setattr__(self, name, value):
         self[name] = value
-    
+
     def __setitem__(self, key, val):
         dict.__setitem__(self, key, val)
         object.__setattr__(self, 'changed', True)
-    
+
     def __delitem__(self, key):
         dict.__delitem__(self, key)
         object.__setattr__(self, 'changed', True)
-        
+
     def __copy__(self):
         _new = NodeAttributes(object.__getattribute__(self, '_node'))
         for key, value in self.items():
             _new[key] = value
         _new.changed = object.__getattribute__(self, 'changed')
         return _new
-    
+
 class AttributedNode(Node):
     implements(IAttributedNode)
 
     attributes_factory = NodeAttributes
-    
+
     @property
     def attrs(self):
         if not hasattr(self, '_attributes'):
             self._attributes = self.attributes_factory(self)
         return self._attributes
-    
+
     # BBB
     attributes = attrs
-    
+
 class LifecycleNodeAttributes(NodeAttributes):
 
     def __setitem__(self, key, val):
         NodeAttributes.__setitem__(self, key, val)
         node = object.__getattribute__(self, '_node')
-        if node._notify_suppress: 
+        if node._notify_suppress:
             return
         objectEventNotify(node.events['modified'](node))
 
     def __delitem__(self, key):
         NodeAttributes.__delitem__(self, key)
         node = object.__getattribute__(self, '_node')
-        if self._node._notify_suppress: 
+        if self._node._notify_suppress:
             return
-        if node._notify_suppress: 
+        if node._notify_suppress:
             return
         objectEventNotify(node.events['modified'](node))
 
 class LifecycleNode(AttributedNode):
     implements(ILifecycleNode)
-    
+
     events = {
         'created': NodeCreatedEvent,
         'added': NodeAddedEvent,
@@ -295,25 +295,25 @@ class LifecycleNode(AttributedNode):
     }
 
     attributes_factory = LifecycleNodeAttributes
-    
+
     def __init__(self, name=None):
         super(LifecycleNode, self).__init__(name=name)
-        self._notify_suppress = False        
+        self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
-    
+
     def __setitem__(self, key, val):
         super(LifecycleNode, self).__setitem__(key, val)
-        if self._notify_suppress: 
+        if self._notify_suppress:
             return
-        objectEventNotify(self.events['added'](val, newParent=self, 
+        objectEventNotify(self.events['added'](val, newParent=self,
                                                newName=key))
-        
+
     def __delitem__(self, key):
         delnode = self[key]
         super(LifecycleNode, self).__delitem__(key)
-        if self._notify_suppress: 
+        if self._notify_suppress:
             return
-        objectEventNotify(self.events['removed'](delnode, oldParent=self, 
+        objectEventNotify(self.events['removed'](delnode, oldParent=self,
                                                  oldName=key))
 
     def detach(self, key):
@@ -321,6 +321,6 @@ class LifecycleNode(AttributedNode):
         self._notify_suppress = True
         node = super(LifecycleNode, self).detach(key)
         self._notify_suppress = False
-        objectEventNotify(self.events['detached'](node, oldParent=self, 
+        objectEventNotify(self.events['detached'](node, oldParent=self,
                                                   oldName=key))
         return node
