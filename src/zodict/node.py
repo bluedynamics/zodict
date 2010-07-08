@@ -44,15 +44,20 @@ class NodeIndex(object):
     def __contains__(self, key):
         return int(key) in self._index
 
-class Node(Zodict):
+class _Node(object):
+    """Abstract node implementation. Subclass must mixin ``_node_impl()``.
+    """
     implements(INode)
+    
+    def _node_impl(self):
+        return None
 
     def __init__(self, name=None):
         """
         ``name``
             optional name used for ``__name__`` declared by ``ILocation``.
         """
-        super(Zodict, self).__init__()
+        super(self._node_impl(), self).__init__()
         self.__parent__ = None
         self.__name__ = name
         self._index = dict()
@@ -74,7 +79,7 @@ class Node(Zodict):
                 raise ValueError, u"Node with uuid already exists"
         self._index.update(val._index)
         val._index = self._index
-        Zodict.__setitem__(self, key, val)
+        self._node_impl().__setitem__(self, key, val)
 
     def _to_delete(self):
         todel = [int(self.uuid)]
@@ -86,7 +91,7 @@ class Node(Zodict):
         val = self[key]
         for iuuid in self[key]._to_delete():
             del self._index[iuuid]
-        Zodict.__delitem__(self, key)
+        self._node_impl().__delitem__(self, key)
 
     def _get_uuid(self):
         return self._uuid
@@ -218,6 +223,13 @@ class Node(Zodict):
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
+
+class Node(_Node, Zodict):
+    """Inherit from _Node and mixin Zodict.
+    """
+    
+    def _node_impl(self):
+        return Zodict
 
 class NodeAttributes(dict):
     implements(INodeAttributes)
