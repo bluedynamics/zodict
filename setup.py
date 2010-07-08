@@ -8,7 +8,7 @@ version = '1.9.3'
 shortdesc = 'zope.interface compliant ordered dictionary and zope.location ' + \
             'aware node.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
-tests_require = ['interlude', 'ZODB3']
+tests_require = ['interlude']
 
 setup(name='zodict',
       version=version,
