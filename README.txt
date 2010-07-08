@@ -245,16 +245,16 @@ Version 1.9.3
 -------------
 
 - Provide abstract ``_Node`` implementation.
-  [rnix]
+  [rnix, 2010-07-08]
 
-- Typos in documentation
-  [thet]
+- Typos in documentation.
+  [thet, 2010-07-06]
 
 - BBB imports in except block rather than trying it first.
-  [thet]
+  [thet, 2010-07-06]
 
 - Buildout configuration for testing purposes.
-  [thet]
+  [thet, 2010-07-06]
 
 Version 1.9.2
 -------------
