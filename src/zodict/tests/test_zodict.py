@@ -14,7 +14,6 @@ TESTFILES = [
     '../node.txt',
     '../events.txt',
     '../locking.txt',
-    #'../persistence.txt',
 ]
 
 def test_suite():
