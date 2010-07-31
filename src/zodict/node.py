@@ -263,10 +263,64 @@ class NodeAttributes(dict):
         _new.changed = object.__getattribute__(self, 'changed')
         return _new
 
+class MappedAttributes(object):
+    """Maps attributes
+    """
+    def __init__(self, node, attrmap):
+        """
+        ``node``
+            the node from which to fetch the mapped attributes
+        ``attrmap``
+            an attribute map, eg {'key_here': 'key_in_node.attrs'}.
+        """
+        self._node = node
+        self._map = attrmap
+
+    def __contains__(self, key):
+        return key in self._map
+
+    def __iter__(self):
+        # Just return the iterator of our keymap
+        return self._map.__iter__()
+
+    iterkeys = __iter__
+
+    def iteritems(self):
+        for key in self._map:
+            yield key, self[key]
+
+    def itervalues(self):
+        for key in self._map:
+            yield self[key]
+
+    def keys(self):
+        return [x for x in self._map]
+
+    def __len__(self):
+        return self._map.__len__()
+
+    def __getitem__(self, key):
+        mkey = self._map[key]
+        return self._node.attrs[mkey]
+
+    def __setitem__(self, key, val):
+        mkey = self._map[key]
+        self._node.attrs[mkey] = val
+
+    def values(self):
+        return [x for x in self.itervalues()]
+
 class AttributedNode(Node):
     implements(IAttributedNode)
 
     attributes_factory = NodeAttributes
+
+    def __init__(self, name=None, attrmap=None):
+        super(AttributedNode, self).__init__(name)
+        if attrmap is not None:
+            self._mattrs = MappedAttributes(self, attrmap)
+        else:
+            self._mattrs = None
 
     @property
     def attrs(self):
@@ -276,6 +330,12 @@ class AttributedNode(Node):
 
     # BBB
     attributes = attrs
+
+    @property
+    def mattrs(self):
+        if self._mattrs is None:
+            raise AttributeError(u"No mapped attributes!")
+        return self._mattrs
 
 class LifecycleNodeAttributes(NodeAttributes):
 
@@ -308,8 +368,8 @@ class LifecycleNode(AttributedNode):
 
     attributes_factory = LifecycleNodeAttributes
 
-    def __init__(self, name=None):
-        super(LifecycleNode, self).__init__(name=name)
+    def __init__(self, name=None, attrmap=None):
+        super(LifecycleNode, self).__init__(name=name, attrmap=attrmap)
         self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
 
