@@ -412,9 +412,24 @@ Check mapped attributes
     ...
     AttributeError: No mapped attributes!
 
-    >>> node._attrmap = {'oof': 'foo'}
+    >>> node._attrmap = {'oof': 'foo', 'bar': 'bar'}
     >>> node.mattrs['oof'] is node.attrs['foo']
     True
+    >>> 'oof' in node.mattrs
+    True
+    >>> [x for x in node.mattrs]
+    ['oof', 'bar']
+    >>> [x for x in node.mattrs.iteritems()]
+    [('oof', 'bar'), ('bar', 'baz')]
+    >>> node.mattrs.keys()
+    ['oof', 'bar']
+    >>> node.mattrs.values()
+    ['bar', 'baz']
+    >>> len(node.mattrs)
+    2
+    >>> node.mattrs['oof'] = 'oink'
+    >>> node.attrs['foo']
+    'oink'
 
 Check bool evaluation
 ::
