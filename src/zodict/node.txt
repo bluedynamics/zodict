@@ -404,6 +404,18 @@ Check Node attributes
     >>> node.attrs.bar
     'baz'
 
+Check mapped attributes
+::
+
+    >>> node.mattrs
+    Traceback (most recent call last):
+    ...
+    AttributeError: No mapped attributes!
+
+    >>> node._attrmap = {'oof': 'foo'}
+    >>> node.mattrs['oof'] is node.attrs['foo']
+    True
+
 Check bool evaluation
 ::
 
