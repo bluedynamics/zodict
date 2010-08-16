@@ -431,6 +431,17 @@ Check mapped attributes
     >>> node.attrs['foo']
     'oink'
 
+    >>> from zodict import AttributedNode
+    >>> class SubNode(AttributedNode):
+    ...     @property
+    ...     def _attrmap(self):
+    ...         return self.__parent__._attrmap
+    >>> sub = SubNode()
+    >>> node['sub'] = sub
+    >>> sub.mattrs['oof'] = 'juhu'
+    >>> sub.attrs['foo']
+    'juhu'
+
 Check bool evaluation
 ::
 

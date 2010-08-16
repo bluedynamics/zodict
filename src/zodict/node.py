@@ -319,9 +319,13 @@ class AttributedNode(Node):
 
     attributes_factory = NodeAttributes
 
+    # enable subclasses to override this
+    _attrmap = None
+
     def __init__(self, name=None, attrmap=None):
         super(AttributedNode, self).__init__(name)
-        self._attrmap = attrmap
+        if attrmap is not None:
+            self._attrmap = attrmap
 
     @property
     def attrs(self):
