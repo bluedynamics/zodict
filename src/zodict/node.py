@@ -278,6 +278,8 @@ class MappedAttributes(object):
 
     @property
     def _attrmap(self):
+        # MappedAttributes are anyway connected to a node, therefore it makes
+        # sense to get the attrmap live from the node.
         return self._node._attrmap
 
     def __contains__(self, key):
