@@ -69,10 +69,45 @@ class _Node(object):
             self._index = None
         self._uuid = None
         self.uuid = uuid.uuid4()
+        self.aliases = None
+
+    def __contains__(self, key):
+        try:
+            return self.aliases.__contains__(key)
+        except AttributeError:
+            # aliases is None
+            return self._node_impl().__contains__(self, key)
+
+    def _aliased(self, key):
+        try:
+            key = self.aliases.__getitem__(key)
+        except AttributeError:
+            # aliases is None
+            pass
+        return key
+
+    def __getitem__(self, key):
+        key = self._aliased(key)
+        return self._node_impl().__getitem__(self, key)
+
+    def __iter__(self):
+        try:
+            return self.aliases.__iter__()
+        except AttributeError:
+            # aliases is None
+            return self._node_impl().__iter__(self)
+
+    def keys(self):
+        try:
+            return self.aliases.keys()
+        except AttributeError:
+            # aliases is None
+            return self._node_impl().keys(self)
 
     def __setitem__(self, key, val):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
+        key = self._aliased(key)
         val.__name__ = key
         val.__parent__ = self
         has_children = False
@@ -95,6 +130,7 @@ class _Node(object):
         return todel
 
     def __delitem__(self, key):
+        key = self._aliased(key)
         val = self[key]
         if self._index is not None:
             for iuuid in self[key]._to_delete():

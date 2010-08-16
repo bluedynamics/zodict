@@ -406,59 +406,35 @@ Detach subtree and insert elsewhere.
 Check Node aliases.
 ::
 
-    >>> root.aliases = {
+    >>> tree1.aliases = {
     ...     'foo': 'a',
     ...     'bar': 'b',
     ... }
 
-    >>> root['foo']
-    <class 'zodict.node.Node'>: a
+    >>> tree1['foo']
+    <Node object 'a' at ...>
 
-    >>> root['bar']
-    <class 'zodict.node.Node'>: b
+    >>> tree1['bar']
+    <Node object 'b' at ...>
 
-    >>> root['a']
-    KeyError
+    >>> tree1['a']
+    Traceback (most recent call last):
+    ...
+    KeyError: 'a'
 
-    >>> 'foo' in root
+    >>> 'foo' in tree1
     True
 
-    >>> 'a' in root
+    >>> 'a' in tree1
     False
 
-    >>> [x for x in root]
+    >>> [x for x in tree1]
+    ['foo', 'bar']
 
-    >>> root.keys()
+    >>> tree1.keys()
+    ['foo', 'bar']
 
-    >>> len(root)
-    2
-
-now with a callable
-::
-
-    >>> _aliases = root.aliases
-    >>> root.aliases = lambda node, key: _aliases[key]
-
-    >>> root['foo']
-    <class 'zodict.node.Node'>: a
-
-    >>> root['bar']
-    <class 'zodict.node.Node'>: b
-
-    >>> root['a']
-    KeyError
-
-    >>> 'foo' in root
-    True
-
-    >>> 'a' in root
-    False
-
-    >>> [x for x in root]
-
-    >>> root.keys()
-
-    >>> len(root)
+    >>> len(tree1)
     2
 
 Check Node attributes
@@ -483,16 +459,20 @@ Check Node attributes
     >>> 'oof' in node.attrs
     True
 
-    >>> 'no' in node.mattrs
+    >>> 'no' in node.attrs
     False
 
     >>> [x for x in node.attrs]
-
-    >>> [x for x in node.attrs.iteritems()]
+    ['oof', 'foo', 'bar']
 
     >>> node.attrs.keys()
+    ['oof', 'foo', 'bar']
+
+    >>> [x for x in node.attrs.iteritems()]
+    [('oof', 'abc'), ('foo', 'bar'), ('bar', 'baz')]
 
     >>> node.attrs.values()
+    ['abc', 'bar', 'baz']
 
     >>> len(node.attrs)
     3
@@ -541,49 +521,6 @@ called, with the node attrs as argument (like an instance method of node attrs).
 
     >>> len(node.mattrs)
     2
-
-
-now with a callable
-::
-
-    >>> _aliases = node.attrs.aliases
-    >>> node.attrs.aliases = lambda attrs, name: _aliases[name]
-
-    >>> node.attrs.x
-    'bar'
-
-    >>> node.attrs.y
-    'baz'
-
-    >>> node.attrs.foo
-    AttributeError
-
-    >>> node.attrs.oof
-    AttributeError
-
-    >>> node.attrs.x = 10
-    >>> node.attrs.x
-    10
-    >>> node.attrs.foo = 10
-    AttributeError
-
-    >>> 'foo' in node.attrs
-    False
-
-    >>> 'x' in node.mattrs
-    True
-
-    >>> [x for x in node.attrs]
-
-    >>> [x for x in node.mattrs.iteritems()]
-
-    >>> node.attrs.keys()
-
-    >>> node.attrs.values()
-
-    >>> len(node.mattrs)
-    2
-
 
 Check bool evaluation
 ::
