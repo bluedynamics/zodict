@@ -315,59 +315,6 @@ class NodeAttributes(dict):
         _new.changed = object.__getattribute__(self, 'changed')
         return _new
 
-# WIP
-class MappedAttributes(object):
-    """Maps attributes
-    """
-    def __init__(self, node):
-        """
-        ``node``
-            the node from which to fetch the mapped attributes
-        ``node._attrmap``
-            an attribute map, eg {'key_here': 'key_in_node.attrs'}.
-        """
-        self._node = node
-
-    @property
-    def _attrmap(self):
-        # MappedAttributes are anyway connected to a node, therefore it makes
-        # sense to get the attrmap live from the node.
-        return self._node._attrmap
-
-    def __contains__(self, key):
-        return key in self._attrmap
-
-    def __iter__(self):
-        # Just return the iterator of our keymap
-        return self._attrmap.__iter__()
-
-    iterkeys = __iter__
-
-    def iteritems(self):
-        for key in self._attrmap:
-            yield key, self[key]
-
-    def itervalues(self):
-        for key in self._attrmap:
-            yield self[key]
-
-    def keys(self):
-        return [x for x in self._attrmap]
-
-    def __len__(self):
-        return self._attrmap.__len__()
-
-    def __getitem__(self, key):
-        mkey = self._attrmap[key]
-        return self._node.attrs[mkey]
-
-    def __setitem__(self, key, val):
-        mkey = self._attrmap[key]
-        self._node.attrs[mkey] = val
-
-    def values(self):
-        return [x for x in self.itervalues()]
-
 class AttributedNode(Node):
     implements(IAttributedNode)
 
@@ -390,15 +337,6 @@ class AttributedNode(Node):
     # BBB
     attributes = attrs
 
-    @property
-    def mattrs(self):
-        if self._attrmap is None:
-            raise AttributeError(u"No mapped attributes!")
-        try:
-            return self._mattrs
-        except AttributeError:
-            self._mattrs = MappedAttributes(self)
-            return self._mattrs
 
 class LifecycleNodeAttributes(NodeAttributes):
 
