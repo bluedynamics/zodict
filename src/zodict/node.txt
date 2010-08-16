@@ -482,45 +482,45 @@ Check Node attribute aliases, a dict serves as whitelist, a callable is
 called, with the node attrs as argument (like an instance method of node attrs).
 ::
 
-    >>> node.attrs.aliases = {
-    ...     'x': 'foo',
-    ...     'y': 'bar',
-    ...     }
-
-    >>> node.attrs.x
-    'bar'
-
-    >>> node.attrs.y
-    'baz'
-
-    >>> node.attrs.foo
-    AttributeError
-
-    >>> node.attrs.oof
-    AttributeError
-
-    >>> node.attrs.x = 10
-    >>> node.attrs.x
-    10
-    >>> node.attrs.foo = 10
-    AttributeError
-
-    >>> 'foo' in node.attrs
-    False
-
-    >>> 'x' in node.mattrs
-    True
-
-    >>> [x for x in node.attrs]
-
-    >>> [x for x in node.mattrs.iteritems()]
-
-    >>> node.attrs.keys()
-
-    >>> node.attrs.values()
-
-    >>> len(node.mattrs)
-    2
+#    >>> node.attrs.aliases = {
+#    ...     'x': 'foo',
+#    ...     'y': 'bar',
+#    ...     }
+#
+#    >>> node.attrs.x
+#    'bar'
+#
+#    >>> node.attrs.y
+#    'baz'
+#
+#    >>> node.attrs.foo
+#    AttributeError
+#
+#    >>> node.attrs.oof
+#    AttributeError
+#
+#    >>> node.attrs.x = 10
+#    >>> node.attrs.x
+#    10
+#    >>> node.attrs.foo = 10
+#    AttributeError
+#
+#    >>> 'foo' in node.attrs
+#    False
+#
+#    >>> 'x' in node.mattrs
+#    True
+#
+#    >>> [x for x in node.attrs]
+#
+#    >>> [x for x in node.mattrs.iteritems()]
+#
+#    >>> node.attrs.keys()
+#
+#    >>> node.attrs.values()
+#
+#    >>> len(node.mattrs)
+#    2
 
 Check bool evaluation
 ::
