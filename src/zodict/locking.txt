@@ -23,7 +23,7 @@ We need a thread implementation which checks for access collision.
     ...         try:
     ...             while dummy._waiting:
     ...                 self._waited = True
-    ...                 time.sleep(1)
+    ...                 time.sleep(3)
     ...             lock = TreeLock(dummy)
     ...             lock.acquire()
     ...             dummy._waiting = True

@@ -41,6 +41,20 @@ Location related attributes.
     >>> root.path
     ['root']
 
+The Node object provides an index. This makes it possible to access each Node
+in tree via it's uuid. Indexing is enabled by default, you can disable it by
+passing ``index=False`` to the constructor.
+::
+
+    >>> root.index
+    <zodict.node.NodeIndex object at ...>
+
+    >>> unindexednode = Node('foo', index=False)
+    >>> unindexednode.index
+    Traceback (most recent call last):
+      ...
+    AttributeError: No index support configured on this Node.
+
 Tree node index.
 ::
 
@@ -389,6 +403,27 @@ Detach subtree and insert elsewhere.
       ...
     KeyError: u'Given node already contained in tree.'
 
+Check Node aliases.
+::
+
+    >>> root.aliases = {
+    ...     'foo': 'a',
+    ...     'bar': 'b',
+    ... }
+    
+    >>> root['foo']
+    <class 'zodict.node.Node'>: a
+    
+    >>> root['bar']
+    <class 'zodict.node.Node'>: b
+    
+    >>> root['a']
+    KeyError
+    
+    >>> root.aliases = lambda x: x.__name__
+    >>> root['bar']
+    'root'
+
 Check Node attributes
 ::
 
@@ -402,7 +437,7 @@ Check Node attributes
     
     >>> node.attrs['bar'] = 'baz'
     >>> node.attrs.bar
-    'baz'
+    'baz'    
 
 Check mapped attributes
 ::

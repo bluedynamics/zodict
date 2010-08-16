@@ -3,6 +3,7 @@
 
 import uuid
 import inspect
+from odict import odict
 from odict.pyodict import _nil
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping

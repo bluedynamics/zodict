@@ -32,6 +32,10 @@ class INode(ILocation, IFullMapping):
     path = Attribute(u"Path of node as list")
     root = Attribute(u"Root node")
     index = Attribute(u"The tree node index")
+    aliases = Attribute(u"zope.interface.common.mapping.IEnumerableMapping "
+                        u"implementation defining key aliases or callable "
+                        u"accepting Node as argument. If aliases is None, "
+                        u"this feature is disables.")
 
     def node(uuid):
         """Return node by uuid located anywhere in this nodetree.
@@ -97,6 +101,11 @@ class INodeAttributes(IEnumerableMapping, IWriteMapping):
     ``LifecycleNode.attributes_factory``.
     """
     changed = Attribute(u"Flag indicating if attributes were changed or not.")
+    aliases = Attribute(u"zope.interface.common.mapping.IEnumerableMapping "
+                        u"implementation defining attr name aliases or "
+                        u"callable accepting NodeAttributes as argument. If "
+                        u"aliases is None, this feature is disables. "
+                        u"Serves as Whitelist.")
 
     def __init__(node):
         """Initialize object.
