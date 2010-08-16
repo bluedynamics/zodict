@@ -20,15 +20,18 @@ We need a thread implementation which checks for access collision.
     >>> class TestThread(Thread):
     ...     def run(self):
     ...         self._waited = False
-    ...         while dummy._waiting:
-    ...             self._waited = True
-    ...             time.sleep(3)
-    ...         lock = TreeLock(dummy)
-    ...         lock.acquire()
-    ...         dummy._waiting = True
-    ...         time.sleep(1)
-    ...         dummy._waiting = False
-    ...         lock.release()
+    ...         try:
+    ...             while dummy._waiting:
+    ...                 self._waited = True
+    ...                 time.sleep(1)
+    ...             lock = TreeLock(dummy)
+    ...             lock.acquire()
+    ...             dummy._waiting = True
+    ...             time.sleep(1)
+    ...             dummy._waiting = False
+    ...             lock.release()
+    ...         except Exception, e:
+    ...             pass
 
     >>> t1 = TestThread()
     >>> t2 = TestThread()

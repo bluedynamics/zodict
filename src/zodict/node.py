@@ -52,15 +52,20 @@ class _Node(object):
     def _node_impl(self):
         return None
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, index=True):
         """
         ``name``
             optional name used for ``__name__`` declared by ``ILocation``.
+        ``index``
+            flag wether node index is enabled or not.
         """
         super(self._node_impl(), self).__init__()
         self.__parent__ = None
         self.__name__ = name
-        self._index = dict()
+        if index:
+            self._index = dict()
+        else:
+            self._index = None
         self._uuid = None
         self.uuid = uuid.uuid4()
 
@@ -73,12 +78,13 @@ class _Node(object):
         for valkey in val.iterkeys():
             has_children = True
             break
-        if has_children:
+        if has_children and self._index is not None:
             keys = set(self._index.keys())
             if keys.intersection(val._index.keys()):
                 raise ValueError, u"Node with uuid already exists"
-        self._index.update(val._index)
-        val._index = self._index
+        if self._index is not None:
+            self._index.update(val._index)
+            val._index = self._index
         self._node_impl().__setitem__(self, key, val)
 
     def _to_delete(self):
@@ -89,8 +95,9 @@ class _Node(object):
 
     def __delitem__(self, key):
         val = self[key]
-        for iuuid in self[key]._to_delete():
-            del self._index[iuuid]
+        if self._index is not None:
+            for iuuid in self[key]._to_delete():
+                del self._index[iuuid]
         self._node_impl().__delitem__(self, key)
 
     def _get_uuid(self):
@@ -98,12 +105,15 @@ class _Node(object):
 
     def _set_uuid(self, uuid):
         iuuid = uuid is not None and int(uuid) or None
-        if iuuid in self._index and self._index[iuuid] is not self:
+        if self._index is not None \
+          and iuuid in self._index \
+          and self._index[iuuid] is not self:
             raise ValueError, u"Given uuid was already used for another Node"
         siuuid = self._uuid is not None and int(self._uuid) or None
-        if siuuid in self._index:
+        if self._index is not None and siuuid in self._index:
             del self._index[siuuid]
-        self._index[iuuid] = self
+        if self._index is not None:
+            self._index[iuuid] = self
         self._uuid = uuid
 
     uuid = property(_get_uuid, _set_uuid)
@@ -125,9 +135,13 @@ class _Node(object):
 
     @property
     def index(self):
+        if self._index is None:
+            raise AttributeError(u"No index support configured on this Node.")
         return NodeIndex(self._index)
 
     def node(self, uuid):
+        if self._index is None:
+            raise ValueError(u"No index support configured on this Node.")
         return self._index.get(int(uuid))
 
     def filtereditems(self, interface):
@@ -203,8 +217,9 @@ class _Node(object):
     def detach(self, key):
         node = self[key]
         del self[key]
-        node._index = { int(node.uuid): node }
-        node._index_nodes()
+        if self._index is not None:
+            node._index = { int(node.uuid): node }
+            node._index_nodes()
         return node
 
     @property
