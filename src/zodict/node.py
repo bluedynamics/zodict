@@ -69,6 +69,7 @@ class _Node(object):
             self.uuid = uuid.uuid4()
         else:
             self._index = None
+        self.allow_non_node_childs = False
         self.aliases = None
 
     def __contains__(self, key):
@@ -107,26 +108,33 @@ class _Node(object):
     def __setitem__(self, key, val):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
+        if not isinstance(val, _Node) and not self.allow_non_node_childs:
+            raise ValueError("Non-node childs are not allowed.")
         key = self._aliased(key)
-        val.__name__ = key
-        val.__parent__ = self
-        has_children = False
-        for valkey in val.iterkeys():
-            has_children = True
-            break
-        if has_children and self._index is not None:
-            keys = set(self._index.keys())
-            if keys.intersection(val._index.keys()):
-                raise ValueError, u"Node with uuid already exists"
-        if self._index is not None:
-            self._index.update(val._index)
-            val._index = self._index
+        if isinstance(val, _Node):
+            val.__name__ = key
+            val.__parent__ = self
+            has_children = False
+            for valkey in val.iterkeys():
+                has_children = True
+                break
+            if has_children and self._index is not None:
+                keys = set(self._index.keys())
+                if keys.intersection(val._index.keys()):
+                    raise ValueError, u"Node with uuid already exists"
+            if self._index is not None:
+                self._index.update(val._index)
+                val._index = self._index
         self._node_impl().__setitem__(self, key, val)
 
     def _to_delete(self):
         todel = [int(self.uuid)]
         for childkey in self:
-            todel += self[childkey]._to_delete()
+            try:
+                todel += self[childkey]._to_delete()
+            except AttributeError:
+                # Non-Node values are not told about deletion
+                continue
         return todel
 
     def __delitem__(self, key):
@@ -247,7 +255,12 @@ class _Node(object):
 
     def _index_nodes(self):
         for node in self.values():
-            self._index[int(node.uuid)] = node
+            try:
+                uuid = int(node.uuid)
+            except AttributeError:
+                # non-Node values are a dead end, no magic for them
+                continue
+            self._index[uuid] = node
             node._index = self._index
             node._index_nodes()
 
@@ -267,7 +280,11 @@ class _Node(object):
     def printtree(self, indent=0):
         print "%s%s" % (indent * ' ', self.noderepr)
         for node in self.values():
-            node.printtree(indent+2)
+            try:
+                node.printtree(indent+2)
+            except AttributeError:
+                # Non-Node values are just printed
+                print "%s%s" % (indent * ' ', node)
 
     def __repr__(self):
         return "<%s object '%s' at %s>" % (self.__class__.__name__,

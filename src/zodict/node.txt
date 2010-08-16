@@ -104,12 +104,27 @@ Add some children and check node containment stuff.
     >>> len(root.index._index)
     4
 
+    # Non-Node "child" is not indexed
+    >>> root['child']['subchild3'] = 1
+    Traceback (most recent call last):
+    ...
+    ValueError: Non-node childs are not allowed.
+
+    >>> root['child'].allow_non_node_childs = True
+    >>> root['child']['subchild3'] = 1
+    >>> root['child']['subchild3']
+    1
+
+    >>> len(root.index._index)
+    4
+
     >>> root['child'].keys()
-    ['subchild', 'subchild2']
+    ['subchild', 'subchild2', 'subchild3']
 
     >>> root['child'].items()
     [('subchild', <Node object 'subchild' at ...>),
-    ('subchild2', <Node object 'subchild2' at ...>)]
+    ('subchild2', <Node object 'subchild2' at ...>),
+    ('subchild3', 1)]
 
     >>> child = root['child']
     >>> child.__name__
@@ -119,13 +134,14 @@ Add some children and check node containment stuff.
     <Node object 'root' at ...>
 
     >>> len(root['child'].keys())
-    2
+    3
 
     >>> root.printtree()
     <class 'zodict.node.Node'>: root
       <class 'zodict.node.Node'>: child
         <class 'zodict.node.Node'>: subchild
         <class 'zodict.node.Node'>: subchild2
+        1
 
 Node uses ``ILocation``, so attribute ``__name__`` is set. A python class object
 itself uses this attribute too, here it stores the class name. If you set a
