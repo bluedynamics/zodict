@@ -65,10 +65,10 @@ class _Node(object):
         self.__name__ = name
         if index:
             self._index = dict()
+            self._uuid = None
+            self.uuid = uuid.uuid4()
         else:
             self._index = None
-        self._uuid = None
-        self.uuid = uuid.uuid4()
         self.aliases = None
 
     def __contains__(self, key):
