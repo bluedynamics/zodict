@@ -113,21 +113,6 @@ class _Node(object):
         except KeyError:
             raise KeyError(key)
 
-    def _aliased_iter(self):
-        # XXX: secondary key could be used here, ie to implement a reverse dict
-        for key in self._node_impl().__iter__(self):
-            for k,v in self.aliases.items():
-                if v == key:
-                    yield k
-
-    def __iter__(self):
-        if self.aliases is None:
-            return self._node_impl().__iter__(self)
-        return self._aliased_iter()
-
-    def keys(self):
-        return [x for x in self]
-
     def __setitem__(self, key, val):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
@@ -153,6 +138,30 @@ class _Node(object):
         key = self._aliased(key)
         self._node_impl().__setitem__(self, key, val)
 
+    def __delitem__(self, key):
+        key = self._aliased(key)
+        val = self[key]
+        if self._index is not None:
+            for iuuid in self[key]._to_delete():
+                del self._index[iuuid]
+        self._node_impl().__delitem__(self, key)
+
+
+    def _aliased_iter(self):
+        # XXX: secondary key could be used here, ie to implement a reverse dict
+        for key in self._node_impl().__iter__(self):
+            for k,v in self.aliases.items():
+                if v == key:
+                    yield k
+
+    def __iter__(self):
+        if self.aliases is None:
+            return self._node_impl().__iter__(self)
+        return self._aliased_iter()
+
+    def keys(self):
+        return [x for x in self]
+
     def _to_delete(self):
         todel = [int(self.uuid)]
         for childkey in self:
@@ -162,14 +171,6 @@ class _Node(object):
                 # Non-Node values are not told about deletion
                 continue
         return todel
-
-    def __delitem__(self, key):
-        key = self._aliased(key)
-        val = self[key]
-        if self._index is not None:
-            for iuuid in self[key]._to_delete():
-                del self._index[iuuid]
-        self._node_impl().__delitem__(self, key)
 
     def _get_uuid(self):
         return self._uuid
