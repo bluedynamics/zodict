@@ -1,3 +1,4 @@
+XXX: Has race conditions, at least the test
 
 Thread locking for Nodes
 ========================
