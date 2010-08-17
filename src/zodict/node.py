@@ -117,6 +117,7 @@ class _Node(object):
             raise ValueError, u"It isn't allowed to use classes as values."
         if not isinstance(val, _Node) and not self.allow_non_node_childs:
             raise ValueError("Non-node childs are not allowed.")
+        # XXX: should happen after it was added or?
         if isinstance(val, _Node):
             val.__name__ = key
             val.__parent__ = self

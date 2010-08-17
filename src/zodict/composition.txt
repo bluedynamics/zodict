@@ -1,0 +1,150 @@
+Node Compositions
+-----------------
+
+A normal node has one nodespace managed by mapping API and AttributedNodes have
+an additional one behind attrs.
+
+Node Compositions behave like normal nodes, but aggregate or compose their
+child nodes from multiple nodespaces.
+
+Compositions are not the parents of their nodespaces' childs.
+
+Existing hierarchies are never touched, if parenthood is needed, AdapterNodes
+are to be used!
+
+class Composition(Node):
+    def __init__(self, name=None, nodespaces=Node()):
+        # XXX: index support turned off for now
+        super(Composition, self).__init__(name=name, index=False)
+        self.nodespaces = nodespaces
+
+The basic setup, a compostion of two nodespaces
+::
+    >>> from zodict import Node, Composition
+    >>> nodespace1 = Node()
+    >>> nodespace2 = Node()
+    >>> nodespaces = Node()
+    >>> nodespaces['nodespace1'] = nodespace1
+    >>> nodespaces['nodespace2'] = nodespace2
+
+    >>> composition = Composition(nodespaces=nodespaces)
+
+Let's seed the nodespaces, a node with key 'node2' exists in both spaces
+::
+    >>> nodespace1['nodeA'] = nodeA = Node()
+    >>> nodespace1['nodeB'] = nodeB1 = Node()
+    >>> nodespace2['nodeB'] = nodeB2 = Node()
+    >>> nodespace2['nodeC'] = nodeC = Node()
+
+Mode *first hit*
+----------------
+::
+
+    >>> from zodict.testing import node_tester
+    >>> childs = odict(
+    ...     nodeA=nodeA,
+    ...     nodeB=nodeB1, # nodeB2 is masked by nodeB1
+    ...     nodeC=nodeC,
+    ...     )
+    >>> node_tester(composition, childs=childs)
+
+New nodes end up in the first succeeding nodespace
+
+    >>> composition['newnode1'] = Node()
+    >>> nodespace1.keys()
+    ['nodeA', 'nodeB', 'newnode']
+    >>> nodespace2.keys()
+    ['nodeB', 'nodeC']
+
+    >>> del composition['newnode']
+    >>> nodespace1.keys()
+    ['nodeA', 'nodeB']
+
+Let's whitelist nodespace1, node_tester still needs to succeed and newnode ends
+up in the second nodespace::
+
+    >>> nodespace1.aliases = {'__nodeA': 'nodeA', 'nodeB': 'nodeB'}
+    >>> childs = odict(
+    ...     __nodeA=nodeA,
+    ...     nodeB=nodeB1, # nodeB2 is masked by nodeB1
+    ...     nodeC=nodeC,
+    ...     )
+    >>> node_tester(composition, childs=childs)
+
+    >>> composition['newnode1'] = Node()
+    >>> nodespace1.keys()
+    ['__nodeA', 'nodeB']
+    >>> nodespace2.keys()
+    ['nodeB', 'nodeC', 'newnode']
+
+    >>> del composition['newnode']
+    >>> nodespace2.keys()
+    ['nodeB', 'nodeC']
+
+Mode *aliased nodespace*
+------------------------
+
+Define aliases for nodespaces, the prefixer just aliases, the dictionary also
+whitelists::
+
+    >>> from zodict.alias import PrefixAliaser
+    >>> composition.aliases = {
+    ...     'nodespace1': PrefixAliaser('prefix^'),
+    ...     'nodespace2': {
+    ...         'aliasedX': 'nodeB',
+    ...         'aliasedY': 'newone',
+    ...         },
+    ...     }
+    >>> childs = odict(data={
+    ...     'prefix^__nodeA': NodeA,
+    ...     'prefix^nodeB: nodeB1,
+    ...     'aliasedX': nodeB2,
+    ...     })
+    >>> node_tester(composition, childs=childs)
+
+Whitelist 'foo' for nodespace1::
+
+    >>> nodespace1.aliases['foo'] = 'foo'
+
+And assign something that will end up as 'foo'::
+
+    >>> composition['prefix^foo'] = Node()
+    >>> nodespace1.keys()
+    ['__nodeA', 'nodeB', 'foo']
+    >>> nodespace2.keys()
+    ['nodeB', 'nodeC']
+    
+'foo' without prefix cannot be matched to a nodespace::
+
+    >>> composition['foo']
+    KeyError: foo
+
+    >>> composition['foo'] = Node()
+    KeyError: foo
+
+'aliasedY' is whitelisted for nodespace2, but does not exist yet::
+
+    >>> composition['aliasedY']
+    KeyError: aliasedY
+
+    >>> composition['aliasedY'] = Node()
+    >>> composition['aliasedY'] is nodespace2['newone']
+    True
+
+Mode *merge*
+------------
+
+
+
+class Group(Composition)
+    def __init__(self, name=None, users=Node(), groups=Node()):
+        super(PrincipalGroup, self)
+    
+
+Mode: Use first succeeding nodespace - nodespaces are queried in order, if all
+fail: KeyError.
+
+Note: Consider using aliases to whitelist nodespace childs.
+
+XXX: Composition with aliasing?
+
