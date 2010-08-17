@@ -493,15 +493,20 @@ Check Node aliases
     3
 
 
-
-
-Check Node attributes
+Check Node attributes, they are a node themselves, IFullMapping and aliasing
+are tested already for the node.
 ::
+
+    >>> isinstance(tree1.attrs, tree1.__class__)
+    True
 
     >>> from zodict.node import LifecycleNode # XXX: provide attributes on
     ...                                       #      base nodes as well
 
     >>> node = LifecycleNode()
+    >>> isinstance(node.attrs, node.__class__)
+    True
+
 
 # XXX can we still support .attrs.foo ?
 #
@@ -517,39 +522,41 @@ Check Node attributes
 #    >>> node.attrs.oof
 #    'abc'
 #
-    
-    >>> node.attrs['foo'] = 'bar'
-    >>> node.attrs['foo']
-    'bar'
 
-    >>> node.attrs['bar'] = 'baz'
-    >>> node.attrs['bar']
-    'baz'
-
-    >>> node.attrs['oof'] = 'abc'
-    >>> node.attrs['oof']
-    'abc'
-
-    >>> 'oof' in node.attrs
-    True
-
-    >>> 'no' in node.attrs
-    False
-
-    >>> [x for x in node.attrs]
-    ['foo', 'bar', 'oof']
-
-    >>> node.attrs.keys()
-    ['foo', 'bar', 'oof']
-
-    >>> [x for x in node.attrs.iteritems()]
-    [('foo', 'bar'), ('bar', 'baz'), ('oof', 'abc')]
-
-    >>> node.attrs.values()
-    ['bar', 'baz', 'abc']
-
-    >>> len(node.attrs)
-    3
+# XXX: not needed anymore
+#    
+#    >>> node.attrs['foo'] = 'bar'
+#    >>> node.attrs['foo']
+#    'bar'
+#
+#    >>> node.attrs['bar'] = 'baz'
+#    >>> node.attrs['bar']
+#    'baz'
+#
+#    >>> node.attrs['oof'] = 'abc'
+#    >>> node.attrs['oof']
+#    'abc'
+#
+#    >>> 'oof' in node.attrs
+#    True
+#
+#    >>> 'no' in node.attrs
+#    False
+#
+#    >>> [x for x in node.attrs]
+#    ['foo', 'bar', 'oof']
+#
+#    >>> node.attrs.keys()
+#    ['foo', 'bar', 'oof']
+#
+#    >>> [x for x in node.attrs.iteritems()]
+#    [('foo', 'bar'), ('bar', 'baz'), ('oof', 'abc')]
+#
+#    >>> node.attrs.values()
+#    ['bar', 'baz', 'abc']
+#
+#    >>> len(node.attrs)
+#    3
 
 
 Check Node attribute aliases, a dict serves as whitelist, a callable is
