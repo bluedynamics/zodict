@@ -19,8 +19,8 @@ We need a thread implementation which checks for access collision.
     >>> from threading import Thread
     >>> from zodict.locking import TreeLock
     >>> class TestThread(Thread):
+    ...     _waited = False
     ...     def run(self):
-    ...         self._waited = False
     ...         while dummy._waiting:
     ...             self._waited = True
     ...             time.sleep(0.2)
@@ -54,8 +54,8 @@ Repeat test using with statement if python version >= 2.6.
     >>> import sys
     >>> if sys.version_info >= (2, 6):
     ...     class TestThread2_6(Thread):
+    ...         _waited = False
     ...         def run(self):
-    ...             self._waited = False
     ...             while dummy._waiting:
     ...                 self._waited = True
     ...                 time.sleep(0.2)
