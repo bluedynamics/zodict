@@ -1,0 +1,36 @@
+A dict aliaser takes a dictionary as base for aliasing
+::
+    >>> from zodict.aliaser import DictAliaser
+    >>> da = DictAliaser(alias1='key1', alias2='key2')
+
+    >>> da.alias('key1')
+    'alias1'
+
+    >>> da.unalias('alias2')
+    'key2'
+
+    >>> da.alias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: 'foo'
+
+    >>> da.unalias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: 'foo'
+
+An aliaser that simply prefixes all keys
+::
+    >>> from zodict.aliaser import PrefixAliaser
+    >>> pa = PrefixAliaser('prefix-')
+    
+    >>> pa.alias('foo')
+    'prefix-foo'
+
+    >>> pa.unalias('prefix-foo')
+    'foo'
+
+    >>> pa.unalias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: u"key 'foo' does not match prefix 'prefix-'"

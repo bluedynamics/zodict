@@ -126,7 +126,7 @@ containing one aliases per nodespace.
 Define aliases for nodespaces, the prefixer just aliases, the dictionary also
 whitelists
 ::
-    >>> from zodict.alias import PrefixAliaser
+    >>> from zodict.aliaser import PrefixAliaser
     >>> composition.aliases = {
     ...     'nodespace1': PrefixAliaser('prefix^'),
     ...     'nodespace2': {

@@ -12,6 +12,7 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
 
 TESTFILES = [
     '../_zodict.txt',
+    '../aliaser.txt',
     '../node.txt',
     '../events.txt',
     '../composition.txt',

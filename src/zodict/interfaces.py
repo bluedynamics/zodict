@@ -53,6 +53,17 @@ class IAttributeAccess(Interface):
         """Call __delitem__ on context.
         """
 
+class IAliaser(Interface):
+    """Generic Aliasing Interface
+    """
+    def alias(key):
+        """returns the alias for a key
+        """
+
+    def unalias(aliased_key):
+        """returns the key belonging to an aliased_key
+        """
+
 class INode(ILocation, IFullMapping):
     """A node.
     """
