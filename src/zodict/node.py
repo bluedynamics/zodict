@@ -125,6 +125,9 @@ class _Node(object):
             if self._index is not None:
                 self._index.update(val._index)
                 val._index = self._index
+        # XXX: Using the name our parent gives us seems more consistent, the
+        # application needs to show whether its good or bad.
+        key = self._aliased(key)
         self._node_impl().__setitem__(self, key, val)
 
     def _to_delete(self):
