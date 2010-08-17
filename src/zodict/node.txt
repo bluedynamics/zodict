@@ -442,14 +442,14 @@ Check Node aliases.
     ...
     KeyError: 'uii'
 
-    # XXX: 'foo' or 'a' ?
+    # XXX: Should the __name__ be 'foo' or 'a' ?
     >>> tree1['foo'] = Node()
     >>> tree1['foo']
-    <Node object 'a' at ...>
+    <Node object 'foo' at ...>
 
-    # XXX: 'foo' or 'a' ?
+    # XXX: Should the __name__ be 'foo' or 'a' ?
     >>> tree1['foo'].__name__
-    'a'
+    'foo'
 
 
 

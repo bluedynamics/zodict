@@ -107,8 +107,10 @@ class _Node(object):
     def __setitem__(self, key, val):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
-        key = self._aliased(key)
+        # XXX: Using the name our parent gives us seems more consistent, the
+        # application needs to show whether its good or bad.
         val.__name__ = key
+        key = self._aliased(key)
         val.__parent__ = self
         has_children = False
         for valkey in val.iterkeys():
