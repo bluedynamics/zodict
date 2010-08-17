@@ -492,6 +492,12 @@ Check Node aliases
     >>> len(tree1)
     3
 
+xxxxxxxxxxxxxxxx
+
+    >>> #child1.attribute_access_for_attrs = False
+    >>> #child1.attributes.__class__
+    
+    <class 'zodict.node.LifecycleNodeAttributes'>
 
 Check Node attributes, they are a node themselves, IFullMapping and aliasing
 are tested already for the node.

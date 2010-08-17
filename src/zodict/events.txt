@@ -33,35 +33,33 @@ Check NodeCreation.
 Check Node adding.
 ::
     
+    >>> del handled_events[0]
     >>> child1 = LifecycleNode()
     >>> root['child1'] = child1
     >>> handled_events
-    [<zodict.events.NodeCreatedEvent object at ...>, 
-    <zodict.events.NodeCreatedEvent object at ...>,
+    [<zodict.events.NodeCreatedEvent object at ...>,
     <zodict.events.NodeAddedEvent object at ...>]
 
 Check Node modification.
 ::
 
-    >>> handled_events = []
-
-    # XXX: Should we suppress this one?
-    >>> child1.attributes.__class__
-    <class 'zodict.node.LifecycleNode'>
-    >>> handled_events
-    [<zodict.events.NodeCreatedEvent object at ...>]
-
     >>> del handled_events[0]
+    >>> del handled_events[0]
+
+    >>> child1.attributes.__class__
+    <class 'zodict.node.AttributeAccess'>
     
-    # XXX: this used to trigger <zodict.events.NodeModifiedEvent object at ...>
+    >>> handled_events
+    []
+    
     >>> child1.attributes['foo'] = 1
     >>> handled_events
-    []
+    [<zodict.events.NodeModifiedEvent object at ...>]
     
-    # XXX: this used to trigger <zodict.events.NodeModifiedEvent object at ...>
+    >>> del handled_events[0]
     >>> del child1.attributes['foo']  
     >>> handled_events
-    []
+    [<zodict.events.NodeModifiedEvent object at ...>]
 
 Check Node Deletion.
 :: 

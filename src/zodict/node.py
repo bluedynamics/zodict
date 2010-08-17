@@ -30,6 +30,48 @@ from zodict.events import (
     NodeDetachedEvent,
 )
 
+class AttributeAccess(object):
+    """Provides Attribute access to dict like context.
+    
+    If someone really needs to access the original context (which should not 
+    happen), she hast to use ``object.__getattr__(attraccess, 'context')``.
+    """
+    
+    def __init__(self, context):
+        object.__setattr__(self, 'context', context)
+    
+    def __getattr__(self, name):
+        context = object.__getattribute__(self, 'context')
+        try:
+            return context[name]
+        except KeyError:
+            raise AttributeError(name)
+    
+    def __setattr__(self, name, value):
+        context = object.__getattribute__(self, 'context')
+        try:
+            context[name] = value
+        except KeyError:
+            raise AttributeError(name)
+    
+    def __getitem__(self, name):
+        """Convenience default access.
+        """
+        context = object.__getattribute__(self, 'context')
+        return context[name]
+    
+    def __setitem__(self, name, value):
+        """Convenience default access.
+        """
+        context = object.__getattribute__(self, 'context')
+        context[name] = value
+    
+    def __delitem__(self, name):
+        """Convenience default access.
+        """
+        context = object.__getattribute__(self, 'context')
+        del context[name]
+
 class NodeIndex(object):
     implements(IReadMapping)
 
@@ -276,6 +318,9 @@ class _Node(object):
             node._index = { int(node.uuid): node }
             node._index_nodes()
         return node
+    
+    def as_attribute_access(self):
+        return AttributeAccess(self)
 
     @property
     def noderepr(self):
@@ -304,76 +349,46 @@ class Node(_Node, Zodict):
     def _node_impl(self):
         return Zodict
 
-class NodeAttributes(dict):
+class NodeAttributes(Node):
+    """Semantic object.
     """
-    If this would be a kind of Node, what would be?
-
-    __parent__ -> node, whose attributes we would be
-    __name__ our childs are all kind of root nodes 
-    index=False
-
-    attrs would be just another nodespace like the one behind self[]
-    """
-    implements(INodeAttributes)
-
+    
     def __init__(self, node):
-        super(NodeAttributes, self).__init__()
-        object.__setattr__(self, '_node', node)
-        object.__setattr__(self, 'changed', False)
-
-    def __getattr__(self, name):
-        try:
-            return self[name]
-        except KeyError:
-            raise AttributeError(name)
-
-    def __setattr__(self, name, value):
-        self[name] = value
-
-    def __setitem__(self, key, val):
-        dict.__setitem__(self, key, val)
-        object.__setattr__(self, 'changed', True)
-
-    def __delitem__(self, key):
-        dict.__delitem__(self, key)
-        object.__setattr__(self, 'changed', True)
-
-    def __copy__(self):
-        _new = NodeAttributes(object.__getattribute__(self, '_node'))
-        for key, value in self.items():
-            _new[key] = value
-        _new.changed = object.__getattribute__(self, 'changed')
-        return _new
+        Node.__init__(self, index=False)
+        self.allow_non_node_childs = True
+        self._node = node
 
 class AttributedNode(Node):
     """A node that has another nodespace behind self.attrs[]
     """
     implements(IAttributedNode)
 
-    #attributes_factory = NodeAttributes
-    attributes_factory = None
+    attributes_factory = NodeAttributes
 
     # enable subclasses to override this
+    # XXX: remove
     _attrmap = None
 
     def __init__(self, name=None, attrmap=None, index=True):
         super(AttributedNode, self).__init__(name, index=index)
+        # XXX: remove
         if attrmap is not None:
             self._attrmap = attrmap
+        self.attribute_access_for_attrs = True
 
     @property
     def attrs(self):
         try:
-            return self._attributes
+            attrs = self._attributes
         except AttributeError:
-            _class = self.attributes_factory or self.__class__
-            self._attributes = _class(self, index=False)
-            self._attributes.allow_non_node_childs = True
-            return self._attributes
+            self._attributes = self.attributes_factory(self)
+            attrs = self._attributes
+        if self.attribute_access_for_attrs:
+            return AttributeAccess(attrs)
+        return attrs
 
     # BBB
     attributes = attrs
-
 
 class LifecycleNodeAttributes(NodeAttributes):
     """XXX If we merge this into node, do we really need the event on the node?
@@ -387,19 +402,17 @@ class LifecycleNodeAttributes(NodeAttributes):
 
     def __setitem__(self, key, val):
         NodeAttributes.__setitem__(self, key, val)
-        node = object.__getattribute__(self, '_node')
-        if node._notify_suppress:
+        if self._node._notify_suppress:
             return
-        objectEventNotify(node.events['modified'](node))
+        objectEventNotify(self._node.events['modified'](self._node))
 
     def __delitem__(self, key):
         NodeAttributes.__delitem__(self, key)
-        node = object.__getattribute__(self, '_node')
         if self._node._notify_suppress:
             return
-        if node._notify_suppress:
+        if self._node._notify_suppress:
             return
-        objectEventNotify(node.events['modified'](node))
+        objectEventNotify(self._node.events['modified'](self._node))
 
 class LifecycleNode(AttributedNode):
     implements(ILifecycleNode)
@@ -412,8 +425,7 @@ class LifecycleNode(AttributedNode):
         'detached': NodeDetachedEvent,
     }
 
-    #attributes_factory = LifecycleNodeAttributes
-    attributes_factory = None # results in self.__class__
+    attributes_factory = LifecycleNodeAttributes
 
     def __init__(self, name=None, attrmap=None, index=True):
         super(LifecycleNode, self).__init__(name=name, attrmap=attrmap,
