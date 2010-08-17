@@ -363,11 +363,13 @@ class AttributedNode(Node):
 
     @property
     def attrs(self):
-        if not hasattr(self, '_attributes'):
+        try:
+            return self._attributes
+        except AttributeError:
             _class = self.attributes_factory or self.__class__
             self._attributes = _class(self, index=False)
             self._attributes.allow_non_node_childs = True
-        return self._attributes
+            return self._attributes
 
     # BBB
     attributes = attrs

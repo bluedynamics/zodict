@@ -497,9 +497,6 @@ Check Node attributes, they are a node themselves, IFullMapping and aliasing
 are tested already for the node.
 ::
 
-    >>> isinstance(tree1.attrs, tree1.__class__)
-    True
-
     >>> from zodict.node import LifecycleNode # XXX: provide attributes on
     ...                                       #      base nodes as well
 
