@@ -460,16 +460,32 @@ Check Node attributes
     ...                                       #      base nodes as well
 
     >>> node = LifecycleNode()
-    >>> node.attrs.foo = 'bar'
+
+# XXX can we still support .attrs.foo ?
+#
+#    >>> node.attrs.foo = 'bar'
+#    >>> node.attrs['foo']
+#    'bar'
+#
+#    >>> node.attrs['bar'] = 'baz'
+#    >>> node.attrs.bar
+#    'baz'
+#
+#    >>> node.attrs['oof'] = 'abc'
+#    >>> node.attrs.oof
+#    'abc'
+#
+    
+    >>> node.attrs['foo'] = 'bar'
     >>> node.attrs['foo']
     'bar'
 
     >>> node.attrs['bar'] = 'baz'
-    >>> node.attrs.bar
+    >>> node.attrs['bar']
     'baz'
 
     >>> node.attrs['oof'] = 'abc'
-    >>> node.attrs.oof
+    >>> node.attrs['oof']
     'abc'
 
     >>> 'oof' in node.attrs
@@ -479,16 +495,16 @@ Check Node attributes
     False
 
     >>> [x for x in node.attrs]
-    ['oof', 'foo', 'bar']
+    ['foo', 'bar', 'oof']
 
     >>> node.attrs.keys()
-    ['oof', 'foo', 'bar']
+    ['foo', 'bar', 'oof']
 
     >>> [x for x in node.attrs.iteritems()]
-    [('oof', 'abc'), ('foo', 'bar'), ('bar', 'baz')]
+    [('foo', 'bar'), ('bar', 'baz'), ('oof', 'abc')]
 
     >>> node.attrs.values()
-    ['abc', 'bar', 'baz']
+    ['bar', 'baz', 'abc']
 
     >>> len(node.attrs)
     3
