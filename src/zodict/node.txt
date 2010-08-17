@@ -537,31 +537,43 @@ Attributes access is disabled, normal object behaviour applias. Beware!
 Check Node attribute aliases, with attribute access object.
 ::
 
-    >>> node.attrs.aliases = {
+XXX: For now attributealiases needs to be set before attrs is called the first
+time, as attribute_access_for_attrs is currently enabled by default.
+
+    >>> node = LifecycleNode()
+    >>> node.attribute_aliases = {
     ...     'x': 'foo',
     ...     'y': 'bar',
     ...     }
-    >>> node.attribute_access_for_attrs = True
+
+    >>> wrapper = node.attrs
+    >>> wrapper
+    <zodict.node.AttributeAccess object at ...>
+
+    >>> real_attrs = object.__getattribute__(wrapper, 'context')
+    >>> real_attrs
+    <LifecycleNodeAttributes object 'None' at ...>
+
+    >>> real_attrs.aliases
+    {'y': 'bar', 'x': 'foo'}
 
     >>> node.attrs.x
-    'bar'
+    Traceback (most recent call last):
+    ...
+    AttributeError: x
 
+    >>> node.attrs.x = 1
+    >>> node.attrs.x
+    1
+
+    >>> node.attrs.y = 2
     >>> node.attrs.y
-    'baz'
+    2
 
     >>> node.attrs.foo
     Traceback (most recent call last):
     ...
     AttributeError: foo
-
-    >>> node.attrs.oof
-    Traceback (most recent call last):
-    ...
-    AttributeError: oof
-
-    >>> node.attrs.x = 10
-    >>> node.attrs.x
-    10
 
     >>> node.attrs.foo = 10
     Traceback (most recent call last):
