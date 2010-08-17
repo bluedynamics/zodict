@@ -296,11 +296,19 @@ class _Node(object):
 class Node(_Node, Zodict):
     """Inherit from _Node and mixin Zodict.
     """
-    
     def _node_impl(self):
         return Zodict
 
 class NodeAttributes(dict):
+    """
+    If this would be a kind of Node, what would be?
+
+    __parent__ -> node, whose attributes we would be
+    __name__ our childs are all kind of root nodes 
+    index=False
+
+    attrs would be just another nodespace like the one behind self[]
+    """
     implements(INodeAttributes)
 
     def __init__(self, node):
@@ -333,22 +341,27 @@ class NodeAttributes(dict):
         return _new
 
 class AttributedNode(Node):
+    """A node that has another nodespace behind self.attrs[]
+    """
     implements(IAttributedNode)
 
-    attributes_factory = NodeAttributes
+    #attributes_factory = NodeAttributes
+    attributes_factory = None
 
     # enable subclasses to override this
     _attrmap = None
 
-    def __init__(self, name=None, attrmap=None):
-        super(AttributedNode, self).__init__(name)
+    def __init__(self, name=None, attrmap=None, index=True):
+        super(AttributedNode, self).__init__(name, index=index)
         if attrmap is not None:
             self._attrmap = attrmap
 
     @property
     def attrs(self):
         if not hasattr(self, '_attributes'):
-            self._attributes = self.attributes_factory(self)
+            _class = self.attributes_factory or self.__class__
+            self._attributes = _class(self, index=False)
+            self._attributes.allow_non_node_childs = True
         return self._attributes
 
     # BBB
@@ -356,6 +369,14 @@ class AttributedNode(Node):
 
 
 class LifecycleNodeAttributes(NodeAttributes):
+    """XXX If we merge this into node, do we really need the event on the node?
+    a) LifecycleNode current would trigger event on the attrs node
+    b) we use to trigger only on the node not on us, shall we suppress us and
+       trigger on node instead (imagine we are an LifecycleNode configured to be
+       used for the attrs nodespace
+    c) we raise an event on us (the attrs nodespace) and on our parent node, that
+       keeps us in .attrs
+    """
 
     def __setitem__(self, key, val):
         NodeAttributes.__setitem__(self, key, val)
@@ -384,10 +405,12 @@ class LifecycleNode(AttributedNode):
         'detached': NodeDetachedEvent,
     }
 
-    attributes_factory = LifecycleNodeAttributes
+    #attributes_factory = LifecycleNodeAttributes
+    attributes_factory = None # results in self.__class__
 
-    def __init__(self, name=None, attrmap=None):
-        super(LifecycleNode, self).__init__(name=name, attrmap=attrmap)
+    def __init__(self, name=None, attrmap=None, index=True):
+        super(LifecycleNode, self).__init__(name=name, attrmap=attrmap,
+                                            index=index)
         self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
 

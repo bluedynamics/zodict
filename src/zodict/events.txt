@@ -45,7 +45,7 @@ Check Node modification.
 
     >>> handled_events = []
     >>> child1.attributes.__class__
-    <class 'zodict.node.LifecycleNodeAttributes'>
+    <class 'zodict.node.LifecycleNode'>
     
     >>> child1.attributes['foo'] = 1
     >>> handled_events
