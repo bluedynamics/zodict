@@ -1,4 +1,4 @@
-# Copyright 2009, BlueDynamics Alliance - http://bluedynamics.com
+# Copyright BlueDynamics Alliance - http://bluedynamics.com
 # Python Software Foundation License
 
 from zope.interface import implements

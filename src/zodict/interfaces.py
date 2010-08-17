@@ -1,4 +1,4 @@
-# Copyright 2009, Blue Dynamics Alliance - http://bluedynamics.com
+# Copyright Blue Dynamics Alliance - http://bluedynamics.com
 # Python Software Foundation License
 
 from zope.interface import Interface, Attribute

@@ -1,4 +1,7 @@
-class NodeTester():
+# Copyright BlueDynamics Alliance - http://bluedynamics.com
+# Python Software Foundation License
+
+class NodeTester(object):
     """Test all known node behaviour
     """
     
