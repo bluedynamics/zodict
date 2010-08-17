@@ -75,6 +75,17 @@ class _Node(object):
             self._index = None
         self.allow_non_node_childs = False
         self.aliases = None
+        self._nodespaces = None
+
+    # a storage and general way to access our nodespaces
+    # an AttributedNode uses this to store the attrs nodespace
+    @property
+    def nodespaces(self):
+        if self._nodespaces is None:
+            nodespaces = odict()
+            nodespaces['__children__'] = self
+            self._nodespaces = nodespaces
+        return self._nodespaces
 
     def __contains__(self, key):
         try:
@@ -92,6 +103,9 @@ class _Node(object):
         return key
 
     def __getitem__(self, key):
+        if key[:2] == key[-2:] == '__':
+            # a reserved child key mapped to a nodespace
+            return self.nodespaces[key]
         try:
             return self._node_impl().__getitem__(self, self._aliased(key))
         except KeyError:
@@ -339,13 +353,15 @@ class AttributedNode(Node):
         # change, as the dict api to attrs is broken by it.
         self.attribute_access_for_attrs = True
 
+    # Another nodespace access via the .attrs attribute
     @property
     def attrs(self):
         try:
-            attrs = self._attributes
-        except AttributeError:
-            self._attributes = self.attributes_factory(self)
-            attrs = self._attributes
+            attrs = self.nodespaces['__attrs__']
+        except KeyError:
+            attrs = self.nodespaces['__attrs__'] = self.attributes_factory(self)
+            attrs.__name__ = '__attrs__'
+            attrs.__parent__ = self
         if self.attribute_aliases:
             attrs.aliases = self.attribute_aliases
         if self.attribute_access_for_attrs:

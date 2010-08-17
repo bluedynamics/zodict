@@ -494,7 +494,7 @@ are tested already for the node.
     >>> from zodict.node import LifecycleNode # XXX: provide attributes on
     ...                                       #      base nodes as well
 
-    >>> node = LifecycleNode()
+    >>> node = LifecycleNode('node')
     >>> node.attrs
     <zodict._zodict.AttributeAccess object at ...>
 
@@ -512,7 +512,17 @@ are tested already for the node.
 
     >>> node.attribute_access_for_attrs = False
     >>> node.attrs
-    <LifecycleNodeAttributes object 'None' at ...>
+    <LifecycleNodeAttributes object '__attrs__' at ...>
+
+The attributes are stored as children of an attrs nodespace, which is stored in
+the node.nodespaces['attrs']. It can be traversed to by the protected key
+``__nodespaces__``::
+
+    >>> node.attrs.path
+    ['node', '__attrs__']
+
+    >>> node['__attrs__'] is node.attrs
+    True
 
     >>> INode.providedBy(node.attrs)
     True
@@ -547,7 +557,7 @@ time, as attribute_access_for_attrs is currently enabled by default.
 
     >>> real_attrs = object.__getattribute__(wrapper, 'context')
     >>> real_attrs
-    <LifecycleNodeAttributes object 'None' at ...>
+    <LifecycleNodeAttributes object '__attrs__' at ...>
 
     >>> real_attrs.aliases
     {'y': 'bar', 'x': 'foo'}
