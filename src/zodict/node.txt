@@ -419,18 +419,20 @@ Detach subtree and insert elsewhere.
       ...
     KeyError: u'Given node already contained in tree.'
 
-Check Node aliases.
+Check Node aliases
+------------------
 ::
 
     >>> tree1.aliases = {
-    ...     'foo': 'a',
-    ...     'bar': 'b',
+    ...     'attr1': 'a',
+    ...     'attr2': 'b',
+    ...     'newattr': 'notthereyet',
     ... }
 
-    >>> tree1['foo']
+    >>> tree1['attr1']
     <Node object 'a' at ...>
 
-    >>> tree1['bar']
+    >>> tree1['attr2']
     <Node object 'b' at ...>
 
     >>> tree1['a']
@@ -438,17 +440,28 @@ Check Node aliases.
     ...
     KeyError: 'a'
 
-    >>> 'foo' in tree1
+    >>> 'attr1' in tree1
     True
 
     >>> 'a' in tree1
     False
 
+ If only an alias exists but the underlaying attr does not exist: KeyError
+ ::
+
+    >>> tree1['newattr']
+    Traceback (most recent call last):
+    ...
+    KeyError: 'newattr'
+
+    >>> 'newattr' in tree1
+    False
+
     >>> [x for x in tree1]
-    ['foo', 'bar']
+    ['attr1', 'attr2']
 
     >>> tree1.keys()
-    ['foo', 'bar']
+    ['attr1', 'attr2']
 
     >>> len(tree1)
     2
@@ -458,14 +471,27 @@ Check Node aliases.
     ...
     KeyError: 'uii'
 
-    # XXX: Should the __name__ be 'foo' or 'a' ?
-    >>> tree1['foo'] = Node()
-    >>> tree1['foo']
-    <Node object 'foo' at ...>
+    # XXX: Should the __name__ be 'attr1' or 'a' ?
+    >>> tree1['newattr'] = Node()
+    >>> tree1['newattr']
+    <Node object 'newattr' at ...>
 
     # XXX: Should the __name__ be 'foo' or 'a' ?
-    >>> tree1['foo'].__name__
-    'foo'
+    >>> tree1['newattr'].__name__
+    'newattr'
+
+    >>> 'newattr' in tree1
+    True
+
+    >>> [x for x in tree1]
+    ['attr1', 'attr2', 'newattr']
+
+    >>> tree1.keys()
+    ['attr1', 'attr2', 'newattr']
+
+    >>> len(tree1)
+    3
+
 
 
 

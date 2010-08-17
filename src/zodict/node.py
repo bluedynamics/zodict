@@ -74,10 +74,10 @@ class _Node(object):
 
     def __contains__(self, key):
         try:
-            return self.aliases.__contains__(key)
-        except AttributeError:
-            # aliases is None
-            return self._node_impl().__contains__(self, key)
+            self[key]
+        except KeyError:
+            return False
+        return True
 
     def _aliased(self, key):
         try:
@@ -88,29 +88,31 @@ class _Node(object):
         return key
 
     def __getitem__(self, key):
-        key = self._aliased(key)
-        return self._node_impl().__getitem__(self, key)
+        try:
+            return self._node_impl().__getitem__(self, self._aliased(key))
+        except KeyError:
+            raise KeyError(key)
+
+    def _aliased_iter(self):
+        # XXX: secondary key could be used here, ie to implement a reverse dict
+        for key in self._node_impl().__iter__(self):
+            for k,v in self.aliases.items():
+                if v == key:
+                    yield k
 
     def __iter__(self):
-        try:
-            return self.aliases.__iter__()
-        except AttributeError:
-            # aliases is None
+        if self.aliases is None:
             return self._node_impl().__iter__(self)
+        return self._aliased_iter()
 
     def keys(self):
-        try:
-            return self.aliases.keys()
-        except AttributeError:
-            # aliases is None
-            return self._node_impl().keys(self)
+        return [x for x in self]
 
     def __setitem__(self, key, val):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
         if not isinstance(val, _Node) and not self.allow_non_node_childs:
             raise ValueError("Non-node childs are not allowed.")
-        key = self._aliased(key)
         if isinstance(val, _Node):
             val.__name__ = key
             val.__parent__ = self
