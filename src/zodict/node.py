@@ -7,6 +7,7 @@ from odict import odict
 from odict.pyodict import _nil
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
+from zope.deprecation import deprecated
 try:
     from zope.location import LocationIterator
 except ImportError, e:
@@ -97,6 +98,8 @@ class _Node(object):
 
     def __init__(self, name=None, index=True):
         """
+        XXX: switch ``index`` to False by default in 2.1
+        
         ``name``
             optional name used for ``__name__`` declared by ``ILocation``.
         ``index``
@@ -349,6 +352,10 @@ class Node(_Node, Zodict):
     def _node_impl(self):
         return Zodict
 
+deprecated('Node',
+           "'index' kwarg of ``__init__`` will be changed to False by default "
+           "in 2.1")
+
 class NodeAttributes(Node):
     """Semantic object.
     """
@@ -387,6 +394,10 @@ class AttributedNode(Node):
 
     # BBB
     attributes = attrs
+
+deprecated('AttributedNode',
+           "'attribute_access_for_attrs' flag will be changed to False by "
+           "default in 2.1")
 
 class LifecycleNodeAttributes(NodeAttributes):
     """XXX If we merge this into node, do we really need the event on the node?
