@@ -1,3 +1,4 @@
+XXX: Has race conditions, at least the test
 
 Thread locking for Nodes
 ========================
@@ -15,23 +16,21 @@ We need a thread implementation which checks for access collision.
 ::
 
     >>> import time
+    >>> import threading
     >>> from threading import Thread
     >>> from zodict.locking import TreeLock
     >>> class TestThread(Thread):
+    ...     _waited = False
     ...     def run(self):
-    ...         self._waited = False
-    ...         try:
-    ...             while dummy._waiting:
-    ...                 self._waited = True
-    ...                 time.sleep(3)
-    ...             lock = TreeLock(dummy)
-    ...             lock.acquire()
-    ...             dummy._waiting = True
-    ...             time.sleep(1)
-    ...             dummy._waiting = False
-    ...             lock.release()
-    ...         except Exception, e:
-    ...             pass
+    ...         while dummy._waiting:
+    ...             self._waited = True
+    ...             time.sleep(0.2)
+    ...         lock = TreeLock(dummy)
+    ...         lock.acquire()
+    ...         dummy._waiting = True
+    ...         time.sleep(0.1)
+    ...         dummy._waiting = False
+    ...         lock.release()
 
     >>> t1 = TestThread()
     >>> t2 = TestThread()
@@ -46,3 +45,45 @@ We expect ``t1`` to proceed without waiting, ``t2`` waited some time.
     
     >>> t2._waited
     True
+    
+    >>> while t1.is_alive() or t2.is_alive():
+    ...     time.sleep(0.1)
+
+Repeat test using with statement if python version >= 2.6.
+::
+
+    >>> import sys
+    >>> if sys.version_info >= (2, 6):
+    ...     class TestThread2_6(Thread):
+    ...         _waited = False
+    ...         def run(self):
+    ...             while dummy._waiting:
+    ...                 self._waited = True
+    ...                 time.sleep(0.2)
+    ...             with TreeLock(dummy):
+    ...                 dummy._waiting = True
+    ...                 time.sleep(0.1)
+    ...                 dummy._waiting = False
+    ...     t1 = TestThread2_6()
+    ...     t2 = TestThread2_6()
+    ...     t1.start()
+    ...     t2.start()
+    ...     if t1._waited:
+    ...         raise Exception(u"t1 was not expected to wait")
+    ...     if not t2._waited:
+    ...         raise Exception(u"t2 was expected to wait")
+    ...     while t1.is_alive() or t2.is_alive():
+    ...         time.sleep(0.1)
+
+Test locking decorator.
+::
+
+    >>> from zodict.locking import locktree
+    >>> class LockingNode(Node):
+    ...     @locktree
+    ...     def foo(self):
+    ...         return 'fooed'
+    
+    >>> node = LockingNode()
+    >>> node.foo()
+    'fooed'

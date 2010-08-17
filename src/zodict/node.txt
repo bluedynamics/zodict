@@ -104,12 +104,27 @@ Add some children and check node containment stuff.
     >>> len(root.index._index)
     4
 
+    # Non-Node "child" is not indexed
+    >>> root['child']['subchild3'] = 1
+    Traceback (most recent call last):
+    ...
+    ValueError: Non-node childs are not allowed.
+
+    >>> root['child'].allow_non_node_childs = True
+    >>> root['child']['subchild3'] = 1
+    >>> root['child']['subchild3']
+    1
+
+    >>> len(root.index._index)
+    4
+
     >>> root['child'].keys()
-    ['subchild', 'subchild2']
+    ['subchild', 'subchild2', 'subchild3']
 
     >>> root['child'].items()
     [('subchild', <Node object 'subchild' at ...>),
-    ('subchild2', <Node object 'subchild2' at ...>)]
+    ('subchild2', <Node object 'subchild2' at ...>),
+    ('subchild3', 1)]
 
     >>> child = root['child']
     >>> child.__name__
@@ -119,13 +134,14 @@ Add some children and check node containment stuff.
     <Node object 'root' at ...>
 
     >>> len(root['child'].keys())
-    2
+    3
 
     >>> root.printtree()
     <class 'zodict.node.Node'>: root
       <class 'zodict.node.Node'>: child
         <class 'zodict.node.Node'>: subchild
         <class 'zodict.node.Node'>: subchild2
+        1
 
 Node uses ``ILocation``, so attribute ``__name__`` is set. A python class object
 itself uses this attribute too, here it stores the class name. If you set a
@@ -403,18 +419,20 @@ Detach subtree and insert elsewhere.
       ...
     KeyError: u'Given node already contained in tree.'
 
-Check Node aliases.
+Check Node aliases
+------------------
 ::
 
     >>> tree1.aliases = {
-    ...     'foo': 'a',
-    ...     'bar': 'b',
+    ...     'attr1': 'a',
+    ...     'attr2': 'b',
+    ...     'newattr': 'notthereyet',
     ... }
 
-    >>> tree1['foo']
+    >>> tree1['attr1']
     <Node object 'a' at ...>
 
-    >>> tree1['bar']
+    >>> tree1['attr2']
     <Node object 'b' at ...>
 
     >>> tree1['a']
@@ -422,17 +440,28 @@ Check Node aliases.
     ...
     KeyError: 'a'
 
-    >>> 'foo' in tree1
+    >>> 'attr1' in tree1
     True
 
     >>> 'a' in tree1
     False
 
+ If only an alias exists but the underlaying attr does not exist: KeyError
+ ::
+
+    >>> tree1['newattr']
+    Traceback (most recent call last):
+    ...
+    KeyError: 'newattr'
+
+    >>> 'newattr' in tree1
+    False
+
     >>> [x for x in tree1]
-    ['foo', 'bar']
+    ['attr1', 'attr2']
 
     >>> tree1.keys()
-    ['foo', 'bar']
+    ['attr1', 'attr2']
 
     >>> len(tree1)
     2
@@ -442,24 +471,38 @@ Check Node aliases.
     ...
     KeyError: 'uii'
 
-    # XXX: Should the __name__ be 'foo' or 'a' ?
-    >>> tree1['foo'] = Node()
-    >>> tree1['foo']
-    <Node object 'foo' at ...>
+    # XXX: Should the __name__ be 'attr1' or 'a' ?
+    >>> tree1['newattr'] = Node()
+    >>> tree1['newattr']
+    <Node object 'newattr' at ...>
 
     # XXX: Should the __name__ be 'foo' or 'a' ?
-    >>> tree1['foo'].__name__
-    'foo'
+    >>> tree1['newattr'].__name__
+    'newattr'
 
+    >>> 'newattr' in tree1
+    True
 
+    >>> [x for x in tree1]
+    ['attr1', 'attr2', 'newattr']
 
-Check Node attributes
+    >>> tree1.keys()
+    ['attr1', 'attr2', 'newattr']
+
+    >>> len(tree1)
+    3
+
+Check Node attributes, they are a node themselves, IFullMapping and aliasing
+are tested already for the node.
 ::
 
     >>> from zodict.node import LifecycleNode # XXX: provide attributes on
     ...                                       #      base nodes as well
 
     >>> node = LifecycleNode()
+    >>> node.attrs
+    <zodict.node.AttributeAccess object at ...>
+
     >>> node.attrs.foo = 'bar'
     >>> node.attrs['foo']
     'bar'
@@ -472,71 +515,70 @@ Check Node attributes
     >>> node.attrs.oof
     'abc'
 
-    >>> 'oof' in node.attrs
+    >>> node.attribute_access_for_attrs = False
+    >>> node.attrs
+    <LifecycleNodeAttributes object 'None' at ...>
+
+    >>> INode.providedBy(node.attrs)
     True
 
-    >>> 'no' in node.attrs
-    False
-
-    >>> [x for x in node.attrs]
-    ['oof', 'foo', 'bar']
-
-    >>> node.attrs.keys()
-    ['oof', 'foo', 'bar']
-
-    >>> [x for x in node.attrs.iteritems()]
-    [('oof', 'abc'), ('foo', 'bar'), ('bar', 'baz')]
-
-    >>> node.attrs.values()
-    ['abc', 'bar', 'baz']
-
-    >>> len(node.attrs)
-    3
-
-
-Check Node attribute aliases, a dict serves as whitelist, a callable is
-called, with the node attrs as argument (like an instance method of node attrs).
+Attributes access is disabled, normal object behaviour applias. Beware!
 ::
 
-#    >>> node.attrs.aliases = {
-#    ...     'x': 'foo',
-#    ...     'y': 'bar',
-#    ...     }
-#
-#    >>> node.attrs.x
-#    'bar'
-#
-#    >>> node.attrs.y
-#    'baz'
-#
-#    >>> node.attrs.foo
-#    AttributeError
-#
-#    >>> node.attrs.oof
-#    AttributeError
-#
-#    >>> node.attrs.x = 10
-#    >>> node.attrs.x
-#    10
-#    >>> node.attrs.foo = 10
-#    AttributeError
-#
-#    >>> 'foo' in node.attrs
-#    False
-#
-#    >>> 'x' in node.mattrs
-#    True
-#
-#    >>> [x for x in node.attrs]
-#
-#    >>> [x for x in node.mattrs.iteritems()]
-#
-#    >>> node.attrs.keys()
-#
-#    >>> node.attrs.values()
-#
-#    >>> len(node.mattrs)
-#    2
+    >>> node.attrs.foo = 'aaa'
+    >>> node.attrs['foo']
+    'bar'
+
+    >>> node.attrs.bar
+    Traceback (most recent call last):
+    ...
+    AttributeError: 'LifecycleNodeAttributes' object has no attribute 'bar'
+    
+Check Node attribute aliases, with attribute access object.
+::
+
+XXX: For now attributealiases needs to be set before attrs is called the first
+time, as attribute_access_for_attrs is currently enabled by default.
+
+    >>> node = LifecycleNode()
+    >>> node.attribute_aliases = {
+    ...     'x': 'foo',
+    ...     'y': 'bar',
+    ...     }
+
+    >>> wrapper = node.attrs
+    >>> wrapper
+    <zodict.node.AttributeAccess object at ...>
+
+    >>> real_attrs = object.__getattribute__(wrapper, 'context')
+    >>> real_attrs
+    <LifecycleNodeAttributes object 'None' at ...>
+
+    >>> real_attrs.aliases
+    {'y': 'bar', 'x': 'foo'}
+
+    >>> node.attrs.x
+    Traceback (most recent call last):
+    ...
+    AttributeError: x
+
+    >>> node.attrs.x = 1
+    >>> node.attrs.x
+    1
+
+    >>> node.attrs.y = 2
+    >>> node.attrs.y
+    2
+
+    >>> node.attrs.foo
+    Traceback (most recent call last):
+    ...
+    AttributeError: foo
+
+    >>> node.attrs.foo = 10
+    Traceback (most recent call last):
+    ...
+    AttributeError: foo
 
 Check bool evaluation
 ::

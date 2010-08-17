@@ -7,6 +7,7 @@ from odict import odict
 from odict.pyodict import _nil
 from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
+from zope.deprecation import deprecated
 try:
     from zope.location import LocationIterator
 except ImportError, e:
@@ -29,6 +30,48 @@ from zodict.events import (
     NodeModifiedEvent,
     NodeDetachedEvent,
 )
+
+class AttributeAccess(object):
+    """Provides Attribute access to dict like context.
+    
+    If someone really needs to access the original context (which should not 
+    happen), she hast to use ``object.__getattr__(attraccess, 'context')``.
+    """
+    
+    def __init__(self, context):
+        object.__setattr__(self, 'context', context)
+    
+    def __getattr__(self, name):
+        context = object.__getattribute__(self, 'context')
+        try:
+            return context[name]
+        except KeyError:
+            raise AttributeError(name)
+    
+    def __setattr__(self, name, value):
+        context = object.__getattribute__(self, 'context')
+        try:
+            context[name] = value
+        except KeyError:
+            raise AttributeError(name)
+    
+    def __getitem__(self, name):
+        """Convenience default access.
+        """
+        context = object.__getattribute__(self, 'context')
+        return context[name]
+    
+    def __setitem__(self, name, value):
+        """Convenience default access.
+        """
+        context = object.__getattribute__(self, 'context')
+        context[name] = value
+    
+    def __delitem__(self, name):
+        """Convenience default access.
+        """
+        context = object.__getattribute__(self, 'context')
+        del context[name]
 
 class NodeIndex(object):
     implements(IReadMapping)
@@ -55,6 +98,8 @@ class _Node(object):
 
     def __init__(self, name=None, index=True):
         """
+        XXX: switch ``index`` to False by default in 2.1
+        
         ``name``
             optional name used for ``__name__`` declared by ``ILocation``.
         ``index``
@@ -69,14 +114,15 @@ class _Node(object):
             self.uuid = uuid.uuid4()
         else:
             self._index = None
+        self.allow_non_node_childs = False
         self.aliases = None
 
     def __contains__(self, key):
         try:
-            return self.aliases.__contains__(key)
-        except AttributeError:
-            # aliases is None
-            return self._node_impl().__contains__(self, key)
+            self[key]
+        except KeyError:
+            return False
+        return True
 
     def _aliased(self, key):
         try:
@@ -87,48 +133,58 @@ class _Node(object):
         return key
 
     def __getitem__(self, key):
-        key = self._aliased(key)
-        return self._node_impl().__getitem__(self, key)
+        try:
+            return self._node_impl().__getitem__(self, self._aliased(key))
+        except KeyError:
+            raise KeyError(key)
+
+    def _aliased_iter(self):
+        # XXX: secondary key could be used here, ie to implement a reverse dict
+        for key in self._node_impl().__iter__(self):
+            for k,v in self.aliases.items():
+                if v == key:
+                    yield k
 
     def __iter__(self):
-        try:
-            return self.aliases.__iter__()
-        except AttributeError:
-            # aliases is None
+        if self.aliases is None:
             return self._node_impl().__iter__(self)
+        return self._aliased_iter()
 
     def keys(self):
-        try:
-            return self.aliases.keys()
-        except AttributeError:
-            # aliases is None
-            return self._node_impl().keys(self)
+        return [x for x in self]
 
     def __setitem__(self, key, val):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
+        if not isinstance(val, _Node) and not self.allow_non_node_childs:
+            raise ValueError("Non-node childs are not allowed.")
+        if isinstance(val, _Node):
+            val.__name__ = key
+            val.__parent__ = self
+            has_children = False
+            for valkey in val.iterkeys():
+                has_children = True
+                break
+            if has_children and self._index is not None:
+                keys = set(self._index.keys())
+                if keys.intersection(val._index.keys()):
+                    raise ValueError, u"Node with uuid already exists"
+            if self._index is not None:
+                self._index.update(val._index)
+                val._index = self._index
         # XXX: Using the name our parent gives us seems more consistent, the
         # application needs to show whether its good or bad.
-        val.__name__ = key
         key = self._aliased(key)
-        val.__parent__ = self
-        has_children = False
-        for valkey in val.iterkeys():
-            has_children = True
-            break
-        if has_children and self._index is not None:
-            keys = set(self._index.keys())
-            if keys.intersection(val._index.keys()):
-                raise ValueError, u"Node with uuid already exists"
-        if self._index is not None:
-            self._index.update(val._index)
-            val._index = self._index
         self._node_impl().__setitem__(self, key, val)
 
     def _to_delete(self):
         todel = [int(self.uuid)]
         for childkey in self:
-            todel += self[childkey]._to_delete()
+            try:
+                todel += self[childkey]._to_delete()
+            except AttributeError:
+                # Non-Node values are not told about deletion
+                continue
         return todel
 
     def __delitem__(self, key):
@@ -249,7 +305,12 @@ class _Node(object):
 
     def _index_nodes(self):
         for node in self.values():
-            self._index[int(node.uuid)] = node
+            try:
+                uuid = int(node.uuid)
+            except AttributeError:
+                # non-Node values are a dead end, no magic for them
+                continue
+            self._index[uuid] = node
             node._index = self._index
             node._index_nodes()
 
@@ -260,6 +321,9 @@ class _Node(object):
             node._index = { int(node.uuid): node }
             node._index_nodes()
         return node
+    
+    def as_attribute_access(self):
+        return AttributeAccess(self)
 
     @property
     def noderepr(self):
@@ -269,7 +333,11 @@ class _Node(object):
     def printtree(self, indent=0):
         print "%s%s" % (indent * ' ', self.noderepr)
         for node in self.values():
-            node.printtree(indent+2)
+            try:
+                node.printtree(indent+2)
+            except AttributeError:
+                # Non-Node values are just printed
+                print "%s%s" % (indent * ' ', node)
 
     def __repr__(self):
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
@@ -281,82 +349,79 @@ class _Node(object):
 class Node(_Node, Zodict):
     """Inherit from _Node and mixin Zodict.
     """
-    
     def _node_impl(self):
         return Zodict
 
-class NodeAttributes(dict):
-    implements(INodeAttributes)
+deprecated('Node',
+           "'index' kwarg of ``__init__`` will be changed to False by default "
+           "in 2.1")
 
+class NodeAttributes(Node):
+    """Semantic object.
+    """
+    
     def __init__(self, node):
-        super(NodeAttributes, self).__init__()
-        object.__setattr__(self, '_node', node)
-        object.__setattr__(self, 'changed', False)
-
-    def __getattr__(self, name):
-        try:
-            return self[name]
-        except KeyError:
-            raise AttributeError(name)
-
-    def __setattr__(self, name, value):
-        self[name] = value
-
-    def __setitem__(self, key, val):
-        dict.__setitem__(self, key, val)
-        object.__setattr__(self, 'changed', True)
-
-    def __delitem__(self, key):
-        dict.__delitem__(self, key)
-        object.__setattr__(self, 'changed', True)
-
-    def __copy__(self):
-        _new = NodeAttributes(object.__getattribute__(self, '_node'))
-        for key, value in self.items():
-            _new[key] = value
-        _new.changed = object.__getattribute__(self, 'changed')
-        return _new
+        Node.__init__(self, index=False)
+        self.allow_non_node_childs = True
+        self._node = node
 
 class AttributedNode(Node):
+    """A node that has another nodespace behind self.attrs[]
+    """
     implements(IAttributedNode)
 
     attributes_factory = NodeAttributes
+    attribute_aliases = None
 
-    # enable subclasses to override this
-    _attrmap = None
-
-    def __init__(self, name=None, attrmap=None):
-        super(AttributedNode, self).__init__(name)
-        if attrmap is not None:
-            self._attrmap = attrmap
+    def __init__(self, name=None, index=True):
+        super(AttributedNode, self).__init__(name, index=index)
+        # XXX: Currently attributes_acces_for_attrs is default, this might
+        # change, as the dict api to attrs is broken by it.
+        self.attribute_access_for_attrs = True
 
     @property
     def attrs(self):
-        if not hasattr(self, '_attributes'):
+        try:
+            attrs = self._attributes
+        except AttributeError:
             self._attributes = self.attributes_factory(self)
-        return self._attributes
+            attrs = self._attributes
+        if self.attribute_aliases:
+            attrs.aliases = self.attribute_aliases
+        if self.attribute_access_for_attrs:
+            return AttributeAccess(attrs)
+        return attrs
 
     # BBB
     attributes = attrs
 
+deprecated('AttributedNode',
+           "'attribute_access_for_attrs' flag will be changed to False by "
+           "default in 2.1")
 
 class LifecycleNodeAttributes(NodeAttributes):
+    """XXX If we merge this into node, do we really need the event on the node?
+    a) LifecycleNode current would trigger event on the attrs node
+    b) we use to trigger only on the node not on us, shall we suppress us and
+       trigger on node instead (imagine we are an LifecycleNode configured to be
+       used for the attrs nodespace
+    c) we raise an event on us (the attrs nodespace) and on our parent node, that
+       keeps us in .attrs
+    """
 
     def __setitem__(self, key, val):
         NodeAttributes.__setitem__(self, key, val)
-        node = object.__getattribute__(self, '_node')
-        if node._notify_suppress:
+        if self._node._notify_suppress:
             return
-        objectEventNotify(node.events['modified'](node))
+        objectEventNotify(self._node.events['modified'](self._node))
 
     def __delitem__(self, key):
         NodeAttributes.__delitem__(self, key)
-        node = object.__getattribute__(self, '_node')
         if self._node._notify_suppress:
             return
-        if node._notify_suppress:
+        if self._node._notify_suppress:
             return
-        objectEventNotify(node.events['modified'](node))
+        objectEventNotify(self._node.events['modified'](self._node))
 
 class LifecycleNode(AttributedNode):
     implements(ILifecycleNode)
@@ -371,8 +436,8 @@ class LifecycleNode(AttributedNode):
 
     attributes_factory = LifecycleNodeAttributes
 
-    def __init__(self, name=None, attrmap=None):
-        super(LifecycleNode, self).__init__(name=name, attrmap=attrmap)
+    def __init__(self, name=None, index=True):
+        super(LifecycleNode, self).__init__(name=name, index=index)
         self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
 
