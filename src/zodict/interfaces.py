@@ -172,3 +172,13 @@ class INodeRemovedEvent(IObjectRemovedEvent):
 class INodeDetachedEvent(IObjectRemovedEvent):
     """An Node has been detached from its parent.
     """
+
+
+class IComposition(INode):
+    pass
+
+class IAttributedComposition(IComposition, IAttributedNode):
+    pass
+
+class ILifecycleComposition(IComposition, ILifecycleNode):
+    pass

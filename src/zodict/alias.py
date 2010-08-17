@@ -1,6 +1,9 @@
 # Copyright BlueDynamics Alliance - http://bluedynamics.com
 # Python Software Foundation License
 
+class NodespaceAliases(dict):
+    pass
+    
 class PrefixAliaser(object):
     """An aliaser that prefix all keys.
 

@@ -95,6 +95,8 @@ class _Node(object):
         return True
 
     def _aliased(self, key):
+        """return real key for alias
+        """
         try:
             key = self.aliases.__getitem__(key)
         except AttributeError:

@@ -14,6 +14,7 @@ TESTFILES = [
     '../_zodict.txt',
     '../node.txt',
     '../events.txt',
+    '../composition.txt',
     '../locking.txt',
 ]
 

@@ -25,22 +25,23 @@ each nodespace of the virtual child ('child', 'attrs', ...).
 XXX: Node Compositions behave like normal nodes, but aggregate or compose their
 child nodes from multiple nodespaces.
 
-class Composition(Node):
-    def __init__(self, name=None, nodespaces=Node()):
-        # XXX: index support turned off for now
-        super(Composition, self).__init__(name=name, index=False)
-        self.nodespaces = nodespaces
-
 The basic setup, a compostion of two nodespaces
 ::
+    >>> from odict import odict
     >>> from zodict import Node, Composition
+    >>> from zodict.interfaces import IComposition
     >>> nodespace1 = Node()
     >>> nodespace2 = Node()
-    >>> nodespaces = Node()
+    >>> nodespaces = odict()
     >>> nodespaces['nodespace1'] = nodespace1
     >>> nodespaces['nodespace2'] = nodespace2
 
     >>> composition = Composition(nodespaces=nodespaces)
+    >>> IComposition.providedBy(composition)
+    True
+
+Mode virtual children *first hit*
+---------------------------------
 
 Let's seed the nodespaces, a node with key 'node2' exists in both spaces
 ::
@@ -49,57 +50,82 @@ Let's seed the nodespaces, a node with key 'node2' exists in both spaces
     >>> nodespace2['nodeB'] = nodeB2 = Node()
     >>> nodespace2['nodeC'] = nodeC = Node()
 
-Mode *first hit*
-----------------
-::
+    >>> composition.keys()
+    ['nodeA', 'nodeB', 'nodeC']
 
-    >>> from zodict.testing import node_tester
-    >>> childs = odict(
-    ...     nodeA=nodeA,
-    ...     nodeB=nodeB1, # nodeB2 is masked by nodeB1
-    ...     nodeC=nodeC,
-    ...     )
-    >>> node_equiv_test(composition, childs=childs)
+    >>> composition['nodeB'] is nodeB1
+    True
+
+    >>> composition.items()
+    [('nodeA', <Node object 'nodeA' at ...>),
+     ('nodeB', <Node object 'nodeB' at ...>),
+     ('nodeC', <Node object 'nodeC' at ...>)]
 
 New nodes end up in the first succeeding nodespace
+::
 
-    >>> composition['newnode1'] = Node()
+    >>> composition['newnode'] = newnode = Node()
     >>> nodespace1.keys()
     ['nodeA', 'nodeB', 'newnode']
     >>> nodespace2.keys()
     ['nodeB', 'nodeC']
 
+    >>> 'newnode' in composition
+    True
+
+    >>> composition['newnode'] is newnode
+    True
+
     >>> del composition['newnode']
     >>> nodespace1.keys()
     ['nodeA', 'nodeB']
 
-Let's whitelist nodespace1, node_tester still needs to succeed and newnode ends
-up in the second nodespace::
-
+Let's whitelist nodespace1, newnode ends now up in the second nodespace
+::
     >>> nodespace1.aliases = {'__nodeA': 'nodeA', 'nodeB': 'nodeB'}
-    >>> childs = odict(
-    ...     __nodeA=nodeA,
-    ...     nodeB=nodeB1, # nodeB2 is masked by nodeB1
-    ...     nodeC=nodeC,
-    ...     )
-    >>> node_tester(composition, childs=childs)
 
-    >>> composition['newnode1'] = Node()
+    >>> composition['newnode'] = newnode = Node()
     >>> nodespace1.keys()
     ['__nodeA', 'nodeB']
     >>> nodespace2.keys()
     ['nodeB', 'nodeC', 'newnode']
 
+    >>> nodespace2['newnode'] is newnode
+    True
+
     >>> del composition['newnode']
     >>> nodespace2.keys()
     ['nodeB', 'nodeC']
 
-Mode *aliased nodespace*
-------------------------
+Let's whitelist all
+::
+    >>> nodespace2.aliases = dict(nodeB='nodeB', nodeC='nodeC')
+    >>> composition['newnode'] = Node()
+    Traceback (most recent call last):
+    ...
+    KeyError: u'No nodespace accepted key newnode'
+
+    >>> composition['newnode']
+    Traceback (most recent call last):
+    ...
+    KeyError: u'No nodespace provided key newnode'
+
+    >>> del composition['newnode']
+    Traceback (most recent call last):
+    ...
+    KeyError: u'No nodespace had key newnode'
+
+
+Aliasing can be defined for each nodespace
+------------------------------------------
+
+In addition to the nodespaces internal aliases (used eg right above for
+whitelisting), a composition has a aliases odict like every other node, but
+containing one aliases per nodespace.
 
 Define aliases for nodespaces, the prefixer just aliases, the dictionary also
-whitelists::
-
+whitelists
+::
     >>> from zodict.alias import PrefixAliaser
     >>> composition.aliases = {
     ...     'nodespace1': PrefixAliaser('prefix^'),
@@ -108,26 +134,29 @@ whitelists::
     ...         'aliasedY': 'newone',
     ...         },
     ...     }
-    >>> childs = odict(data={
-    ...     'prefix^__nodeA': NodeA,
-    ...     'prefix^nodeB: nodeB1,
-    ...     'aliasedX': nodeB2,
-    ...     })
-    >>> node_tester(composition, childs=childs)
 
-Whitelist 'foo' for nodespace1::
-
+Whitelist 'foo' in nodespace1's internal aliases, that means it will not accept
+any other keys than 'foo
+::
     >>> nodespace1.aliases['foo'] = 'foo'
 
-And assign something that will end up as 'foo'::
-
-    >>> composition['prefix^foo'] = Node()
+And assign something that will end up as 'foo' in nodespace1
+::
+    >>> composition['prefix^foo'] = newnode = Node()
     >>> nodespace1.keys()
     ['__nodeA', 'nodeB', 'foo']
     >>> nodespace2.keys()
     ['nodeB', 'nodeC']
-    
-'foo' without prefix cannot be matched to a nodespace::
+
+    >>> nodespace2['foo'] is newnode
+    True
+
+    >>> del composition['newnode']
+    >>> nodespace2.keys()
+    ['nodeB', 'nodeC']
+
+'foo' without prefix cannot be matched to a nodespace
+::
 
     >>> composition['foo']
     KeyError: foo
@@ -135,7 +164,8 @@ And assign something that will end up as 'foo'::
     >>> composition['foo'] = Node()
     KeyError: foo
 
-'aliasedY' is whitelisted for nodespace2, but does not exist yet::
+'aliasedY' is whitelisted for nodespace2, but does not exist yet
+::
 
     >>> composition['aliasedY']
     KeyError: aliasedY
@@ -144,8 +174,8 @@ And assign something that will end up as 'foo'::
     >>> composition['aliasedY'] is nodespace2['newone']
     True
 
-Mode *merge*
-------------
+Mode: real children *merge*
+---------------------------
 
 A composition hase one or more nodespaces that are the base for its virtual
 child nodespace. A child has its own child nodespace and optionally arbitrary
