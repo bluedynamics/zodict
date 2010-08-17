@@ -1,0 +1,35 @@
+Zodict
+======
+
+Test BBB - deprecated usage.
+::
+
+    >>> from zodict.zodict import zodict as BBBzodict
+    >>> BBBzodict
+    <class 'zodict._zodict.Zodict'>
+
+Test Zodict.
+::
+
+    >>> from zope.interface.common.mapping import IFullMapping
+    >>> from zodict import Zodict
+    >>> zod = Zodict()
+    >>> IFullMapping.providedBy(zod)
+    True
+
+Test ReverseMapping.
+::
+
+    >>> from zodict import ReverseMapping
+    >>> context = {
+    ...     'foo': 'a',
+    ...     'bar': 'b',
+    ... }
+    >>> mapping = ReverseMapping(context)
+    >>> mapping['foo']
+    
+
+Test AttributeAccess.
+::
+
+    >>> from zodict import AttributeAccess
