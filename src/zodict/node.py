@@ -366,15 +366,8 @@ class AttributedNode(Node):
     attributes_factory = NodeAttributes
     attribute_aliases = None
 
-    # enable subclasses to override this
-    # XXX: remove
-    _attrmap = None
-
-    def __init__(self, name=None, attrmap=None, index=True):
+    def __init__(self, name=None, index=True):
         super(AttributedNode, self).__init__(name, index=index)
-        # XXX: remove
-        if attrmap is not None:
-            self._attrmap = attrmap
         # XXX: Currently attributes_acces_for_attrs is default, this might
         # change, as the dict api to attrs is broken by it.
         self.attribute_access_for_attrs = True
@@ -432,9 +425,8 @@ class LifecycleNode(AttributedNode):
 
     attributes_factory = LifecycleNodeAttributes
 
-    def __init__(self, name=None, attrmap=None, index=True):
-        super(LifecycleNode, self).__init__(name=name, attrmap=attrmap,
-                                            index=index)
+    def __init__(self, name=None, index=True):
+        super(LifecycleNode, self).__init__(name=name, index=index)
         self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
 
