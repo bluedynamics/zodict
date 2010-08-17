@@ -1,8 +1,10 @@
+# Copyright BlueDynamics Alliance - http://bluedynamics.com
+# Python Software Foundation License
 
 class PrefixAliaser(object):
-    """An aliaser that prefix all keys
+    """An aliaser that prefix all keys.
 
-    As it never raise KeyError it is not whitelisting
+    As it never raise KeyError it is not whitelisting.
     """
     def __init__(self, prefix=''):
         self.prefix = prefix
