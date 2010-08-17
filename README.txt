@@ -21,6 +21,30 @@ Ordered dictionary which implements the corresponding
     >>> IFullMapping.providedBy(zod)
     True
 
+Overview
+--------
+
+XXX: copy from agx.doc, extend, formulate
+
+A node is the root of a nodespace.
+
+Every node has a child nodespace managed by IFullMapping
+
+AttributedNodes have an addition attrs nodespace
+
+A nodespace consists of a node and its children. Every child is the root of
+its own nodespace, a subspace of the full tree.
+
+Compositions make up their child nodespace from multiple other nodespaces.
+
+
+#    >>> nodespace(Node)['children']
+#    >>> nodespace(Node)['attrs']
+#    >>> nodespace(Node)['whatever']
+
+
+
+
 Node
 ----
 
