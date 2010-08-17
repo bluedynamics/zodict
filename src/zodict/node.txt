@@ -29,6 +29,17 @@ We have a base node which provides the default interface implementation.
 
     >>> INode.providedBy(root)
     True
+    
+    >>> from odict import odict
+    >>> from guppy import hpy
+    >>> h = hpy()
+    >>> print h.iso(Node(), Zodict(), odict(), dict())
+    Partition of a set of 4 objects. Total size = 1168 bytes.
+     Index  Count   %     Size   % Cumulative  % Kind (class / dict of class)
+         0      1  25      296  25       296  25 odict.pyodict.odict
+         1      1  25      296  25       592  51 zodict._zodict.Zodict
+         2      1  25      296  25       888  76 zodict.node.Node
+         3      1  25      280  24      1168 100 dict (no owner)
 
 Location related attributes.
 ::
