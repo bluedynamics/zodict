@@ -1,32 +1,36 @@
 # Copyright BlueDynamics Alliance - http://bluedynamics.com
 # Python Software Foundation License
 
+class NodeTestError(Exception):
+    """Raised if a Node test fails unforseen.
+    """
+
 class NodeTester(object):
     """Tester object for Nodes.
     """
     
-    def __call__(self, node, childs=None):
+    def __call__(self, node, childred=None):
         """
         ``node``
           the node to test
-        ``childs``
-          odict containing key/val pairs respresenting the child nodespace
+        ``children``
+          odict containing key/val pairs respresenting node children.
         """
-        self.nodespaces['childs'] = childs
+        self.node = node
+        self.children = children
     
     def run_all(self):
         self.test_IFullMapping()
         self.test_INode()
     
     def test_IFullMapping(self):
+        self.test_IExtendedWriteMapping()
         self.test_IItemMapping()
         self.test_IReadMapping()
         self.test_IWriteMapping()
         self.test_IEnumerableMapping()
         self.test_IIterableMapping()
         self.test_IClonableMapping()
-        self.test_IExtendedReadMapping()
-        self.test_IExtendedWriteMapping()
     
     def test_IItemMapping(self):
         key = None
@@ -96,128 +100,171 @@ class NodeTester(object):
     ###########################################################################
     
     def test__getitem__(self, key):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # IReadMapping
     ###########################################################################
     
     def test_get(self, key, default=None):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test__contains__(self, key):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # IWriteMapping
     ###########################################################################
     
     def test__delitem__(self, key):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test__setitem__(self, key, value):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # IEnumerableMapping
     ###########################################################################
     
     def test_keys(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test__iter__(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_values(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_items(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test__len__(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # IIterableMapping
     ###########################################################################
     
     def test_iterkeys(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_itervalues(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_iteritems(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # IClonableMapping
     ###########################################################################
     
     def test_copy(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # IExtendedReadMapping
     ###########################################################################
     
     def test_has_key(self, key):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # IExtendedWriteMapping
     ###########################################################################
     
     def test_clear(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        try:
+            # fill self.node
+            for key in self.children:
+                self.node[key] = self.children[key]
+            # after filling len of self.node must match len of self.children
+            if len(self.node) != len(self.children):
+                msg = 'ERROR: required __len__ implementation for testing ' + \
+                      'clear function malfunction.\n'
+                print msg
+                return
+            # fail if len of self.node is not 0 after clear call.
+            self.node.clear()
+            if len(self.node) != 0:
+                msg = 'ERROR: clear function does not work properly.\n'
+                print msg
+                return
+            print 'SUCCESS:'
+            self.node.printtree()
+            print ''
+        except Exception, e:
+            raise NodeTestError(e)
     
     def test_update(self, d):
-        raise NotImplementedError(u"Not implemented yet.")
+        try:
+            # reset node
+            self.node.clear()
+            self.node.update(self.children)
+            # after updating len of self.node must match len of self.children
+            if len(self.node) != len(self.children):
+                msg = 'ERROR: required __len__ implementation for testing ' + \
+                      'clear function malfunction.\n'
+                print msg
+                return
+            # key of self.node and self.children must be the same.
+            nodekeys = self.node.keys()
+            nodekeys.sort()
+            childkeys = self.children.keys()
+            childkeys.sort()
+            if nodekeys != childkeys:
+                msg = 'ERROR: key compaistion failed in test_update.\n'
+                print msg
+                return
+            print 'SUCCESS:'
+            self.node.printtree()
+            print ''
+        except Exception, e:
+            raise NodeTestError(e)
     
     def test_setdefault(self, key, default=None):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     def test_pop(self, k, *args):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     def test_popitem(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     ###########################################################################
     # INode
     ###########################################################################
     
     def test_uuid(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     def test_path(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     def test_root(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     def test_index(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
     
     def test_aliases(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_node(self, uuid):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_filtereditems(self, interface):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_insertbefore(self, newnode, refnode):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_insertafter(self, newnode, refnode):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_detach(self, key):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
     def test_printtree(self):
-        raise NotImplementedError(u"Not implemented yet.")
+        print "WARNING: NodeTester not implemented this function Yet"
 
 node_tester = NodeTester()
