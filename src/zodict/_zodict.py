@@ -32,40 +32,40 @@ class ReverseMapping(object):
         """
         self.context = context
     
-    def __getitem__(self, key):
-        """Get a value for a key
-
-        A KeyError is raised if there is no value for the key.
-        """
+    def __getitem__(self, value):
+        for key in self.context:
+            if self.context[key] == value:
+                return key
+        raise KeyError(value)
     
-    def get(self, key, default=None):
-        """Get a value for a key
+    def get(self, value, default=None):
+        try:
+            return self[value]
+        except KeyError:
+            return default
 
-        The default is returned if there is no value for the key.
-        """
-
-    def __contains__(self, key):
-        """Tell if a key exists in the mapping."""
+    def __contains__(self, value):
+        for key in self.context:
+            val = self.context[key]
+            if val == value:
+                return True
+        return False
     
     def keys(self):
-        """Return the keys of the mapping object.
-        """
+        return [val for val in self]
 
     def __iter__(self):
-        """Return an iterator for the keys of the mapping object.
-        """
+        for key in self.context:
+            yield self.context[key]
 
     def values(self):
-        """Return the values of the mapping object.
-        """
+        return [key for key in self.context]
 
     def items(self):
-        """Return the items of the mapping object.
-        """
+        return [(v, k) for k, v in self.context.items()]
 
     def __len__(self):
-        """Return the number of items.
-        """
+        return len(self.context)
 
 class AttributeAccess(object):
     """If someone really needs to access the original context (which should not 
