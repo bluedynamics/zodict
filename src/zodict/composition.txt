@@ -4,13 +4,26 @@ Node Compositions
 A normal node has one nodespace managed by mapping API and AttributedNodes have
 an additional one behind attrs.
 
-Node Compositions behave like normal nodes, but aggregate or compose their
+A composition is a node that has one or more nodespaces that are the base for
+its child nodespace. A child has its own child nodespace and optionally
+arbitrary further named nodespaces, eg. 'attrs'.
+
+A composition can work in two general modes:
+- virtual children (composition is not child.__parent__), using its nodespaces
+  as child factories
+- real children (composition is child.__parent__), that are compositions
+  factored on the base of matching children from the nodespaces
+
+In general: Existing hierarchies are never touched, if parenthood is needed,
+wrappers/adapters need to be involved, a merging composition might be the
+solution.
+
+XXX: For the composition of virtual children, the composing mode can be defined for
+each nodespace of the virtual child ('child', 'attrs', ...).
+
+
+XXX: Node Compositions behave like normal nodes, but aggregate or compose their
 child nodes from multiple nodespaces.
-
-Compositions are not the parents of their nodespaces' childs.
-
-Existing hierarchies are never touched, if parenthood is needed, AdapterNodes
-are to be used!
 
 class Composition(Node):
     def __init__(self, name=None, nodespaces=Node()):
@@ -46,7 +59,7 @@ Mode *first hit*
     ...     nodeB=nodeB1, # nodeB2 is masked by nodeB1
     ...     nodeC=nodeC,
     ...     )
-    >>> node_tester(composition, childs=childs)
+    >>> node_equiv_test(composition, childs=childs)
 
 New nodes end up in the first succeeding nodespace
 
@@ -134,17 +147,14 @@ And assign something that will end up as 'foo'::
 Mode *merge*
 ------------
 
+A composition hase one or more nodespaces that are the base for its virtual
+child nodespace. A child has its own child nodespace and optionally arbitrary
+further named nodespaces, eg. 'attrs'.
 
+A merging composition is the parent of its children, as they themselves are
+compositions that wrap the involved children.
 
-class Group(Composition)
-    def __init__(self, name=None, users=Node(), groups=Node()):
-        super(PrincipalGroup, self)
-    
+For the composition of virtual children, the composing mode can be defined for
+each nodespace of the virtual child ('child', 'attrs', ...).
 
-Mode: Use first succeeding nodespace - nodespaces are queried in order, if all
-fail: KeyError.
-
-Note: Consider using aliases to whitelist nodespace childs.
-
-XXX: Composition with aliasing?
-
+XXX: todo
