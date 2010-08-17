@@ -364,6 +364,7 @@ class AttributedNode(Node):
     implements(IAttributedNode)
 
     attributes_factory = NodeAttributes
+    attribute_aliases = None
 
     # enable subclasses to override this
     # XXX: remove
@@ -383,6 +384,8 @@ class AttributedNode(Node):
         except AttributeError:
             self._attributes = self.attributes_factory(self)
             attrs = self._attributes
+        if self.attribute_aliases:
+            attrs.aliases = self.attribute_aliases
         if self.attribute_access_for_attrs:
             return AttributeAccess(attrs)
         return attrs
