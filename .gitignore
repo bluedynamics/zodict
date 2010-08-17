@@ -1,8 +1,10 @@
 /build
+/coverage
 /dist
 /*.egg
 /bin
 /.installed.cfg
 /.mr.developer.cfg
 /develop-eggs
+/devsrc
 /parts
