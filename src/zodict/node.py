@@ -375,6 +375,8 @@ class AttributedNode(Node):
         # XXX: remove
         if attrmap is not None:
             self._attrmap = attrmap
+        # XXX: Currently attributes_acces_for_attrs is default, this might
+        # change, as the dict api to attrs is broken by it.
         self.attribute_access_for_attrs = True
 
     @property

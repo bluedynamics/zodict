@@ -46,12 +46,15 @@ Check Node modification.
     >>> del handled_events[0]
     >>> del handled_events[0]
 
-    >>> child1.attributes.__class__
-    <class 'zodict.node.AttributeAccess'>
+    >>> ignore = child1.attributes
     
+No event, despite the node creation for the attributes nodespace
+
     >>> handled_events
     []
     
+Node modified events if the attributes nodespace is changed
+
     >>> child1.attributes['foo'] = 1
     >>> handled_events
     [<zodict.events.NodeModifiedEvent object at ...>]
