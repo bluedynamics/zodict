@@ -11,6 +11,7 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
               doctest.REPORT_ONLY_FIRST_FAILURE
 
 TESTFILES = [
+    '../_zodict.txt',
     '../node.txt',
     '../events.txt',
     '../locking.txt',

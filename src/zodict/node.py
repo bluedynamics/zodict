@@ -17,6 +17,7 @@ try:
 except ImportError, e:
     from zope.app.event.objectevent import objectEventNotify # BBB
 from zodict import Zodict
+from zodict import AttributeAccess
 from zodict.interfaces import (
     INode,
     INodeAttributes,
@@ -30,48 +31,6 @@ from zodict.events import (
     NodeModifiedEvent,
     NodeDetachedEvent,
 )
-
-class AttributeAccess(object):
-    """Provides Attribute access to dict like context.
-    
-    If someone really needs to access the original context (which should not 
-    happen), she hast to use ``object.__getattr__(attraccess, 'context')``.
-    """
-    
-    def __init__(self, context):
-        object.__setattr__(self, 'context', context)
-    
-    def __getattr__(self, name):
-        context = object.__getattribute__(self, 'context')
-        try:
-            return context[name]
-        except KeyError:
-            raise AttributeError(name)
-    
-    def __setattr__(self, name, value):
-        context = object.__getattribute__(self, 'context')
-        try:
-            context[name] = value
-        except KeyError:
-            raise AttributeError(name)
-    
-    def __getitem__(self, name):
-        """Convenience default access.
-        """
-        context = object.__getattribute__(self, 'context')
-        return context[name]
-    
-    def __setitem__(self, name, value):
-        """Convenience default access.
-        """
-        context = object.__getattribute__(self, 'context')
-        context[name] = value
-    
-    def __delitem__(self, name):
-        """Convenience default access.
-        """
-        context = object.__getattribute__(self, 'context')
-        del context[name]
 
 class NodeIndex(object):
     implements(IReadMapping)

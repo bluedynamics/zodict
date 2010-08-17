@@ -25,6 +25,34 @@ except ImportError, e: # BBB
     class IObjectModifiedEvent(IObjectEvent): pass
     class IObjectRemovedEvent(IObjectEvent): pass
 
+class IAttributeAccess(Interface):
+    """Provides Attribute access to dict like context.
+    
+    Dome dict API functions are wrapped.
+    
+    Implementation is supposed to be an adapter like object.
+    """
+    
+    def __getattr__(name):
+        """Call __getitem__ on context.
+        """
+    
+    def __setattr__(name, value):
+        """Call __setattr__ on context.
+        """
+    
+    def __getitem__(name):
+        """Call __getitem__ on context.
+        """
+    
+    def __setitem__(name, value):
+        """Call __setitem__ on context.
+        """
+    
+    def __delitem__(name):
+        """Call __delitem__ on context.
+        """
+
 class INode(ILocation, IFullMapping):
     """A node.
     """

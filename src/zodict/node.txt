@@ -1,25 +1,10 @@
 Node
 ====
 
-Short test on superclass.
-::
-
-    >>> from zope.interface.common.mapping import IFullMapping
-    >>> from zodict import Zodict
-    >>> zod = Zodict()
-    >>> IFullMapping.providedBy(zod)
-    True
-
-Test BBB - deprecated usage
-::
-
-    >>> from zodict.zodict import zodict as BBBzodict
-    >>> BBBzodict
-    <class 'zodict._zodict.Zodict'>
-
 We have a base node which provides the default interface implementation.
 ::
 
+    >>> from zodict import Zodict
     >>> from zodict.interfaces import INode
     >>> from zodict import Node
     >>> root = Node('root')
@@ -511,7 +496,7 @@ are tested already for the node.
 
     >>> node = LifecycleNode()
     >>> node.attrs
-    <zodict.node.AttributeAccess object at ...>
+    <zodict._zodict.AttributeAccess object at ...>
 
     >>> node.attrs.foo = 'bar'
     >>> node.attrs['foo']
@@ -558,7 +543,7 @@ time, as attribute_access_for_attrs is currently enabled by default.
 
     >>> wrapper = node.attrs
     >>> wrapper
-    <zodict.node.AttributeAccess object at ...>
+    <zodict._zodict.AttributeAccess object at ...>
 
     >>> real_attrs = object.__getattribute__(wrapper, 'context')
     >>> real_attrs
