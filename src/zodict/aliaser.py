@@ -27,19 +27,20 @@ class PrefixAliaser(object):
     """
     implements(IAliaser)
 
-    def __init__(self, prefix=''):
+    def __init__(self, prefix=None):
         self.prefix = prefix
 
     def alias(self, key):
-        return self.prefix + key
+        return (self.prefix or '') + key
 
     def unalias(self, prefixed_key):
         """returns the real key for a prefixed_key
         """
-        if not prefixed_key.startswith(self.prefix):
+        prefix = self.prefix or ''
+        if not prefixed_key.startswith(prefix):
             raise KeyError(u"key '%s' does not match prefix '%s'" % \
-                    (prefixed_key, self.prefix))
-        return prefixed_key[len(self.prefix):]
+                    (prefixed_key, prefix))
+        return prefixed_key[len(prefix):]
 
 class SuffixAliaser(object):
     """An aliaser that suffixes all keys.
@@ -48,21 +49,22 @@ class SuffixAliaser(object):
     """
     implements(IAliaser)
 
-    def __init__(self, suffix=''):
+    def __init__(self, suffix=None):
         self.suffix = suffix
 
     def alias(self, key):
-        return key + self.suffix
+        return key + (self.suffix or '')
 
     def unalias(self, suffixed_key):
         """returns the real key for a suffixed_key
         """
-        if not suffixed_key.endswith(self.suffix):
+        suffix = self.suffix or ''
+        if not suffixed_key.endswith(suffix):
             raise KeyError(
                     u"key '%s' does not match suffix '%s'" % \
-                            (suffixed_key, self.suffix)
+                            (suffixed_key, suffix)
                     )
-        return suffixed_key[:-len(self.suffix)]
+        return suffixed_key[:-len(suffix)]
 
 class NodespaceAliases(dict):
     pass
