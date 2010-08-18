@@ -111,21 +111,19 @@ class _Node(object):
     def __setitem__(self, key, val):
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
+            if isinstance(val, _Node):
+                val.__name__ = key
+                val.__parent__ = self
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             self.nodespaces[key] = val
-        else:
-            if inspect.isclass(val):
-                raise ValueError, u"It isn't allowed to use classes as values."
-            if not isinstance(val, _Node) and not self.allow_non_node_childs:
-                raise ValueError("Non-node childs are not allowed.")
-            unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
-            self._node_impl().__setitem__(self, unaliased_key, val)
+            # index checks below must not happen for other nodespace.
+            return
+        # ???
         # this used to happen before actually storing the value, moved below
         # not to mess with val before we are sure it is our now
+        # /???
         if isinstance(val, _Node):
-            val.__name__ = key
-            val.__parent__ = self
             has_children = False
             for valkey in val.iterkeys():
                 has_children = True
@@ -134,9 +132,17 @@ class _Node(object):
                 keys = set(self._index.keys())
                 if keys.intersection(val._index.keys()):
                     raise ValueError, u"Node with uuid already exists"
+            val.__name__ = key
+            val.__parent__ = self
             if self._index is not None:
                 self._index.update(val._index)
                 val._index = self._index
+        if inspect.isclass(val):
+            raise ValueError, u"It isn't allowed to use classes as values."
+        if not isinstance(val, _Node) and not self.allow_non_node_childs:
+            raise ValueError("Non-node childs are not allowed.")
+        key = self.aliaser is None and key or self.aliaser.unalias(key)
+        self._node_impl().__setitem__(self, key, val)
 
     def __delitem__(self, key):
         # blend in our nodespaces as children, with name __<name>__
@@ -407,8 +413,6 @@ class LifecycleNodeAttributes(NodeAttributes):
 
     def __delitem__(self, key):
         NodeAttributes.__delitem__(self, key)
-        if self._node._notify_suppress:
-            return
         if self._node._notify_suppress:
             return
         objectEventNotify(self._node.events['modified'](self._node))

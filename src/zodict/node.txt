@@ -18,7 +18,6 @@ Abstract _Node, subclasses need to implement _node_impl and subclass it
 
 We have a base node which provides the default interface implementation.
 ::
-
     >>> from zodict import Zodict
     >>> from zodict.interfaces import INode
     >>> from zodict import Node
@@ -42,7 +41,6 @@ We have a base node which provides the default interface implementation.
 
 Location related attributes.
 ::
-
     >>> root.__name__
     'root'
 
@@ -55,7 +53,6 @@ The Node object provides an index. This makes it possible to access each Node
 in tree via it's uuid. Indexing is enabled by default, you can disable it by
 passing ``index=False`` to the constructor.
 ::
-
     >>> root.index
     <zodict.node.NodeIndex object at ...>
 
@@ -67,7 +64,6 @@ passing ``index=False`` to the constructor.
 
 Tree node index.
 ::
-
     >>> root.index
     <zodict.node.NodeIndex object at ...>
 
@@ -89,7 +85,6 @@ Tree node index.
 
 Add some children and check node containment stuff.
 ::
-
     >>> root['child'] = Node()
     >>> root['child'].path
     ['root', 'child']
@@ -153,9 +148,16 @@ Add some children and check node containment stuff.
         <class 'zodict.node.Node'>: subchild2
         1
 
+Adding in indexed Node with same uuid or the same node twice fails.
+::
+    >>> child = root['child']
+    >>> root['child2'] = child
+    Traceback (most recent call last):
+      ...
+    ValueError: Node with uuid already exists
+
 Delete non-extistent key
 ::
-
     >>> del root['non-existent']
     Traceback (most recent call last):
     ...
@@ -167,7 +169,6 @@ itself uses this attribute too, here it stores the class name. If you set a
 class derived from Node (others would be catched earlier) as a value in a Node
 you'd get odd effects, so we don't allow it!
 ::
-
     >>> class SomeClass(Node):
     ...     """for testing"""
     >>> root['aclasshere'] = SomeClass
@@ -177,7 +178,6 @@ you'd get odd effects, so we don't allow it!
 
 Test filtereditems function.
 ::
-
     >>> from zope.interface import Interface
     >>> from zope.interface import alsoProvides
     >>> class IMarker(Interface): pass
@@ -191,7 +191,6 @@ Test filtereditems function.
 
 Check UUID stuff.
 ::
-
     >>> len(root._index.keys())
     4
 
@@ -220,7 +219,6 @@ Check UUID stuff.
 Store the uuids of the nodes which are expected to be deleted from index if
 child is deleted.
 ::
-
     >>> delindexes = [
     ...     int(root['child'].uuid),
     ...     int(root['child']['subchild'].uuid),
@@ -229,7 +227,6 @@ child is deleted.
 
 Read the uuid index and check containment in index.
 ::
-
     >>> iuuids = root._index.keys()
     >>> len(iuuids)
     4
@@ -245,7 +242,6 @@ Read the uuid index and check containment in index.
 
 Delete child. All checked uuids above must be deleted from index.
 ::
-
     >>> del root['child']
     >>> root.keys()
     []
@@ -271,7 +267,6 @@ Delete child. All checked uuids above must be deleted from index.
 
 Node insertion. There exist an ``insertbefore`` and ``insertafter`` function.
 ::
-
     >>> root['child1'] = Node()
     >>> root['child2'] = Node()
     >>> root.printtree()
@@ -308,20 +303,19 @@ Node insertion. There exist an ``insertbefore`` and ``insertafter`` function.
       <class 'zodict.node.Node'>: child2
 
     >>> node = Node('child5')
-    >>> root.insertafter(node, root['child3'])
+    >>> root.insertafter(node, root['child2'])
     >>> root.printtree()
     <class 'zodict.node.Node'>: root
       <class 'zodict.node.Node'>: child1
       <class 'zodict.node.Node'>: child3
-      <class 'zodict.node.Node'>: child5
       <class 'zodict.node.Node'>: child4
       <class 'zodict.node.Node'>: child2
+      <class 'zodict.node.Node'>: child5
 
 Move a node. Therefor we first need to detach the node we want to move from
 tree. Then insert the detached node elsewhere. In general, you can insert the
 detached node or subtree to a complete different tree.
 ::
-
     >>> len(root._index.keys())
     6
 
@@ -343,12 +337,11 @@ detached node or subtree to a complete different tree.
       <class 'zodict.node.Node'>: child4
       <class 'zodict.node.Node'>: child1
       <class 'zodict.node.Node'>: child3
-      <class 'zodict.node.Node'>: child5
       <class 'zodict.node.Node'>: child2
+      <class 'zodict.node.Node'>: child5
 
 Merge 2 Node Trees.
 ::
-
     >>> tree1 = Node()
     >>> tree1['a'] = Node()
     >>> tree1['b'] = Node()
@@ -393,7 +386,6 @@ Merge 2 Node Trees.
 
 Detach subtree and insert elsewhere.
 ::
-
     >>> sub = tree1.detach('c')
     >>> sub.printtree()
     <class 'zodict.node.Node'>: c
@@ -438,10 +430,15 @@ Detach subtree and insert elsewhere.
       ...
     KeyError: u'Given node already contained in tree.'
 
+Access Node children via AttributeAccess.
+::
+    >>> attraccess = root.as_attribute_access()
+    >>> attraccess.child1
+    <Node object 'child1' at ...>
+
 Check Node aliases
 ------------------
 ::
-
     >>> from zodict.aliaser import DictAliaser
     >>> tree1.aliaser = DictAliaser({
     ...     'attr1': 'a',
@@ -466,9 +463,8 @@ Check Node aliases
     >>> 'a' in tree1
     False
 
- If only an alias exists but the underlaying attr does not exist: KeyError
- ::
-
+If only an alias exists but the underlaying attr does not exist: KeyError
+::
     >>> tree1['newattr']
     Traceback (most recent call last):
     ...
@@ -512,10 +508,20 @@ Check Node aliases
     >>> len(tree1)
     3
 
+Check invalid aliaser.
+
+XXX: implement aliaser as setter getter property and initialize IDictAliaser
+if IEnumerableMapping is set as value.
+::
+    >>> tree1.aliaser = Zodict(data=(('attr1_', 'attr1'), ('attr2_', 'attr2')))
+    >>> [x for x in tree1]
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'Zodict' object has no attribute 'alias'
+
 Check Node attributes, they are a node themselves, IFullMapping and aliasing
 are tested already for the node.
 ::
-
     >>> from zodict.node import LifecycleNode # XXX: provide attributes on
     ...                                       #      base nodes as well
 
@@ -541,8 +547,8 @@ are tested already for the node.
 
 The attributes are stored as children of an attrs nodespace, which is stored in
 the node.nodespaces['attrs']. It can be traversed to by the protected key
-``__nodespaces__``::
-
+``__nodespaces__``
+::
     >>> node.attrs.path
     ['node', '__attrs__']
 
@@ -554,7 +560,6 @@ the node.nodespaces['attrs']. It can be traversed to by the protected key
 
 Attributes access is disabled, normal object behaviour applias. Beware!
 ::
-
     >>> node.attrs.foo = 'aaa'
     >>> node.attrs['foo']
     'bar'
@@ -565,11 +570,10 @@ Attributes access is disabled, normal object behaviour applias. Beware!
     AttributeError: 'LifecycleNodeAttributes' object has no attribute 'bar'
     
 Check Node attribute aliases, with attribute access object.
-::
 
 XXX: For now attributealiases needs to be set before attrs is called the first
 time, as attribute_access_for_attrs is currently enabled by default.
-
+::
     >>> node = LifecycleNode()
     >>> node.attribute_aliases = {
     ...     'x': 'foo',
@@ -610,7 +614,6 @@ XXX This is broken and should return an error
 
 Check bool evaluation
 ::
-
     >>> node = Node()
     >>> node and True or False
     False
@@ -635,9 +638,8 @@ that need more than one nodespace, eg AttributedNode has one more namespace root
 at .attrs.
 
 All namespaces (including the child namespace) are accessable via
-node.nodespaces, it will be initialized on first call
+node.nodespaces, it will be initialized on first call.
 ::
-
     >>> node = Node('node')
     >>> node.nodespaces
     odict([('__children__', <Node object 'node' at ...>)])
@@ -656,10 +658,8 @@ the first time.
     odict([('__children__', <LifecycleNode object 'node' at ...>),
            ('__attrs__', <LifecycleNodeAttributes object '__attrs__' at ...>)])
 
-
 The attributes are traversable and now their path
 ::
-
     >>> node.attrs.__name__
     '__attrs__'
 
@@ -668,7 +668,6 @@ The attributes are traversable and now their path
 
     >>> node.attrs.path
     ['node', '__attrs__']
-
 
 XXX: rewording
 You can define arbitrary further nodespace, __<name>__ are accessable via
@@ -690,8 +689,8 @@ IFullMapping means
     KeyError: 'newnode'
 
 When added through the nodes setitem, parentship is claimed and a name is set,
-the nodespaces do not show up in keys/values
-
+the nodespaces do not show up in keys/values.
+::
     >>> node['__new1__'] = newnode = Node()
     >>> node['__new1__'] is newnode
     True
