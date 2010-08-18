@@ -38,16 +38,40 @@ An aliaser that simply prefixes all keys
 An aliaser that simply suffixes all keys
 ::
     >>> from zodict.aliaser import SuffixAliaser
-    >>> pa = SuffixAliaser('-suffix')
+    >>> sa = SuffixAliaser('-suffix')
     
-    >>> pa.alias('foo')
+    >>> sa.alias('foo')
     'foo-suffix'
 
-    >>> pa.unalias('foo-suffix')
+    >>> sa.unalias('foo-suffix')
     'foo'
 
-    >>> pa.unalias('foo')
+    >>> sa.unalias('foo')
     Traceback (most recent call last):
     ...
     KeyError: u"key 'foo' does not match suffix '-suffix'"
 
+A chain of aliasers
+::
+    >>> from zodict.aliaser import AliaserChain
+    >>> aliaser = AliaserChain()
+    >>> pa2 = PrefixAliaser('pre2-')
+    >>> aliaser.chain = [pa, pa2]
+    >>> aliaser.alias('foo')
+    'pre2-prefix-foo'
+
+    >>> aliaser.unalias(aliaser.alias('foo'))
+    'foo'
+
+    >>> aliaser.chain = [pa2, pa]
+    >>> aliaser.unalias(aliaser.alias('foo'))
+    'foo'
+
+PrefixSuffixAliaser
+::
+    >>> from zodict.aliaser import PrefixSuffixAliaser
+    >>> psa = PrefixSuffixAliaser('prefix-', '-suffix')
+    >>> psa.alias('foo')
+    'prefix-foo-suffix'
+    >>> psa.unalias(psa.alias('foo'))
+    'foo'

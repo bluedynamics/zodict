@@ -69,3 +69,35 @@ class SuffixAliaser(object):
 class NodespaceAliases(dict):
     pass
     
+class AliaserChain(object):
+    """A chain of aliasers
+
+    chain = [aliaser1, aliaser2]
+    chain.alias(key) == aliaser2.alias(aliaser1.alias(key))
+    chain.unalias(alias_key) == aliaser2.unalias(aliaser1.unalias(aliased_key))
+    """
+    implements(IAliaser)
+    # XXX: we are IEnumerableMapping if one of our childs is, which is
+    # important as we become a whitelist, eg. for Node.__iter__
+
+    def __init__(self, chain=None):
+        self.chain = chain
+
+    def alias(self, key):
+        for aliaser in self.chain:
+            key = aliaser.alias(key)
+        return key
+
+    def unalias(self, key):
+        for aliaser in reversed(self.chain):
+            key = aliaser.unalias(key)
+        return key
+
+class PrefixSuffixAliaser(AliaserChain):
+    """Prefixes and suffixes
+    """
+    def __init__(self, prefix=None, suffix=None):
+        self.chain = (
+                PrefixAliaser(prefix),
+                SuffixAliaser(suffix),
+                )
