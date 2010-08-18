@@ -633,79 +633,113 @@ Check bool evaluation
 Nodespaces
 ----------
 
-A Node manages its namespace via IFullMapping. There are node implementations
-that need more than one nodespace, eg AttributedNode has one more namespace rooted
-at .attrs.
+Every node is the root of at least one nodespaces, the children nodespace. A
+nodespace is managed via IFullMapping. There are node implementations that have
+further nodespaces, eg AttributedNode has one more namespace rooted at .attrs.
 
-All namespaces (including the child namespace) are accessable via
-node.nodespaces, it will be initialized on first call.
+All nodespaces (including the child nodespace) are accessable via
+node.nodespaces an ordered IFullMapping, it will be initialized on first call.
 ::
     >>> node = Node('node')
     >>> node.nodespaces
     odict([('__children__', <Node object 'node' at ...>)])
 
-Special nodespaces are marked by prefix and suffix '__', like the
-``__children__`` above and the ``__attrs__`` below, after they were accessed
-the first time.
+The children nodespace is the default nodespace, worked upon via the node's
+IFullMapping API.
 ::
-    >>> node = LifecycleNode('node')
+    >>> node.nodespaces['__children__'] is node
+    True
+
+XXX: Having __children__ in nodespaces is experimental and might dissappear at
+one point.
+
+The attrs nodespaces is created upon first access, we choose mapping API for
+attrs (will be default from v2.1 on).
+::
+    >>> from zodict import AttributedNode
+    >>> node = AttributedNode('anode')
     >>> node.nodespaces
-    odict([('__children__', <LifecycleNode object 'node' at ...>)])
+    odict([('__children__', <AttributedNode object 'anode' at ...>)])
 
     >>> node.attribute_access_for_attrs = False
     >>> ignore = node.attrs
     >>> node.nodespaces
-    odict([('__children__', <LifecycleNode object 'node' at ...>),
-           ('__attrs__', <LifecycleNodeAttributes object '__attrs__' at ...>)])
+    odict([('__children__', <AttributedNode object 'anode' at ...>),
+           ('__attrs__', <NodeAttributes object '__attrs__' at ...>)])
 
-The attributes are traversable and now their path
+Special nodespaces are prefixed and suffixed with '__', like ``__attrs__``, and
+are accessable via the node's ``__getitem__``, ``__setitem__`` and
+``__delitem__``, but do not appear in any of the other IFullMapping methods.
 ::
-    >>> node.attrs.__name__
-    '__attrs__'
 
-    >>> node.attrs.__parent__ is node
+    >>> node['__attrs__'] is node.attrs
     True
 
-    >>> node.attrs.path
-    ['node', '__attrs__']
-
-XXX: rewording
-You can define arbitrary further nodespace, __<name>__ are accessable via
-the node's normal getitem/setitem/delitem, but are ignored for any other
-IFullMapping means
-::
-    >>> node.nodespaces['newnode'] = newnode = Node()
-    >>> node.nodespaces['newnode'] is newnode
+    >>> node['__foo__'] = foo = Node()
+    >>> node['__foo__'] is foo
     True
 
-    >>> newnode.__name__ is None
-    True
-    >>> newnode.__parent__ is None
-    True
-
-    >>> node['newnode']
-    Traceback (most recent call last):
-    ...
-    KeyError: 'newnode'
-
-When added through the nodes setitem, parentship is claimed and a name is set,
-the nodespaces do not show up in keys/values.
-::
-    >>> node['__new1__'] = newnode = Node()
-    >>> node['__new1__'] is newnode
-    True
-    >>> node['__new1__'] is node.nodespaces['__new1__']
-    True
     >>> node.keys()
     []
+
     >>> node.values()
     []
 
-    >>> newnode.path
-    ['node', '__new1__']
-
-    >>> del node['__new1__']
     >>> node.nodespaces
-    odict([('__children__', <LifecycleNode object 'node' at ...>),
-           ('__attrs__', <LifecycleNodeAttributes object '__attrs__' at ...>),
-           ('newnode', <Node object 'None' at ...>)])
+    odict([('__children__', <AttributedNode object 'anode' at ...>),
+           ('__attrs__', <NodeAttributes object '__attrs__' at ...>),
+           ('__foo__', <Node object '__foo__' at ...>)])
+
+    >>> del node['__foo__']
+    >>> node.nodespaces
+    odict([('__children__', <AttributedNode object 'anode' at ...>),
+           ('__attrs__', <NodeAttributes object '__attrs__' at ...>)])
+
+
+The node will take parentship of nodespaces set via ``__setitem__``, like usual
+for child nodes, which enables traversal and path.
+::
+
+    >>> foo.__name__
+    '__foo__'
+    >>> foo.__parent__ is node
+    True
+
+    >>> foo.path
+    ['anode', '__foo__']
+
+    >>> node.attrs.path
+    ['anode', '__attrs__']
+
+Further, you can put nodespaces directly into node.nodespaces to avoid taking
+parentship and naming. Whether it makes sense to make them traversable, by
+prefixing and suffixing with '__', but not to take parentship is up to you.
+::
+    >>> node.nodespaces['not_traversable'] = not_traversable = Node()
+    >>> node.nodespaces['not_traversable'] is not_traversable
+    True
+
+    >>> not_traversable.__name__ is None
+    True
+    >>> not_traversable.__parent__ is None
+    True
+
+    >>> node['not_traversable']
+    Traceback (most recent call last):
+    ...
+    KeyError: 'not_traversable'
+
+    >>> node.nodespaces['__traversable__'] = traversable = Node()
+    >>> node.nodespaces['__traversable__'] is traversable
+    True
+
+    >>> traversable.__name__ is None
+    True
+    >>> traversable.__parent__ is None
+    True
+
+    >>> node['__traversable__'] is traversable
+    True
+
+    >>> traversable.path
+    [None]

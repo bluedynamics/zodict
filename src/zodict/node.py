@@ -82,9 +82,8 @@ class _Node(object):
     @property
     def nodespaces(self):
         if self._nodespaces is None:
-            nodespaces = odict()
-            nodespaces['__children__'] = self
-            self._nodespaces = nodespaces
+            self._nodespaces = odict()
+            self._nodespaces['__children__'] = self
         return self._nodespaces
 
     def __contains__(self, key):
