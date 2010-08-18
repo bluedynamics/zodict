@@ -166,7 +166,7 @@ class _Node(object):
                 yield self.aliaser.alias(key)
             except KeyError:
                 if IEnumerableMapping.providedBy(self.aliaser):
-                    # enumerable aliaser whitelist, we skip non-listed keys
+                    # an enumerable aliaser whitelists, we skip non-listed keys
                     continue
                 # no whitelisting and a KeyError on our internal data: that's
                 # bad! Most probably not triggered on _Node but a subclass
