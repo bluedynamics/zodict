@@ -107,6 +107,23 @@ class _Node(object):
         except KeyError:
             raise KeyError(key)
 
+    def _adopt(self, key, val):
+        """Adopting happens eg during ``__setitem__``.
+        """
+        has_children = False
+        for valkey in val.iterkeys():
+            has_children = True
+            break
+        if has_children and self._index is not None:
+            keys = set(self._index.keys())
+            if keys.intersection(val._index.keys()):
+                raise ValueError, u"Node with uuid already exists"
+        val.__name__ = key
+        val.__parent__ = self
+        if self._index is not None:
+            self._index.update(val._index)
+            val._index = self._index
+
     def __setitem__(self, key, val):
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
@@ -118,28 +135,13 @@ class _Node(object):
             self.nodespaces[key] = val
             # index checks below must not happen for other nodespace.
             return
-        # ???
-        # this used to happen before actually storing the value, moved below
-        # not to mess with val before we are sure it is our now
-        # /???
-        if isinstance(val, _Node):
-            has_children = False
-            for valkey in val.iterkeys():
-                has_children = True
-                break
-            if has_children and self._index is not None:
-                keys = set(self._index.keys())
-                if keys.intersection(val._index.keys()):
-                    raise ValueError, u"Node with uuid already exists"
-            val.__name__ = key
-            val.__parent__ = self
-            if self._index is not None:
-                self._index.update(val._index)
-                val._index = self._index
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
-        if not isinstance(val, _Node) and not self.allow_non_node_childs:
-            raise ValueError("Non-node childs are not allowed.")
+        if isinstance(val, _Node):
+            self._adopt(key, val)
+        else:
+            if not self.allow_non_node_childs:
+                raise ValueError("Non-node childs are not allowed.")
         key = self.aliaser is None and key or self.aliaser.unalias(key)
         self._node_impl().__setitem__(self, key, val)
 
