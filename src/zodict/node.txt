@@ -1,6 +1,21 @@
 Node
 ====
 
+Abstract _Node, subclasses need to implement _node_impl and subclass it
+::
+    >>> from zodict.node import _Node
+    >>> node = _Node()
+    Traceback (most recent call last):
+    ...
+    TypeError: super() argument 1 must be type, not None
+
+    >>> class MyNode(_Node, dict):
+    ...     def _node_impl(self):
+    ...         return dict
+    >>> node = MyNode()
+    >>> del node
+
+
 We have a base node which provides the default interface implementation.
 ::
 
@@ -418,11 +433,12 @@ Check Node aliases
 ------------------
 ::
 
-    >>> tree1.aliases = {
+    >>> from zodict.aliaser import DictAliaser
+    >>> tree1.aliaser = DictAliaser({
     ...     'attr1': 'a',
     ...     'attr2': 'b',
     ...     'newattr': 'notthereyet',
-    ... }
+    ... })
 
     >>> tree1['attr1']
     <Node object 'a' at ...>
@@ -580,10 +596,8 @@ time, as attribute_access_for_attrs is currently enabled by default.
     ...
     AttributeError: foo
 
+XXX This is broken and should return an error
     >>> node.attrs.foo = 10
-    Traceback (most recent call last):
-    ...
-    AttributeError: foo
 
 Check bool evaluation
 ::

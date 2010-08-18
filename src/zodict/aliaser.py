@@ -2,6 +2,7 @@
 # Python Software Foundation License
 
 from zope.interface import implements
+from zope.interface.common.mapping import IFullMapping
 from zodict import ReverseMapping
 # for some reason this won't work
 #from zodict.interfaces import IAliaser
@@ -12,7 +13,7 @@ class DictAliaser(dict):
 
     ``__getitem__`` -> unalias
     """
-    implements(IAliaser)
+    implements(IAliaser, IFullMapping)
 
     def alias(self, key):
         return ReverseMapping(self)[key]

@@ -6,7 +6,7 @@ import inspect
 from odict import odict
 from odict.pyodict import _nil
 from zope.interface import implements
-from zope.interface.common.mapping import IReadMapping
+from zope.interface.common.mapping import IReadMapping, IEnumerableMapping
 from zope.deprecation import deprecated
 try:
     from zope.location import LocationIterator
@@ -74,7 +74,7 @@ class _Node(object):
         else:
             self._index = None
         self.allow_non_node_childs = False
-        self.aliases = None
+        self.aliaser = None
         self._nodespaces = None
 
     # a storage and general way to access our nodespaces
@@ -88,37 +88,44 @@ class _Node(object):
         return self._nodespaces
 
     def __contains__(self, key):
+        """uses __getitem__
+        """
         try:
             self[key]
         except KeyError:
             return False
         return True
 
-    def _aliased(self, key):
-        """return real key for alias
-        """
-        try:
-            key = self.aliases.__getitem__(key)
-        except AttributeError:
-            # aliases is None
-            pass
-        return key
-
     def __getitem__(self, key):
-        if key[:2] == key[-2:] == '__':
-            # a reserved child key mapped to a nodespace
+        # blend in our nodespaces as children, with name __<name>__
+        if key.startswith('__') and key.endswith('__'):
+            # a reserved child key mapped to the nodespace behind
+            # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
+        unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
         try:
-            return self._node_impl().__getitem__(self, self._aliased(key))
+            return self._node_impl().__getitem__(self, unaliased_key)
         except KeyError:
             raise KeyError(key)
 
     def __setitem__(self, key, val):
+        # blend in our nodespaces as children, with name __<name>__
+        if key.startswith('__') and key.endswith('__'):
+            # a reserved child key mapped to the nodespace behind
+            # nodespaces[key], nodespaces is an odict
+            self.nodespaces[key] = val
+            return
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
         if not isinstance(val, _Node) and not self.allow_non_node_childs:
             raise ValueError("Non-node childs are not allowed.")
-        # XXX: should happen after it was added or?
+        unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
+        try:
+            self._node_impl().__setitem__(self, unaliased_key, val)
+        except KeyError:
+            raise KeyError(key)
+        # this used to happen before actually storing the value, moved below
+        # not to mess with val before we are sure it is our now
         if isinstance(val, _Node):
             val.__name__ = key
             val.__parent__ = self
@@ -133,29 +140,39 @@ class _Node(object):
             if self._index is not None:
                 self._index.update(val._index)
                 val._index = self._index
-        # XXX: Using the name our parent gives us seems more consistent, the
-        # application needs to show whether its good or bad.
-        key = self._aliased(key)
-        self._node_impl().__setitem__(self, key, val)
 
     def __delitem__(self, key):
-        key = self._aliased(key)
-        val = self[key]
+        # blend in our nodespaces as children, with name __<name>__
+        if key.startswith('__') and key.endswith('__'):
+            # a reserved child key mapped to the nodespace behind
+            # nodespaces[key], nodespaces is an odict
+            del self.nodespaces[key]
+            return
+        # fail immediately if key does not exist
+        self[key]
         if self._index is not None:
             for iuuid in self[key]._to_delete():
                 del self._index[iuuid]
-        self._node_impl().__delitem__(self, key)
-
+        unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
+        try:
+            self._node_impl().__delitem__(self, unaliased_key)
+        except KeyError:
+            raise KeyError(key)
 
     def _aliased_iter(self):
-        # XXX: secondary key could be used here, ie to implement a reverse dict
         for key in self._node_impl().__iter__(self):
-            for k,v in self.aliases.items():
-                if v == key:
-                    yield k
+            try:
+                yield self.aliaser.alias(key)
+            except KeyError:
+                if IEnumerableMapping.providedBy(self.aliaser):
+                    # enumerable aliaser whitelist, we skip non-listed keys
+                    continue
+                # no whitelisting and a KeyError on our internal data: that's
+                # bad! Most probably not triggered on _Node but a subclass
+                raise RuntimeError(u"Inconsist internal node state")
 
     def __iter__(self):
-        if self.aliases is None:
+        if self.aliaser is None:
             return self._node_impl().__iter__(self)
         return self._aliased_iter()
 
