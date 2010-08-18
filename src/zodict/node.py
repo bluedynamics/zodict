@@ -114,16 +114,13 @@ class _Node(object):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             self.nodespaces[key] = val
-            return
-        if inspect.isclass(val):
-            raise ValueError, u"It isn't allowed to use classes as values."
-        if not isinstance(val, _Node) and not self.allow_non_node_childs:
-            raise ValueError("Non-node childs are not allowed.")
-        unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
-        try:
+        else:
+            if inspect.isclass(val):
+                raise ValueError, u"It isn't allowed to use classes as values."
+            if not isinstance(val, _Node) and not self.allow_non_node_childs:
+                raise ValueError("Non-node childs are not allowed.")
+            unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
             self._node_impl().__setitem__(self, unaliased_key, val)
-        except KeyError:
-            raise KeyError(key)
         # this used to happen before actually storing the value, moved below
         # not to mess with val before we are sure it is our now
         if isinstance(val, _Node):
@@ -154,10 +151,7 @@ class _Node(object):
             for iuuid in self[key]._to_delete():
                 del self._index[iuuid]
         unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
-        try:
-            self._node_impl().__delitem__(self, unaliased_key)
-        except KeyError:
-            raise KeyError(key)
+        self._node_impl().__delitem__(self, unaliased_key)
 
     def _aliased_iter(self):
         for key in self._node_impl().__iter__(self):
