@@ -135,8 +135,8 @@ whitelists
     ...         },
     ...     }
 
-Whitelist 'foo' in nodespace1's internal aliases, that means it will not accept
-any other keys than 'foo
+Whitelist 'foo' via nodespace1's internal aliases, that means it will not accept
+any other keys than 'foo'
 ::
     >>> nodespace1.aliases['foo'] = 'foo'
 

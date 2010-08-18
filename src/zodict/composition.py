@@ -28,6 +28,7 @@ class Composition(Node):
             # copy the nodespaces into our nodespace
             self.nodespaces.update(nodespaces)
 
+    # do we need this?
     def __contains__(self, key):
         try:
             self[key]
@@ -40,13 +41,20 @@ class Composition(Node):
 
         ``args`` = (key, optional:val)
         """
+        # The key needs to be aliased by the corresponding nodespaces aliaser
         for nkey in self.nodespaces:
             if nkey[:2] == nkey[-2:] == '__':
                 # we skip internal ones
                 continue
             try:
+                try:
+                    aliaser = self.aliasers[nkey]
+                except (AttributeError, TypeError, KeyError):
+                    aliaser = None
+                ourkey = self._aliased(aliaser, args[0])
                 func = getattr(self.nodespaces[nkey], funcstr)
-                return func(*args)
+                ourargs = [ourkey] + list(args[1:])
+                return func(*ourargs)
             except KeyError:
                 continue
         raise KeyError(msg)
