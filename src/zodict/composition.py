@@ -28,14 +28,6 @@ class Composition(Node):
             # copy the nodespaces into our nodespace
             self.nodespaces.update(nodespaces)
 
-    # do we need this?
-    def __contains__(self, key):
-        try:
-            self[key]
-        except KeyError:
-            return False
-        return True
-
     def _perform(self, funcstr, args, msg):
         """perform one of th actions __getitem__, __setitem__, __delitem
 
