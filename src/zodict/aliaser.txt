@@ -34,3 +34,20 @@ An aliaser that simply prefixes all keys
     Traceback (most recent call last):
     ...
     KeyError: u"key 'foo' does not match prefix 'prefix-'"
+
+An aliaser that simply suffixes all keys
+::
+    >>> from zodict.aliaser import SuffixAliaser
+    >>> pa = SuffixAliaser('-suffix')
+    
+    >>> pa.alias('foo')
+    'foo-suffix'
+
+    >>> pa.unalias('foo-suffix')
+    'foo'
+
+    >>> pa.unalias('foo')
+    Traceback (most recent call last):
+    ...
+    KeyError: u"key 'foo' does not match suffix '-suffix'"
+

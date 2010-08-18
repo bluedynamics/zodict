@@ -41,6 +41,29 @@ class PrefixAliaser(object):
                     (prefixed_key, self.prefix))
         return prefixed_key[len(self.prefix):]
 
+class SuffixAliaser(object):
+    """An aliaser that suffixes all keys.
+
+    As it never raise KeyError it is not whitelisting.
+    """
+    implements(IAliaser)
+
+    def __init__(self, suffix=''):
+        self.suffix = suffix
+
+    def alias(self, key):
+        return key + self.suffix
+
+    def unalias(self, suffixed_key):
+        """returns the real key for a suffixed_key
+        """
+        if not suffixed_key.endswith(self.suffix):
+            raise KeyError(
+                    u"key '%s' does not match suffix '%s'" % \
+                            (suffixed_key, self.suffix)
+                    )
+        return suffixed_key[:-len(self.suffix)]
+
 class NodespaceAliases(dict):
     pass
     
