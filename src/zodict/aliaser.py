@@ -102,3 +102,7 @@ class PrefixSuffixAliaser(AliaserChain):
                 PrefixAliaser(prefix),
                 SuffixAliaser(suffix),
                 )
+
+class NamedAliasers(dict):
+    """A dictionary storing aliasers by name
+    """

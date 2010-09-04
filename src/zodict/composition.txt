@@ -65,8 +65,10 @@ New nodes end up in the first succeeding nodespace
 ::
 
     >>> composition['newnode'] = newnode = Node()
+
     >>> nodespace1.keys()
     ['nodeA', 'nodeB', 'newnode']
+
     >>> nodespace2.keys()
     ['nodeB', 'nodeC']
 
@@ -82,11 +84,17 @@ New nodes end up in the first succeeding nodespace
 
 Let's whitelist nodespace1, newnode ends now up in the second nodespace
 ::
-    >>> nodespace1.aliases = {'__nodeA': 'nodeA', 'nodeB': 'nodeB'}
+    >>> from zodict.aliaser import DictAliaser
+    >>> nodespace1.aliaser = DictAliaser({
+    ...         '__nodeA': 'nodeA',
+    ...         'nodeB': 'nodeB',
+    ...         })
 
     >>> composition['newnode'] = newnode = Node()
+
     >>> nodespace1.keys()
     ['__nodeA', 'nodeB']
+
     >>> nodespace2.keys()
     ['nodeB', 'nodeC', 'newnode']
 
@@ -99,7 +107,10 @@ Let's whitelist nodespace1, newnode ends now up in the second nodespace
 
 Let's whitelist all
 ::
-    >>> nodespace2.aliases = dict(nodeB='nodeB', nodeC='nodeC')
+    >>> nodespace2.aliaser = DictAliaser(dict(
+    ...         nodeB='nodeB',
+    ...         nodeC='nodeC',
+    ...         ))
     >>> composition['newnode'] = Node()
     Traceback (most recent call last):
     ...
@@ -126,19 +137,19 @@ containing one aliases per nodespace.
 Define aliases for nodespaces, the prefixer just aliases, the dictionary also
 whitelists
 ::
-    >>> from zodict.aliaser import PrefixAliaser
-    >>> composition.aliases = {
-    ...     'nodespace1': PrefixAliaser('prefix^'),
-    ...     'nodespace2': {
-    ...         'aliasedX': 'nodeB',
-    ...         'aliasedY': 'newone',
-    ...         },
-    ...     }
+    >>> from zodict.aliaser import PrefixAliaser, NamedAliasers
+    >>> composition.aliaser = NamedAliasers(dict(
+    ...     nodespace1=PrefixAliaser('prefix^'),
+    ...     nodespace2=DictAliaser(dict(
+    ...         aliasedX='nodeB',
+    ...         aliasedY='newone',
+    ...         )),
+    ...     ))
 
 Whitelist 'foo' via nodespace1's internal aliases, that means it will not accept
 any other keys than 'foo'
 ::
-    >>> nodespace1.aliases['foo'] = 'foo'
+    >>> nodespace1.aliaser['foo'] = 'foo'
 
 And assign something that will end up as 'foo' in nodespace1
 ::
@@ -148,31 +159,43 @@ And assign something that will end up as 'foo' in nodespace1
     >>> nodespace2.keys()
     ['nodeB', 'nodeC']
 
-    >>> nodespace2['foo'] is newnode
+    >>> nodespace1['foo'] is newnode
     True
 
-    >>> del composition['newnode']
-    >>> nodespace2.keys()
-    ['nodeB', 'nodeC']
+    >>> newnode.__parent__ is nodespace1
+    True
+
+    >>> newnode.__name__
+    'foo'
+
+    >>> del composition['prefix^foo']
+    >>> nodespace1.keys()
+    ['__nodeA', 'nodeB']
 
 'foo' without prefix cannot be matched to a nodespace
 ::
 
     >>> composition['foo']
-    KeyError: foo
+    Traceback (most recent call last):
+    ...
+    KeyError: u'No nodespace provided key foo'
 
     >>> composition['foo'] = Node()
-    KeyError: foo
+    Traceback (most recent call last):
+    ...
+    KeyError: u'No nodespace accepted key foo'
 
 'aliasedY' is whitelisted for nodespace2, but does not exist yet
 ::
 
     >>> composition['aliasedY']
-    KeyError: aliasedY
+    Traceback (most recent call last):
+    ...
+    KeyError: u'No nodespace provided key aliasedY'
 
-    >>> composition['aliasedY'] = Node()
-    >>> composition['aliasedY'] is nodespace2['newone']
-    True
+#    >>> composition['aliasedY'] = Node()
+#    >>> composition['aliasedY'] is nodespace2['newone']
+#    True
 
 Mode: real children *merge*
 ---------------------------

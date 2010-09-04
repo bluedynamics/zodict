@@ -40,10 +40,10 @@ class Composition(Node):
                 continue
             try:
                 try:
-                    aliaser = self.aliasers[nkey]
-                except (AttributeError, TypeError, KeyError):
+                    aliaser = self.aliaser[nkey]
+                except (TypeError, KeyError):
                     aliaser = None
-                ourkey = self._aliased(aliaser, args[0])
+                ourkey = aliaser and aliaser.unalias(args[0]) or args[0]
                 func = getattr(self.nodespaces[nkey], funcstr)
                 ourargs = [ourkey] + list(args[1:])
                 return func(*ourargs)
