@@ -265,6 +265,12 @@ Alternative it can be used in older Python version with in a try: finally.
 Changes
 =======
 
+Version 1.9.4
+-------------
+
+- Node provides now ``get`` method (promised by IFullMapping) again.
+  [jensens, 2010-09-04]
+
 Version 1.9.3
 -------------
 

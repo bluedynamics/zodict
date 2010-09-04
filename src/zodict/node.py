@@ -94,8 +94,8 @@ class _Node(object):
         except KeyError:
             return False
         return True
-
-    def __getitem__(self, key):
+    
+    def _get_by_key(self, key):
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind
@@ -106,6 +106,17 @@ class _Node(object):
             return self._node_impl().__getitem__(self, unaliased_key)
         except KeyError:
             raise KeyError(key)
+
+    def get(self, key, default=None):
+        """IReadMapping promises get.
+        """
+        try:
+            return self._get_by_key(key)
+        except KeyError:
+            return default
+
+    def __getitem__(self, key):
+        return self._get_by_key(key)
 
     def _adopt(self, key, val):
         """Adopting happens eg during ``__setitem__``.
@@ -179,7 +190,7 @@ class _Node(object):
 
     def keys(self):
         return [x for x in self]
-
+    
     def _to_delete(self):
         todel = [int(self.uuid)]
         for childkey in self:
@@ -359,7 +370,7 @@ class NodeAttributes(Node):
         Node.__init__(self, index=False)
         self.allow_non_node_childs = True
         self._node = node
-
+        
 class AttributedNode(Node):
     """A node that has another nodespace behind self.attrs[]
     """
