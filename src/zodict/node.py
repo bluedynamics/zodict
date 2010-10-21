@@ -49,6 +49,12 @@ class NodeIndex(object):
 
 class _Node(object):
     """Abstract node implementation. Subclass must mixin ``_node_impl()``.
+
+    A node implemententation must provide:
+        __getitem__
+        __setitem__
+        __delitem__
+        __iter__
     """
     implements(INode)
     
@@ -64,6 +70,9 @@ class _Node(object):
         ``index``
             flag wether node index is enabled or not.
         """
+        # XXX: this looks to me like we are calling the node_impl's
+        # super-class' __init__ and not node_impl's __init__. Is this what we
+        # want?
         super(self._node_impl(), self).__init__()
         self.__parent__ = None
         self.__name__ = name
