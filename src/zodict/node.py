@@ -32,6 +32,7 @@ from zodict.events import (
     NodeDetachedEvent,
 )
 
+
 class NodeIndex(object):
     implements(IReadMapping)
 
@@ -46,6 +47,7 @@ class NodeIndex(object):
 
     def __contains__(self, key):
         return int(key) in self._index
+
 
 class _Node(object):
     """Abstract node implementation. Subclass must mixin ``_node_impl()``.
@@ -364,6 +366,7 @@ class _Node(object):
 
     __str__ = __repr__
 
+
 class Node(_Node, Zodict):
     """Inherit from _Node and mixin Zodict.
     """
@@ -374,6 +377,7 @@ deprecated('Node',
            "'index' kwarg of ``__init__`` will be changed to False by default "
            "in 2.1")
 
+
 class NodeAttributes(Node):
     """Semantic object.
     """
@@ -382,7 +386,8 @@ class NodeAttributes(Node):
         Node.__init__(self, index=False)
         self.allow_non_node_childs = True
         self._node = node
-        
+
+
 class AttributedNode(Node):
     """A node that has another nodespace behind self.attrs[]
     """
@@ -419,6 +424,7 @@ deprecated('AttributedNode',
            "'attribute_access_for_attrs' flag will be changed to False by "
            "default in 2.1")
 
+
 class LifecycleNodeAttributes(NodeAttributes):
     """XXX If we merge this into node, do we really need the event on the node?
     a) LifecycleNode current would trigger event on the attrs node
@@ -440,6 +446,7 @@ class LifecycleNodeAttributes(NodeAttributes):
         if self._node._notify_suppress:
             return
         objectEventNotify(self._node.events['modified'](self._node))
+
 
 class LifecycleNode(AttributedNode):
     implements(ILifecycleNode)
