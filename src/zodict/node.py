@@ -378,21 +378,17 @@ deprecated('Node',
            "in 2.1")
 
 
-class _NodeAttributes(_Node):
+class NodeAttributes(Node):
     """Semantic object.
     """
+    
     def __init__(self, node):
-        super(_NodeAttributes, self).__init__(index=False)
+        Node.__init__(self, index=False)
         self.allow_non_node_childs = True
         self._node = node
 
 
-class NodeAttributes(_NodeAttributes, Zodict):
-    def _node_impl(self):
-        return Zodict
-
-
-class _AttributedNode(_Node):
+class AttributedNode(Node):
     """A node that has another nodespace behind self.attrs[]
     """
     implements(IAttributedNode)
@@ -401,7 +397,7 @@ class _AttributedNode(_Node):
     attribute_aliases = None
 
     def __init__(self, name=None, index=True):
-        super(_AttributedNode, self).__init__(name, index=index)
+        super(AttributedNode, self).__init__(name, index=index)
         # XXX: Currently attributes_acces_for_attrs is default, this might
         # change, as the dict api to attrs is broken by it.
         self.attribute_access_for_attrs = True
@@ -424,17 +420,12 @@ class _AttributedNode(_Node):
     # BBB
     attributes = attrs
 
-
-class AttributedNode(_AttributedNode, Zodict):
-    def _node_impl(self):
-        return Zodict
-
 deprecated('AttributedNode',
            "'attribute_access_for_attrs' flag will be changed to False by "
            "default in 2.1")
 
 
-class _LifecycleNodeAttributes(_NodeAttributes):
+class LifecycleNodeAttributes(NodeAttributes):
     """XXX If we merge this into node, do we really need the event on the node?
     a) LifecycleNode current would trigger event on the attrs node
     b) we use to trigger only on the node not on us, shall we suppress us and
@@ -445,24 +436,19 @@ class _LifecycleNodeAttributes(_NodeAttributes):
     """
 
     def __setitem__(self, key, val):
-        super(_LifecycleNodeAttributes, self).__setitem__(key, val)
+        NodeAttributes.__setitem__(self, key, val)
         if self._node._notify_suppress:
             return
         objectEventNotify(self._node.events['modified'](self._node))
 
     def __delitem__(self, key):
-        super(_LifecycleNodeAttributes, self).__delitem__(key)
+        NodeAttributes.__delitem__(self, key)
         if self._node._notify_suppress:
             return
         objectEventNotify(self._node.events['modified'](self._node))
 
 
-class LifecycleNodeAttributes(_LifecycleNodeAttributes, Zodict):
-    def _node_impl(self):
-        return Zodict
-
-
-class _LifecycleNode(_AttributedNode):
+class LifecycleNode(AttributedNode):
     implements(ILifecycleNode)
 
     events = {
@@ -476,12 +462,12 @@ class _LifecycleNode(_AttributedNode):
     attributes_factory = LifecycleNodeAttributes
 
     def __init__(self, name=None, index=True):
-        super(_LifecycleNode, self).__init__(name=name, index=index)
+        super(LifecycleNode, self).__init__(name=name, index=index)
         self._notify_suppress = False
         objectEventNotify(self.events['created'](self))
 
     def __setitem__(self, key, val):
-        super(_LifecycleNode, self).__setitem__(key, val)
+        super(LifecycleNode, self).__setitem__(key, val)
         if self._notify_suppress:
             return
         objectEventNotify(self.events['added'](val, newParent=self,
@@ -489,7 +475,7 @@ class _LifecycleNode(_AttributedNode):
 
     def __delitem__(self, key):
         delnode = self[key]
-        super(_LifecycleNode, self).__delitem__(key)
+        super(LifecycleNode, self).__delitem__(key)
         if self._notify_suppress:
             return
         objectEventNotify(self.events['removed'](delnode, oldParent=self,
@@ -498,13 +484,8 @@ class _LifecycleNode(_AttributedNode):
     def detach(self, key):
         notify_before = self._notify_suppress
         self._notify_suppress = True
-        node = super(_LifecycleNode, self).detach(key)
+        node = super(LifecycleNode, self).detach(key)
         self._notify_suppress = False
         objectEventNotify(self.events['detached'](node, oldParent=self,
                                                   oldName=key))
         return node
-
-
-class LifecycleNode(_LifecycleNode, Zodict):
-    def _node_impl(self):
-        return Zodict
