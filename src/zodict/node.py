@@ -95,7 +95,15 @@ class _Node(object):
             return False
         return True
     
-    def _get_by_key(self, key):
+    def get(self, key, default=None):
+        """IReadMapping promises get.
+        """
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __getitem__(self, key):
         # blend in our nodespaces as children, with name __<name>__
         if key.startswith('__') and key.endswith('__'):
             # a reserved child key mapped to the nodespace behind
@@ -106,17 +114,6 @@ class _Node(object):
             return self._node_impl().__getitem__(self, unaliased_key)
         except KeyError:
             raise KeyError(key)
-
-    def get(self, key, default=None):
-        """IReadMapping promises get.
-        """
-        try:
-            return self._get_by_key(key)
-        except KeyError:
-            return default
-
-    def __getitem__(self, key):
-        return self._get_by_key(key)
 
     def _adopt(self, key, val):
         """Adopting happens eg during ``__setitem__``.
