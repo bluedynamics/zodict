@@ -185,6 +185,12 @@ class _Node(object):
             return self._node_impl().__iter__(self)
         return self._aliased_iter()
 
+    iterkeys = __iter__
+
+    def iteritems(self):
+        for key in self:
+            yield key, self[key]
+
     def keys(self):
         return [x for x in self]
     
