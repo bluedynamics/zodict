@@ -485,6 +485,8 @@ class LifecycleNode(AttributedNode):
         notify_before = self._notify_suppress
         self._notify_suppress = True
         node = super(LifecycleNode, self).detach(key)
+        # XXX: looks like bug, notify_before, however, I do not understand why
+        # we enforce notify_suppress before calling super
         self._notify_suppress = False
         objectEventNotify(self.events['detached'](node, oldParent=self,
                                                   oldName=key))
