@@ -108,7 +108,7 @@ class _Node(object):
         return True
     
     def get(self, key, default=None):
-        """IReadMapping promises get.
+        """uses __getitem__
         """
         try:
             return self[key]
@@ -383,7 +383,6 @@ deprecated('Node',
 class NodeAttributes(Node):
     """Semantic object.
     """
-    
     def __init__(self, node):
         Node.__init__(self, index=False)
         self.allow_non_node_childs = True
