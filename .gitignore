@@ -10,3 +10,4 @@
 /parts
 *.pyc
 *.egg-info
+.mrsd
