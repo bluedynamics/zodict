@@ -78,6 +78,7 @@ class _Node(object):
         super(self._node_impl(), self).__init__()
         self.__parent__ = None
         self.__name__ = name
+        self._adopting = True
         if index:
             self._index = dict()
             self._uuid = None
@@ -157,7 +158,8 @@ class _Node(object):
         if inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
         if isinstance(val, _Node):
-            self._adopt(key, val)
+            if self._adopting:
+                self._adopt(key, val)
         else:
             if not self.allow_non_node_childs:
                 raise ValueError("Non-node childs are not allowed.")
