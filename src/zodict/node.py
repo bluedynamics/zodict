@@ -121,9 +121,8 @@ class _Node(object):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
         try:
-            return self._node_impl().__getitem__(self, unaliased_key)
+            return self._node_impl().__getitem__(self, key)
         except KeyError:
             raise KeyError(key)
 
@@ -163,8 +162,7 @@ class _Node(object):
         else:
             if not self.allow_non_node_childs:
                 raise ValueError("Non-node childs are not allowed.")
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        self._node_impl().__setitem__(self, unaliased_key, val)
+        self._node_impl().__setitem__(self, key, val)
 
     def __delitem__(self, key):
         # blend in our nodespaces as children, with name __<name>__
@@ -178,27 +176,20 @@ class _Node(object):
         if self._index is not None:
             for iuuid in self[key]._to_delete():
                 del self._index[iuuid]
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        self._node_impl().__delitem__(self, unaliased_key)
+        self._node_impl().__delitem__(self, key)
 
-    def _aliased_iter(self):
-        for key in self._node_impl().__iter__(self):
-            try:
-                yield self.aliaser.alias(key)
-            except KeyError:
-                if IEnumerableMapping.providedBy(self.aliaser):
-                    # an enumerable aliaser whitelists, we skip non-listed keys
-                    continue
-                # no whitelisting and a KeyError on our internal data: that's
-                # bad! Most probably not triggered on _Node but a subclass
-                raise RuntimeError(u"Inconsist internal node state")
-
-    def __iter__(self):
-        if self.aliaser is None:
-            return self._node_impl().__iter__(self)
-        return self._aliased_iter()
-
-    iterkeys = __iter__
+# XXX: waiting for AliasWrapper to be moved to
+#    def _aliased_iter(self):
+#        for key in self._node_impl().__iter__(self):
+#            try:
+#                yield self.aliaser.alias(key)
+#            except KeyError:
+#                if IEnumerableMapping.providedBy(self.aliaser):
+#                    # an enumerable aliaser whitelists, we skip non-listed keys
+#                    continue
+#                # no whitelisting and a KeyError on our internal data: that's
+#                # bad! Most probably not triggered on _Node but a subclass
+#                raise RuntimeError(u"Inconsist internal node state")
 
     def iteritems(self):
         for key in self:
