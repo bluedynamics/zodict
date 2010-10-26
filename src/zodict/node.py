@@ -500,7 +500,7 @@ class LifecycleNode(AttributedNode):
 
 
 # WIP
-class NodespaceAliaser(_Node):
+class AliasedNodespace(_Node):
     """Performs aliasing/unaliasing for node children
 
     Is not the parent of the its children, the children don't know about their
@@ -518,6 +518,7 @@ class NodespaceAliaser(_Node):
         ``aliaser``
             the aliaser to be used
         """
+        super(AliasedNodespace, self).__init__(index=False)
         self.context = context
         self.aliaser = aliaser
 

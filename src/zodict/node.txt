@@ -436,14 +436,14 @@ Access Node children via AttributeAccess.
     >>> attraccess.child1
     <Node object 'child1' at ...>
 
-Check NodespaceAliaser
+Check AliasedNodespace
 ----------------------
 ::
     >>> tree1.keys()
     ['x', 'a', 'b']
 
-    >>> from zodict.node import NodespaceAliaser
-    >>> aliased_tree1 = NodespaceAliaser(tree1)
+    >>> from zodict.node import AliasedNodespace
+    >>> aliased_tree1 = AliasedNodespace(tree1)
     >>> aliased_tree1.keys()
     ['x', 'a', 'b']
 
