@@ -121,7 +121,7 @@ class _Node(object):
             # a reserved child key mapped to the nodespace behind
             # nodespaces[key], nodespaces is an odict
             return self.nodespaces[key]
-        unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
+        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
         try:
             return self._node_impl().__getitem__(self, unaliased_key)
         except KeyError:
@@ -163,8 +163,8 @@ class _Node(object):
         else:
             if not self.allow_non_node_childs:
                 raise ValueError("Non-node childs are not allowed.")
-        key = self.aliaser is None and key or self.aliaser.unalias(key)
-        self._node_impl().__setitem__(self, key, val)
+        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
+        self._node_impl().__setitem__(self, unaliased_key, val)
 
     def __delitem__(self, key):
         # blend in our nodespaces as children, with name __<name>__
@@ -178,7 +178,7 @@ class _Node(object):
         if self._index is not None:
             for iuuid in self[key]._to_delete():
                 del self._index[iuuid]
-        unaliased_key = self.aliaser is None and key or self.aliaser.unalias(key)
+        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
         self._node_impl().__delitem__(self, unaliased_key)
 
     def _aliased_iter(self):
