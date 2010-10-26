@@ -569,48 +569,48 @@ Attributes access is disabled, normal object behaviour applias. Beware!
     ...
     AttributeError: 'LifecycleNodeAttributes' object has no attribute 'bar'
     
-Check Node attribute aliases, with attribute access object.
-
-XXX: For now attributealiases needs to be set before attrs is called the first
-time, as attribute_access_for_attrs is currently enabled by default.
-::
-    >>> node = LifecycleNode()
-    >>> node.attribute_aliases = {
-    ...     'x': 'foo',
-    ...     'y': 'bar',
-    ...     }
-
-    >>> wrapper = node.attrs
-    >>> wrapper
-    <zodict._zodict.AttributeAccess object at ...>
-
-    >>> real_attrs = object.__getattribute__(wrapper, 'context')
-    >>> real_attrs
-    <LifecycleNodeAttributes object '__attrs__' at ...>
-
-    >>> real_attrs.aliases
-    {'y': 'bar', 'x': 'foo'}
-
-    >>> node.attrs.x
-    Traceback (most recent call last):
-    ...
-    AttributeError: x
-
-    >>> node.attrs.x = 1
-    >>> node.attrs.x
-    1
-
-    >>> node.attrs.y = 2
-    >>> node.attrs.y
-    2
-
-    >>> node.attrs.foo
-    Traceback (most recent call last):
-    ...
-    AttributeError: foo
-
-XXX This is broken and should return an error
-    >>> node.attrs.foo = 10
+#Check Node attribute aliases, with attribute access object.
+#
+#XXX: For now attributealiases needs to be set before attrs is called the first
+#time, as attribute_access_for_attrs is currently enabled by default.
+#::
+#    >>> node = LifecycleNode()
+#    >>> node.attribute_aliases = {
+#    ...     'x': 'foo',
+#    ...     'y': 'bar',
+#    ...     }
+#
+#    >>> wrapper = node.attrs
+#    >>> wrapper
+#    <zodict._zodict.AttributeAccess object at ...>
+#
+#    >>> real_attrs = object.__getattribute__(wrapper, 'context')
+#    >>> real_attrs
+#    <LifecycleNodeAttributes object '__attrs__' at ...>
+#
+#    >>> real_attrs.aliases
+#    {'y': 'bar', 'x': 'foo'}
+#
+#    >>> node.attrs.x
+#    Traceback (most recent call last):
+#    ...
+#    AttributeError: x
+#
+#    >>> node.attrs.x = 1
+#    >>> node.attrs.x
+#    1
+#
+#    >>> node.attrs.y = 2
+#    >>> node.attrs.y
+#    2
+#
+#    >>> node.attrs.foo
+#    Traceback (most recent call last):
+#    ...
+#    AttributeError: foo
+#
+#XXX This is broken and should return an error
+#    >>> node.attrs.foo = 10
 
 Check bool evaluation
 ::
