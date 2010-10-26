@@ -428,62 +428,6 @@ deprecated('AttributedNode',
            "default in 2.1")
 
 
-# WIP
-class NodespaceAliaser(_Node):
-    """Performs aliasing/unaliasing for node children
-
-    Is not the parent of the its children, the children don't know about their
-    name here.
-
-    Future additional mode: children are wrapped, wrapper knows name and we are
-    parent of wrapper
-
-    XXX: Actually this not specific to node, but can alias any dictionary
-    """
-    def __init__(self, context, aliaser=None):
-        """
-        ``context``
-            the node whose children to alias
-        ``aliaser``
-            the aliaser to be used
-        """
-        self.context = context
-        self.aliaser = aliaser
-
-    def __delitem__(self, key):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        try:
-            del self.context[unaliased_key]
-        except KeyError:
-            raise KeyError(key)
-
-    def __getitem__(self, key):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        try:
-            return self.context[unaliased_key]
-        except KeyError:
-            raise KeyError(key)
-
-    def __setitem__(self, key, val):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        try:
-            self.context[unaliased_key] = val
-        except KeyError:
-            raise KeyError(key)
-
-    def __iter__(self):
-        for key in self.context:
-            try:
-                yield self.aliaser and self.aliaser.alias(key) or key
-            except KeyError:
-                if IEnumerableMapping.providedBy(self.aliaser):
-                    # an enumerable aliaser whitelists, we skip non-listed keys
-                    continue
-                # no whitelisting and a KeyError on our internal data: that's
-                # bad! Most probably not triggered on _Node but a subclass
-                raise RuntimeError(u"Inconsist internal node state")
-
-
 class LifecycleNodeAttributes(NodeAttributes):
     """XXX If we merge this into node, do we really need the event on the node?
     a) LifecycleNode current would trigger event on the attrs node
@@ -550,3 +494,59 @@ class LifecycleNode(AttributedNode):
         objectEventNotify(self.events['detached'](node, oldParent=self,
                                                   oldName=key))
         return node
+
+
+# WIP
+class NodespaceAliaser(_Node):
+    """Performs aliasing/unaliasing for node children
+
+    Is not the parent of the its children, the children don't know about their
+    name here.
+
+    Future additional mode: children are wrapped, wrapper knows name and we are
+    parent of wrapper
+
+    XXX: Actually this not specific to node, but can alias any dictionary
+    """
+    def __init__(self, context, aliaser=None):
+        """
+        ``context``
+            the node whose children to alias
+        ``aliaser``
+            the aliaser to be used
+        """
+        self.context = context
+        self.aliaser = aliaser
+
+    def __delitem__(self, key):
+        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
+        try:
+            del self.context[unaliased_key]
+        except KeyError:
+            raise KeyError(key)
+
+    def __getitem__(self, key):
+        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
+        try:
+            return self.context[unaliased_key]
+        except KeyError:
+            raise KeyError(key)
+
+    def __setitem__(self, key, val):
+        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
+        try:
+            self.context[unaliased_key] = val
+        except KeyError:
+            raise KeyError(key)
+
+    def __iter__(self):
+        for key in self.context:
+            try:
+                yield self.aliaser and self.aliaser.alias(key) or key
+            except KeyError:
+                if IEnumerableMapping.providedBy(self.aliaser):
+                    # an enumerable aliaser whitelists, we skip non-listed keys
+                    continue
+                # no whitelisting and a KeyError on our internal data: that's
+                # bad! Most probably not triggered on _Node but a subclass
+                raise RuntimeError(u"Inconsist internal node state")
