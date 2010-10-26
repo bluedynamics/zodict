@@ -366,8 +366,11 @@ class _Node(object):
                 print "%s%s" % (indent * ' ', node)
 
     def __repr__(self):
+        # XXX: This is mainly used in doctest, I think
+        # doctest fails if we output utf-8
+        name = unicode(self.__name__).encode('ascii', 'replace')
         return "<%s object '%s' at %s>" % (self.__class__.__name__,
-                                           str(self.__name__),
+                                           name,
                                            hex(id(self))[:-1])
 
     __str__ = __repr__
