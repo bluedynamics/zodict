@@ -403,8 +403,6 @@ class AttributedNode(Node):
             attrs = self.nodespaces['__attrs__'] = self.attributes_factory(self)
             attrs.__name__ = '__attrs__'
             attrs.__parent__ = self
-        if self.attribute_aliases:
-            attrs.aliases = self.attribute_aliases
         if self.attribute_access_for_attrs:
             return AttributeAccess(attrs)
         return attrs
