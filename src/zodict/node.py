@@ -437,6 +437,8 @@ class NodespaceAliaser(_Node):
 
     Future additional mode: children are wrapped, wrapper knows name and we are
     parent of wrapper
+
+    XXX: Actually this not specific to node, but can alias any dictionary
     """
     def __init__(self, context, aliaser=None):
         """
