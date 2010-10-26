@@ -436,88 +436,104 @@ Access Node children via AttributeAccess.
     >>> attraccess.child1
     <Node object 'child1' at ...>
 
-#Check Node aliases
-#------------------
-#::
-#    >>> from zodict.aliaser import DictAliaser
-#    >>> tree1.aliaser = DictAliaser({
-#    ...     'attr1': 'a',
-#    ...     'attr2': 'b',
-#    ...     'newattr': 'notthereyet',
-#    ... })
-#
-#    >>> tree1['attr1']
-#    <Node object 'a' at ...>
-#
-#    >>> tree1['attr2']
-#    <Node object 'b' at ...>
-#
-#    >>> tree1['a']
-#    Traceback (most recent call last):
-#    ...
-#    KeyError: 'a'
-#
-#    >>> 'attr1' in tree1
-#    True
-#
-#    >>> 'a' in tree1
-#    False
-#
-#If only an alias exists but the underlaying attr does not exist: KeyError
-#::
-#    >>> tree1['newattr']
-#    Traceback (most recent call last):
-#    ...
-#    KeyError: 'newattr'
-#
-#    >>> 'newattr' in tree1
-#    False
-#
-#    >>> [x for x in tree1]
-#    ['attr1', 'attr2']
-#
-#    >>> tree1.keys()
-#    ['attr1', 'attr2']
-#
-#    >>> len(tree1)
-#    2
-#
-#    >>> tree1['uii'] = Node()
-#    Traceback (most recent call last):
-#    ...
-#    KeyError: 'uii'
-#
-#    # XXX: Should the __name__ be 'attr1' or 'a' ?
-#    >>> tree1['newattr'] = Node()
-#    >>> tree1['newattr']
-#    <Node object 'newattr' at ...>
-#
-#    # XXX: Should the __name__ be 'foo' or 'a' ?
-#    >>> tree1['newattr'].__name__
-#    'newattr'
-#
-#    >>> 'newattr' in tree1
-#    True
-#
-#    >>> [x for x in tree1]
-#    ['attr1', 'attr2', 'newattr']
-#
-#    >>> tree1.keys()
-#    ['attr1', 'attr2', 'newattr']
-#
-#    >>> len(tree1)
-#    3
-#
-#Check invalid aliaser.
-#
-#XXX: implement aliaser as setter getter property and initialize IDictAliaser
-#if IEnumerableMapping is set as value.
-#::
-#    >>> tree1.aliaser = Zodict(data=(('attr1_', 'attr1'), ('attr2_', 'attr2')))
-#    >>> [x for x in tree1]
-#    Traceback (most recent call last):
-#      ...
-#    AttributeError: 'Zodict' object has no attribute 'alias'
+Check NodespaceAliaser
+----------------------
+::
+    >>> tree1.keys()
+    ['x', 'a', 'b']
+
+    >>> from zodict.node import NodespaceAliaser
+    >>> aliased_tree1 = NodespaceAliaser(tree1)
+    >>> aliased_tree1.keys()
+    ['x', 'a', 'b']
+
+    >>> from zodict.aliaser import DictAliaser
+    >>> aliased_tree1.aliaser = DictAliaser({
+    ...     'attr1': 'a',
+    ...     'attr2': 'b',
+    ...     'newattr': 'notthereyet',
+    ... })
+
+    >>> aliased_tree1['attr1']
+    <Node object 'a' at ...>
+
+    >>> aliased_tree1['attr2']
+    <Node object 'b' at ...>
+
+    >>> aliased_tree1['a']
+    Traceback (most recent call last):
+    ...
+    KeyError: 'a'
+
+    >>> 'attr1' in aliased_tree1
+    True
+
+    >>> 'a' in aliased_tree1
+    False
+
+If only an alias exists but the underlaying attr does not exist: KeyError
+::
+    >>> aliased_tree1['newattr']
+    Traceback (most recent call last):
+    ...
+    KeyError: 'newattr'
+
+    >>> 'newattr' in aliased_tree1
+    False
+
+    >>> [x for x in aliased_tree1]
+    ['attr1', 'attr2']
+
+    >>> aliased_tree1.keys()
+    ['attr1', 'attr2']
+
+    >>> len(aliased_tree1)
+    2
+
+    >>> aliased_tree1['uii'] = Node()
+    Traceback (most recent call last):
+    ...
+    KeyError: 'uii'
+
+The aliased nodes are named after their real name and the aliaser is not parent
+but the real container is.
+
+    >>> aliased_tree1['newattr'] = Node()
+    >>> aliased_tree1['newattr']
+    <Node object 'notthereyet' at ...>
+
+    >>> aliased_tree1['newattr'].__parent__ is aliased_tree1
+    False
+    >>> aliased_tree1['newattr'].__parent__ is tree1
+    True
+
+    >>> aliased_tree1['newattr'].__name__
+    'notthereyet'
+
+    >>> 'newattr' in aliased_tree1
+    True
+    >>> 'notthereyet' in tree1
+    True
+
+    >>> [x for x in aliased_tree1]
+    ['attr1', 'attr2', 'newattr']
+
+    >>> aliased_tree1.keys()
+    ['attr1', 'attr2', 'newattr']
+
+    >>> len(aliased_tree1)
+    3
+
+Check invalid aliaser.
+
+XXX: implement aliaser as setter getter property and initialize IDictAliaser
+if IEnumerableMapping is set as value.
+::
+    >>> aliased_tree1.aliaser = Zodict(data=(('attr1_', 'attr1'),))
+    >>> [x for x in aliased_tree1]
+    Traceback (most recent call last):
+      ...
+    AttributeError: 'Zodict' object has no attribute 'alias'
 
 Check Node attributes, they are a node themselves, IFullMapping and aliasing
 are tested already for the node.
