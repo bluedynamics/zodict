@@ -357,7 +357,7 @@ class _Node(object):
 
     @property
     def noderepr(self):
-        name = str(self.__name__)
+        name = unicode(self.__name__).encode('ascii', 'replace')
         return str(self.__class__) + ': ' + name[name.find(':') + 1:]
 
     def printtree(self, indent=0):
