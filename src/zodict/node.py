@@ -178,13 +178,38 @@ class _Node(object):
                 del self._index[iuuid]
         self._node_impl().__delitem__(self, key)
 
+# XXX: If these are undesired here, because they override the ones of a
+# node_impl, we need to move them to some other class. It is convenient to
+# have them here in order to create full-blown nodes by subclassing _Node and
+# providing __delitem__, __getitem__, __iter__, __setitem__.
 
     def iteritems(self):
         for key in self:
             yield key, self[key]
 
+    def iterkeys(self):
+        return self.__iter__()
+
+    def itervalues(self):
+        for key in self:
+            yield self[key]
+
+    def items(self):
+        return [x for x in self.iteritems()]
+
     def keys(self):
         return [x for x in self]
+
+    def __len__(self):
+        # XXX: could also be an idea:
+        #try:
+        #    return self._node_impl().__len__()
+        #except AttributeError:
+        #    return len(self.keys())
+        return len(self.keys())
+
+    def values(self):
+        return [x for x in self.itervalues()]
     
     def _to_delete(self):
         todel = [int(self.uuid)]
