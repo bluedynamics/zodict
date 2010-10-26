@@ -524,6 +524,7 @@ class AliasedNodespace(_Node):
         """
         super(AliasedNodespace, self).__init__(index=False)
         self.context = context
+        self.__name__ = context.__name__
         self.aliaser = aliaser
 
     def __delitem__(self, key):
@@ -558,3 +559,6 @@ class AliasedNodespace(_Node):
                 # no whitelisting and a KeyError on our internal data: that's
                 # bad! Most probably not triggered on _Node but a subclass
                 raise RuntimeError(u"Inconsist internal node state")
+
+    def __repr__(self):
+        return "Aliased " + self.context.__repr__()
