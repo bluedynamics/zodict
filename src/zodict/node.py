@@ -75,7 +75,11 @@ class _Node(object):
         # XXX: this looks to me like we are calling the node_impl's
         # super-class' __init__ and not node_impl's __init__. Is this what we
         # want?
-        super(self._node_impl(), self).__init__()
+        # XXX: feels hackish, should be split into a abstract node and one that
+        # expects an implementation like here. Corresponding test in node.txt
+        # very beginning should then be enabled again
+        if self._node_impl() is not None:
+            super(self._node_impl(), self).__init__()
         self.__parent__ = None
         self.__name__ = name
         self._adopting = True

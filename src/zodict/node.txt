@@ -5,9 +5,11 @@ Abstract _Node, subclasses need to implement _node_impl and subclass it
 ::
     >>> from zodict.node import _Node
     >>> node = _Node()
-    Traceback (most recent call last):
-    ...
-    TypeError: super() argument 1 must be type, not None
+
+# XXX: see comment in _Node.__init__
+#    Traceback (most recent call last):
+#    ...
+#    TypeError: super() argument 1 must be type, not None
 
     >>> class MyNode(_Node, dict):
     ...     def _node_impl(self):
