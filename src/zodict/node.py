@@ -133,16 +133,28 @@ class _Node(object):
     def _adopt(self, key, val):
         """Adopting happens eg during ``__setitem__``.
         """
+        # remember val __name__ and __parent__ for reverting
+        old__name__ = val.__name__
+        old__parent__ = val.__parent__
+        # immediately set __name__ and __parent__ on val, implementation often
+        # require hierarchy information to acquire keys
+        val.__name__ = key
+        val.__parent__ = self
         has_children = False
+        # XXX: maybe skip this check and just use self._index for condition in
+        #      next code block. then remembering origin __name__ and __parent__
+        #      gets obsolete
         for valkey in val.iterkeys():
             has_children = True
             break
         if has_children and self._index is not None:
             keys = set(self._index.keys())
             if keys.intersection(val._index.keys()):
+                val.__name__ = old__name__
+                val.__parent__ = old__parent__
                 raise ValueError, u"Node with uuid already exists"
-        val.__name__ = key
-        val.__parent__ = self
+        # val.__name__ = key
+        # val.__parent__ = self
         if self._index is not None:
             self._index.update(val._index)
             val._index = self._index
@@ -158,7 +170,7 @@ class _Node(object):
             self.nodespaces[key] = val
             # index checks below must not happen for other nodespace.
             return
-        if inspect.isclass(val):
+        if not self.allow_non_node_childs and inspect.isclass(val):
             raise ValueError, u"It isn't allowed to use classes as values."
         if isinstance(val, _Node):
             if self._adopting:
