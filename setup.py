@@ -7,7 +7,7 @@ import sys, os
 version = '1.9.3'
 shortdesc = 'zope.interface compliant ordered dictionary and zope.location ' + \
             'aware node.'
-longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
+longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 tests_require = [
     'interlude',
     'guppy',
