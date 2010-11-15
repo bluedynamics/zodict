@@ -25,6 +25,18 @@ except ImportError, e: # BBB
     class IObjectModifiedEvent(IObjectEvent): pass
     class IObjectRemovedEvent(IObjectEvent): pass
 
+try:
+    from node.interfaces import IAliaser
+except ImportError:
+    node = __import__('node.interfaces', {})
+    IAliaser = node.interfaces.IAliaser
+# XXX: deprecated message as soon as the new location is stable
+#deprecated(
+#    'IAliaser',
+#    "Will be removed in 2.0, Use node.interfaces.IAliaser instead."
+#    )
+
+
 class IAttributeAccess(Interface):
     """Provides Attribute access to dict like context.
     
@@ -53,16 +65,6 @@ class IAttributeAccess(Interface):
         """Call __delitem__ on context.
         """
 
-class IAliaser(Interface):
-    """Generic Aliasing Interface
-    """
-    def alias(key):
-        """returns the alias for a key
-        """
-
-    def unalias(aliased_key):
-        """returns the key belonging to an aliased_key
-        """
 
 class INode(ILocation, IFullMapping):
     """A node.

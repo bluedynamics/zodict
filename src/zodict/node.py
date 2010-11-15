@@ -6,7 +6,7 @@ import inspect
 from odict import odict
 from odict.pyodict import _nil
 from zope.interface import implements
-from zope.interface.common.mapping import IReadMapping, IEnumerableMapping
+from zope.interface.common.mapping import IReadMapping
 from zope.deprecation import deprecated
 try:
     from zope.location import LocationIterator
@@ -31,6 +31,24 @@ from zodict.events import (
     NodeModifiedEvent,
     NodeDetachedEvent,
 )
+
+# XXX: python 2.4 does relative imports and would not find the toplevel node
+# package, 2.5 and 2.6 support absolute_import behavior via from future import,
+# 2.7 will do absolute imports by default. As soon as we drop 2.4 support we
+# can switch to:
+#from __future__ import absolute_import
+#from node.aliasing import AliasedNodespace
+try:
+    from node.aliasing import AliasedNodespace
+except ImportError:
+    # 2.4 or 2.5/2.5 without absolute_import turned on
+    node = __import__('node.aliasing', {})
+    AliasedNodespace = node.aliasing.AliasedNodespace
+# XXX: deprecated message as soon as the new location is stable
+#deprecated(
+#    'AliasedNodespace',
+#    "Will be removed in 2.0, Use node.aliasing.AliasedNodespace instead.",
+#    )
 
 
 class NodeIndex(object):
@@ -515,64 +533,3 @@ class LifecycleNode(AttributedNode):
         objectEventNotify(self.events['detached'](node, oldParent=self,
                                                   oldName=key))
         return node
-
-
-# WIP
-class AliasedNodespace(_Node):
-    """Performs aliasing/unaliasing for node children
-
-    Is not the parent of the its children, the children don't know about their
-    name here.
-
-    Future additional mode: children are wrapped, wrapper knows name and we are
-    parent of wrapper
-
-    XXX: Actually this not specific to node, but can alias any dictionary
-    """
-    def __init__(self, context, aliaser=None):
-        """
-        ``context``
-            the node whose children to alias
-        ``aliaser``
-            the aliaser to be used
-        """
-        super(AliasedNodespace, self).__init__(index=False)
-        self.context = context
-        self.__name__ = context.__name__
-        self.aliaser = aliaser
-
-    def __delitem__(self, key):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        try:
-            del self.context[unaliased_key]
-        except KeyError:
-            raise KeyError(key)
-
-    def __getitem__(self, key):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        try:
-            return self.context[unaliased_key]
-        except KeyError:
-            raise KeyError(key)
-
-    def __setitem__(self, key, val):
-        unaliased_key = self.aliaser and self.aliaser.unalias(key) or key
-        try:
-            self.context[unaliased_key] = val
-        except KeyError:
-            raise KeyError(key)
-
-    def __iter__(self):
-        for key in self.context:
-            try:
-                yield self.aliaser and self.aliaser.alias(key) or key
-            except KeyError:
-                if IEnumerableMapping.providedBy(self.aliaser):
-                    # an enumerable aliaser whitelists, we skip non-listed keys
-                    continue
-                # no whitelisting and a KeyError on our internal data: that's
-                # bad! Most probably not triggered on _Node but a subclass
-                raise RuntimeError(u"Inconsist internal node state")
-
-    def __repr__(self):
-        return "Aliased " + self.context.__repr__()

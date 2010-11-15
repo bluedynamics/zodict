@@ -38,6 +38,7 @@ setup(name='zodict',
       install_requires=[
           'setuptools',
           'uuid', # only needed for python2.4!
+          'node',
           'odict',
           'zope.location',
           'zope.lifecycleevent',
