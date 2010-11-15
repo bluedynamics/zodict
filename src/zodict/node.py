@@ -282,6 +282,7 @@ class _Node(object):
         return self._index.get(int(uuid))
 
     def filtereditems(self, interface):
+        # XXX: inconsistent naming, this should be filtereditervalues()
         for node in self.values():
             if interface.providedBy(node):
                 yield node
@@ -369,6 +370,7 @@ class _Node(object):
 
     @property
     def noderepr(self):
+        # XXX: why do we have noderepr and __repr__?
         name = unicode(self.__name__).encode('ascii', 'replace')
         return str(self.__class__) + ': ' + name[name.find(':') + 1:]
 
