@@ -19,6 +19,8 @@ from zope.deprecation import deprecated
 deprecated('zodict', "'zodict' has been renamed to 'Zodict'. Please modify your"
                      " code and import to use: 'from zodict import Zodict'")
 
+
+# XXX: should move to node.utils?, so far it is used by node.aliasing
 class ReverseMapping(object):
     """Reversed IEnumerableMapping.
     """
@@ -66,6 +68,7 @@ class ReverseMapping(object):
 
     def __len__(self):
         return len(self.context)
+
 
 class AttributeAccess(object):
     """If someone really needs to access the original context (which should not 
