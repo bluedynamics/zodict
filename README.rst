@@ -262,6 +262,13 @@ Alternative it can be used in older Python version with in a try: finally.
     ...     def __setitem__(self, key, val):
     ...         super(LockedNode, self).__setitem__(key, val)
 
+Contributors
+============
+
+- Robert Niederreiter <rnix@squarewave.at>
+
+- Jens Klein <jens@bluedynamics.com>
+
 Changes
 =======
 
@@ -469,10 +476,3 @@ Version 1.1
 
 - Add ``INode`` interface and implementation.
   [rnix, 2009-03-18]
-
-Credits
-=======
-
-- Written by Robert Niederreiter <rnix@squarewave.at>
-
-- Contributions and ideas by Jens Klein <jens@bluedynamics.com>
