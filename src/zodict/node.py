@@ -162,18 +162,19 @@ class _Node(object):
         # XXX: maybe skip this check and just use self._index for condition in
         #      next code block. then remembering origin __name__ and __parent__
         #      gets obsolete
-        for valkey in val.iterkeys():
-            has_children = True
-            break
-        if has_children and self._index is not None:
-            keys = set(self._index.keys())
-            if keys.intersection(val._index.keys()):
-                val.__name__ = old__name__
-                val.__parent__ = old__parent__
-                raise ValueError, u"Node with uuid already exists"
-        # val.__name__ = key
-        # val.__parent__ = self
         if self._index is not None:
+            # XXX: this iterkeys was a problem with the current LDAPNode's
+            # __setitem__. As we don't have indexing on them we circumvented
+            # the problem.
+            for valkey in val.iterkeys():
+                has_children = True
+                break
+            if has_children:
+                keys = set(self._index.keys())
+                if keys.intersection(val._index.keys()):
+                    val.__name__ = old__name__
+                    val.__parent__ = old__parent__
+                    raise ValueError, u"Node with uuid already exists"
             self._index.update(val._index)
             val._index = self._index
 
