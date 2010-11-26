@@ -9,6 +9,8 @@ shortdesc = 'zope.interface compliant ordered dictionary and zope.location ' + \
             'aware node.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 tests_require = [
+    'zope.location',
+    'zope.app.location',
     'interlude',
     'guppy',
 ]
@@ -40,7 +42,6 @@ setup(name='zodict',
           'uuid', # only needed for python2.4!
           'node',
           'odict',
-          'zope.location',
           'zope.lifecycleevent',
           'zope.deprecation', # can be removed with v.2.0
       ],
