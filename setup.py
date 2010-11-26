@@ -10,7 +10,6 @@ shortdesc = 'zope.interface compliant ordered dictionary and zope.location ' + \
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 tests_require = [
     'zope.location',
-    'zope.app.location',
     'interlude',
     'guppy',
 ]
