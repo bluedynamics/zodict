@@ -1,7 +1,7 @@
 /build
 /coverage
 /dist
-/*.egg
+/eggs
 /bin
 /.installed.cfg
 /.mr.developer.cfg
@@ -11,3 +11,4 @@
 *.pyc
 *.egg-info
 .mrsd
+.*.swp

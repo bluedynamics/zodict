@@ -9,10 +9,6 @@ from zope.interface import implements
 from zope.interface.common.mapping import IReadMapping
 from zope.deprecation import deprecated
 try:
-    from zope.location import LocationIterator
-except ImportError, e:
-    from zope.app.location import LocationIterator # BBB
-try:
     from zope.component.event import objectEventNotify
 except ImportError, e:
     from zope.app.event.objectevent import objectEventNotify # BBB
@@ -49,6 +45,17 @@ except ImportError:
 #    'AliasedNodespace',
 #    "Will be removed in 2.0, Use node.aliasing.AliasedNodespace instead.",
 #    )
+
+
+def LocationIterator(object):
+    """Iterate over an object and all of its parents.
+
+    Copied from ``zope.location.LocationIterator``.
+
+    """
+    while object is not None:
+        yield object
+        object = getattr(object, '__parent__', None)
 
 
 class NodeIndex(object):

@@ -10,7 +10,27 @@ from zope.interface.common.mapping import (
 try:
     from zope.location.interfaces import ILocation
 except ImportError, e:
-    from zope.app.location.interfaces import ILocation # BBB
+    try:
+        from zope.app.location.interfaces import ILocation # BBB
+    except ImportError, e:
+        class ILocation(Interface):
+            """Objects that can be located in a hierachy.
+
+            This is a replacement for ``zope[.app].interface.ILocation``, as
+            zope[.app].interface cannot be easily used on App Engine due to its
+            dependency on ``zope.proxy``, which has C extensions that are not
+            implemented in Python.
+
+            This implementation is slightly simpler than the original one, as
+            this is only intended to be used on App Engine, where the original
+            interface is not available anyway, so probably nobody will register
+            any adapters/utilities for it.
+
+            """
+
+            __parent__ = Attribute('The parent in the location hierarchy.')
+
+            __name__ = Attribute('The name within the parent')
 try:
     from zope.lifecycleevent import (
         IObjectCreatedEvent,
