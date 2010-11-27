@@ -1,0 +1,66 @@
+Interfaces
+==========
+
+Node objects implement ``zope.location.interfaces.ILocation``. If it is not
+available, then falls back to ``zope.app.location.interfaces.ILocation``. If
+neither of those are available, then it will provide its own implementation of
+the ``ILocation`` interface, ``zodict.interfaces.ILocation``.
+
+To test it, we create a new-style import hook (see PEP 302).
+::
+    >>> import sys
+    >>> class Blocker(list):
+    ...     """Blocks modules from being imported."""
+    ...     def append(self, item):
+    ...         del sys.modules[item]
+    ...         return super(Blocker, self).append(item)
+    ...     def find_module(self, fullname, path):
+    ...         if fullname in self:
+    ...             raise ImportError(fullname)
+
+    >>> blocker = Blocker()
+    >>> sys.meta_path.append(blocker)
+
+Register a utility for ``zodict.interfaces.INode``.
+:: 
+    >>> from zope.component import getGlobalSiteManager, getUtility
+    >>> from zodict.interfaces import INode
+    >>> from zodict.node import Node
+    >>> gsm = getGlobalSiteManager()
+    >>> node = Node()
+    >>> gsm.registerUtility(node, INode)
+
+That utility is now available through ``zope.location.interfaces.ILocation``.
+::
+    >>> from zope.location.interfaces import ILocation
+    >>> getUtility(ILocation) is node
+    True
+
+Also, the ``Node`` class implements the ``ILocation`` interface.
+::
+    >>> ILocation.implementedBy(Node)
+    True
+
+    >>> ILocation.providedBy(node)
+    True
+
+If ``zope.location.interfaces.ILocation`` is not available, Node will provide
+one of the fallback interfaces.
+::
+    >>> blocker.append('zope.location.interfaces')
+    >>> import zope.location.interfaces
+    Traceback (most recent call last):
+    ...
+    ImportError: No module named interfaces
+
+    >>> import zodict.interfaces
+    >>> reload(zodict.interfaces)
+    <module 'zodict.interfaces' from '...'>
+
+    >>> from zodict.interfaces import ILocation
+    >>> ILocation
+    <InterfaceClass zodict.interfaces.ILocation>
+
+Remove the import hook.
+::
+    >>> del sys.meta_path[-1]
