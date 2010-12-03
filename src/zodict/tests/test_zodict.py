@@ -17,6 +17,7 @@ TESTFILES = [
     '../events.txt',
     '../composition.txt',
     '../locking.txt',
+    '../interfaces.txt',
 ]
 
 def test_suite():
