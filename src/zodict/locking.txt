@@ -31,6 +31,8 @@ We need a thread implementation which checks for access collision.
     ...         time.sleep(0.1)
     ...         dummy._waiting = False
     ...         lock.release()
+    ...     def is_alive(self):  # Python 2.5
+    ...         return self.isAlive()
 
     >>> t1 = TestThread()
     >>> t2 = TestThread()
