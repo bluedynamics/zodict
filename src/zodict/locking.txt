@@ -51,31 +51,30 @@ We expect ``t1`` to proceed without waiting, ``t2`` waited some time.
     >>> while t1.is_alive() or t2.is_alive():
     ...     time.sleep(0.1)
 
-Repeat test using with statement if python version >= 2.6.
+Repeat test using with statement.
 ::
 
-    >>> import sys
-    >>> if sys.version_info >= (2, 6):
-    ...     class TestThread2_6(Thread):
-    ...         _waited = False
-    ...         def run(self):
-    ...             while dummy._waiting:
-    ...                 self._waited = True
-    ...                 time.sleep(0.2)
-    ...             with TreeLock(dummy):
-    ...                 dummy._waiting = True
-    ...                 time.sleep(0.1)
-    ...                 dummy._waiting = False
-    ...     t1 = TestThread2_6()
-    ...     t2 = TestThread2_6()
-    ...     t1.start()
-    ...     t2.start()
-    ...     if t1._waited:
-    ...         raise Exception(u"t1 was not expected to wait")
-    ...     if not t2._waited:
-    ...         raise Exception(u"t2 was expected to wait")
-    ...     while t1.is_alive() or t2.is_alive():
-    ...         time.sleep(0.1)
+    >>> from __future__ import with_statement
+    ... class TestThread2_6(Thread):
+    ...     _waited = False
+    ...     def run(self):
+    ...         while dummy._waiting:
+    ...             self._waited = True
+    ...             time.sleep(0.2)
+    ...         with TreeLock(dummy):
+    ...             dummy._waiting = True
+    ...             time.sleep(0.1)
+    ...             dummy._waiting = False
+    ... t1 = TestThread2_6()
+    ... t2 = TestThread2_6()
+    ... t1.start()
+    ... t2.start()
+    ... if t1._waited:
+    ...     raise Exception(u"t1 was not expected to wait")
+    ... if not t2._waited:
+    ...     raise Exception(u"t2 was expected to wait")
+    ... while t1.is_alive() or t2.is_alive():
+    ...     time.sleep(0.1)
 
 Test locking decorator.
 ::
