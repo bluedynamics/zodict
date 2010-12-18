@@ -27,7 +27,7 @@ Check NodeCreation.
 
     >>> root = LifecycleNode('root')
     >>> handled_events
-    [<zodict.events.NodeCreatedEvent object at ...>]
+    [<node.events.NodeCreatedEvent object at ...>]
 
 Check Node adding.
 ::
@@ -36,8 +36,8 @@ Check Node adding.
     >>> child1 = LifecycleNode()
     >>> root['child1'] = child1
     >>> handled_events
-    [<zodict.events.NodeCreatedEvent object at ...>,
-    <zodict.events.NodeAddedEvent object at ...>]
+    [<node.events.NodeCreatedEvent object at ...>, 
+    <node.events.NodeAddedEvent object at ...>]
 
 Check Node modification.
 ::
@@ -56,12 +56,12 @@ Node modified events if the attributes nodespace is changed
 
     >>> child1.attributes['foo'] = 1
     >>> handled_events
-    [<zodict.events.NodeModifiedEvent object at ...>]
+    [<node.events.NodeModifiedEvent object at ...>]
     
     >>> del handled_events[0]
     >>> del child1.attributes['foo']  
     >>> handled_events
-    [<zodict.events.NodeModifiedEvent object at ...>]
+    [<node.events.NodeModifiedEvent object at ...>]
 
 Check Node Deletion.
 :: 
@@ -69,7 +69,7 @@ Check Node Deletion.
     >>> handled_events = []
     >>> del root['child1']
     >>> handled_events
-    [<zodict.events.NodeRemovedEvent object at ...>]
+    [<node.events.NodeRemovedEvent object at ...>]
 
 Check Node Detach.
 :: 
@@ -79,4 +79,4 @@ Check Node Detach.
     >>> handled_events = []
     >>> detached = root.detach('child2')    
     >>> handled_events
-    [<zodict.events.NodeDetachedEvent object at ...>]
+    [<node.events.NodeDetachedEvent object at ...>]

@@ -36,9 +36,9 @@ We have a base node which provides the default interface implementation.
     >>> print h.iso(Node(), Zodict(), odict(), dict())
     Partition of a set of 4 objects. Total size = 1168 bytes.
      Index  Count   %     Size   % Cumulative  % Kind (class / dict of class)
-         0      1  25      296  25       296  25 odict.pyodict.odict
-         1      1  25      296  25       592  51 zodict._zodict.Zodict
-         2      1  25      296  25       888  76 zodict.node.Node
+         0      1  25      296  25       296  25 node.base.Node
+         1      1  25      296  25       592  51 node.utils.Zodict
+         2      1  25      296  25       888  76 odict.pyodict.odict
          3      1  25      280  24      1168 100 dict (no owner)
 
 Location related attributes.
@@ -56,7 +56,7 @@ in tree via it's uuid. Indexing is enabled by default, you can disable it by
 passing ``index=False`` to the constructor.
 ::
     >>> root.index
-    <zodict.node.NodeIndex object at ...>
+    <node.base.NodeIndex object at ...>
 
     >>> unindexednode = Node('foo', index=False)
     >>> unindexednode.index
@@ -66,8 +66,9 @@ passing ``index=False`` to the constructor.
 
 Tree node index.
 ::
+
     >>> root.index
-    <zodict.node.NodeIndex object at ...>
+    <node.base.NodeIndex object at ...>
 
     >>> from zope.interface.common.mapping import IReadMapping
     >>> IReadMapping.providedBy(root.index)
@@ -144,11 +145,11 @@ Add some children and check node containment stuff.
     3
 
     >>> root.printtree()
-    <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child
-        <class 'zodict.node.Node'>: subchild
-        <class 'zodict.node.Node'>: subchild2
-        1
+    <class 'node.base.Node'>: root
+      <class 'node.base.Node'>: child
+        <class 'node.base.Node'>: subchild
+        <class 'node.base.Node'>: subchild2
+      1
 
 Adding in indexed Node with same uuid or the same node twice fails.
 ::
@@ -265,16 +266,16 @@ Delete child. All checked uuids above must be deleted from index.
     False
 
     >>> root.printtree()
-    <class 'zodict.node.Node'>: root
+    <class 'node.base.Node'>: root
 
 Node insertion. There exist an ``insertbefore`` and ``insertafter`` function.
 ::
     >>> root['child1'] = Node()
     >>> root['child2'] = Node()
     >>> root.printtree()
-    <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child1
-      <class 'zodict.node.Node'>: child2
+    <class 'node.base.Node'>: root
+      <class 'node.base.Node'>: child1
+      <class 'node.base.Node'>: child2
 
     >>> node = Node()
     >>> root.insertbefore(node, root['child1'])
@@ -290,29 +291,29 @@ Node insertion. There exist an ``insertbefore`` and ``insertafter`` function.
     >>> node.__name__ = 'child3'
     >>> root.insertbefore(node, root['child2'])
     >>> root.printtree()
-    <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child1
-      <class 'zodict.node.Node'>: child3
-      <class 'zodict.node.Node'>: child2
+    <class 'node.base.Node'>: root
+      <class 'node.base.Node'>: child1
+      <class 'node.base.Node'>: child3
+      <class 'node.base.Node'>: child2
 
     >>> node = Node('child4')
     >>> root.insertafter(node, root['child3'])
     >>> root.printtree()
-    <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child1
-      <class 'zodict.node.Node'>: child3
-      <class 'zodict.node.Node'>: child4
-      <class 'zodict.node.Node'>: child2
+    <class 'node.base.Node'>: root
+      <class 'node.base.Node'>: child1
+      <class 'node.base.Node'>: child3
+      <class 'node.base.Node'>: child4
+      <class 'node.base.Node'>: child2
 
     >>> node = Node('child5')
     >>> root.insertafter(node, root['child2'])
     >>> root.printtree()
-    <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child1
-      <class 'zodict.node.Node'>: child3
-      <class 'zodict.node.Node'>: child4
-      <class 'zodict.node.Node'>: child2
-      <class 'zodict.node.Node'>: child5
+    <class 'node.base.Node'>: root
+      <class 'node.base.Node'>: child1
+      <class 'node.base.Node'>: child3
+      <class 'node.base.Node'>: child4
+      <class 'node.base.Node'>: child2
+      <class 'node.base.Node'>: child5
 
 Move a node. Therefor we first need to detach the node we want to move from
 tree. Then insert the detached node elsewhere. In general, you can insert the
@@ -335,12 +336,12 @@ detached node or subtree to a complete different tree.
 
     >>> root.insertbefore(node, root['child1'])
     >>> root.printtree()
-    <class 'zodict.node.Node'>: root
-      <class 'zodict.node.Node'>: child4
-      <class 'zodict.node.Node'>: child1
-      <class 'zodict.node.Node'>: child3
-      <class 'zodict.node.Node'>: child2
-      <class 'zodict.node.Node'>: child5
+    <class 'node.base.Node'>: root
+      <class 'node.base.Node'>: child4
+      <class 'node.base.Node'>: child1
+      <class 'node.base.Node'>: child3
+      <class 'node.base.Node'>: child2
+      <class 'node.base.Node'>: child5
 
 Merge 2 Node Trees.
 ::
@@ -357,17 +358,17 @@ Merge 2 Node Trees.
     3
 
     >>> tree1.printtree()
-    <class 'zodict.node.Node'>: None
-      <class 'zodict.node.Node'>: a
-      <class 'zodict.node.Node'>: b
+    <class 'node.base.Node'>: None
+      <class 'node.base.Node'>: a
+      <class 'node.base.Node'>: b
 
     >>> len(tree2._index.keys())
     3
 
     >>> tree2.printtree()
-    <class 'zodict.node.Node'>: None
-      <class 'zodict.node.Node'>: d
-      <class 'zodict.node.Node'>: e
+    <class 'node.base.Node'>: None
+      <class 'node.base.Node'>: d
+      <class 'node.base.Node'>: e
 
     >>> tree1['c'] = tree2
     >>> len(tree1._index.keys())
@@ -379,20 +380,20 @@ Merge 2 Node Trees.
     True
 
     >>> tree1.printtree()
-    <class 'zodict.node.Node'>: None
-      <class 'zodict.node.Node'>: a
-      <class 'zodict.node.Node'>: b
-      <class 'zodict.node.Node'>: c
-        <class 'zodict.node.Node'>: d
-        <class 'zodict.node.Node'>: e
+    <class 'node.base.Node'>: None
+      <class 'node.base.Node'>: a
+      <class 'node.base.Node'>: b
+      <class 'node.base.Node'>: c
+        <class 'node.base.Node'>: d
+        <class 'node.base.Node'>: e
 
 Detach subtree and insert elsewhere.
 ::
     >>> sub = tree1.detach('c')
     >>> sub.printtree()
-    <class 'zodict.node.Node'>: c
-      <class 'zodict.node.Node'>: d
-      <class 'zodict.node.Node'>: e
+    <class 'node.base.Node'>: c
+      <class 'node.base.Node'>: d
+      <class 'node.base.Node'>: e
 
     >>> tree1._index is sub._index
     False
@@ -404,9 +405,9 @@ Detach subtree and insert elsewhere.
     3
 
     >>> tree1.printtree()
-    <class 'zodict.node.Node'>: None
-      <class 'zodict.node.Node'>: a
-      <class 'zodict.node.Node'>: b
+    <class 'node.base.Node'>: None
+      <class 'node.base.Node'>: a
+      <class 'node.base.Node'>: b
 
     >>> len(tree1._index.keys())
     3
@@ -414,12 +415,12 @@ Detach subtree and insert elsewhere.
     >>> sub.__name__ = 'x'
     >>> tree1.insertbefore(sub, tree1['a'])
     >>> tree1.printtree()
-    <class 'zodict.node.Node'>: None
-      <class 'zodict.node.Node'>: x
-        <class 'zodict.node.Node'>: d
-        <class 'zodict.node.Node'>: e
-      <class 'zodict.node.Node'>: a
-      <class 'zodict.node.Node'>: b
+    <class 'node.base.Node'>: None
+      <class 'node.base.Node'>: x
+        <class 'node.base.Node'>: d
+        <class 'node.base.Node'>: e
+      <class 'node.base.Node'>: a
+      <class 'node.base.Node'>: b
 
     >>> tree1._index is sub._index
     True
@@ -545,7 +546,7 @@ are tested already for the node.
 
     >>> node = LifecycleNode('node')
     >>> node.attrs
-    <zodict._zodict.AttributeAccess object at ...>
+    <node.utils.AttributeAccess object at ...>
 
     >>> node.attrs.foo = 'bar'
     >>> node.attrs['foo']

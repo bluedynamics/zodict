@@ -1,4 +1,4 @@
-from zodict.node import Node
+from node.utils import Node
 
 import cProfile
 

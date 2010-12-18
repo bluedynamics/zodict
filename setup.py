@@ -39,11 +39,7 @@ setup(name='zodict',
       zip_safe=True,
       install_requires=[
           'setuptools',
-          'uuid', # only needed for python2.4!
           'node',
-          'odict',
-          'zope.lifecycleevent',
-          'zope.deprecation', # can be removed with v.2.0
       ],
       tests_require=tests_require,
       test_suite="zodict.tests.test_suite",

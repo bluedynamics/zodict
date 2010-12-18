@@ -53,13 +53,13 @@ one of the fallback interfaces.
     ...
     ImportError: No module named interfaces
 
-    >>> import zodict.interfaces
-    >>> reload(zodict.interfaces)
-    <module 'zodict.interfaces' from '...'>
+    >>> import node.interfaces
+    >>> reload(node.interfaces)
+    <module 'node.interfaces' from '...'>
 
-    >>> from zodict.interfaces import ILocation
+    >>> from node.interfaces import ILocation
     >>> ILocation
-    <InterfaceClass zodict.interfaces.ILocation>
+    <InterfaceClass node.interfaces.ILocation>
 
 Remove the import hook.
 ::

@@ -6,7 +6,7 @@ Test BBB - deprecated usage.
 
     >>> from zodict.zodict import zodict as BBBzodict
     >>> BBBzodict
-    <class 'zodict._zodict.Zodict'>
+    <class 'node.utils.Zodict'>
 
 Test Zodict.
 ::
