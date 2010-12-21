@@ -10,7 +10,7 @@ from node.utils import (
     ReverseMapping,
     AttributeAccess,
 )
-from node.base import (
+from node.bbb import (
     Node,
     AttributedNode,
     LifecycleNode,

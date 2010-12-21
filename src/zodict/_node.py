@@ -1,5 +1,4 @@
-from node.base import (
-    AbstractNode,
+from node.bbb import (
     NodeIndex,
     _Node,
     Node,
@@ -9,4 +8,5 @@ from node.base import (
     LifecycleNode,
     FilteredNodespace,
 )
+from node.base import AbstractNode
 from node.aliasing import AliasedNodespace
