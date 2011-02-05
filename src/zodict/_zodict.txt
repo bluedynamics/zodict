@@ -49,7 +49,7 @@ Test ReverseMapping.
     False
     
     >>> mapping['a']
-    'foo'
+    ['foo']
     
     >>> mapping['foo']
     Traceback (most recent call last):
@@ -57,7 +57,7 @@ Test ReverseMapping.
     KeyError: 'foo'
     
     >>> mapping.get('b')
-    'bar'
+    ['bar']
     
     >>> mapping.get('foo', 'DEFAULT')
     'DEFAULT'
