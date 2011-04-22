@@ -4,7 +4,7 @@ A dict aliaser takes a dictionary as base for aliasing
     >>> da = DictAliaser([('alias1', 'key1'), ('alias2', 'key2')])
 
     >>> da.alias('key1')
-    ['alias1']
+    'alias1'
 
     >>> da.unalias('alias2')
     'key2'

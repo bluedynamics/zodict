@@ -9,4 +9,4 @@ from node.bbb import (
     FilteredNodespace,
 )
 from node.base import AbstractNode
-from node.parts.alias import AliasedNodespace
+from node.aliasing import AliasedNodespace

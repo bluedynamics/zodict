@@ -2,6 +2,7 @@ from node.aliasing import (
     DictAliaser,
     PrefixAliaser,
     SuffixAliaser,
+    NodespaceAliases,
     AliaserChain,
     PrefixSuffixAliaser,
     NamedAliasers,
