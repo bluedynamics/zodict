@@ -1,3 +1,1 @@
-from node.composition import (
-    Composition,
-)
+from node.composition import Composition

@@ -272,8 +272,8 @@ Contributors
 Changes
 =======
 
-Version 1.9.4
--------------
+Version 1.9.4dev
+----------------
 
 - Node provides now ``get`` method (promised by IFullMapping) again.
   [jensens, 2010-09-04]

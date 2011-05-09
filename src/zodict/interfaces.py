@@ -13,8 +13,8 @@ from node.interfaces import (
     INodeModifiedEvent,
     INodeRemovedEvent,
     INodeDetachedEvent,
-    IComposition,
-    IAttributedComposition,
-    ILifecycleComposition,
     IAliaser,
+    IComposition,
+#    IAttributedComposition,
+#    ILifecycleComposition,
 )

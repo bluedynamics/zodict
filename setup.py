@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.9.4b7'
+version = '1.9.4dev'
 shortdesc = 'zope.interface compliant ordered dictionary and zope.location ' + \
             'aware node.'
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
